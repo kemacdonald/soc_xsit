@@ -1,0 +1,58 @@
+This is BibTeX, Version 0.99d (TeX Live 2013)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: km_fyp_p.aux
+The style file: apacite.bst
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=20001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Database file #1: fyp_p.bib
+apacite.bst [2012/02/25 v6.01 APA bibliography style]
+Warning--No journal in baldwin1995understanding
+Warning--`others' not consistent with 6th ed. of the APA Manual
+You've used 32 entries,
+            6735 wiz_defined-function locations,
+            1435 strings with 16077 characters,
+and the built_in function-call counts, 63662 in all, are:
+= -- 7902
+> -- 521
+< -- 3212
++ -- 3365
+- -- 66
+* -- 4215
+:= -- 12068
+add.period$ -- 128
+call.type$ -- 32
+change.case$ -- 545
+chr.to.int$ -- 0
+cite$ -- 65
+duplicate$ -- 1607
+empty$ -- 2375
+format.name$ -- 885
+if$ -- 11862
+int.to.chr$ -- 0
+int.to.str$ -- 64
+missing$ -- 0
+newline$ -- 810
+num.names$ -- 256
+pop$ -- 911
+preamble$ -- 1
+purify$ -- 128
+quote$ -- 0
+skip$ -- 4000
+stack$ -- 0
+substring$ -- 3678
+swap$ -- 948
+text.length$ -- 71
+text.prefix$ -- 0
+top$ -- 1
+type$ -- 2624
+warning$ -- 2
+while$ -- 292
+width$ -- 0
+write$ -- 1028
+(There were 2 warnings)

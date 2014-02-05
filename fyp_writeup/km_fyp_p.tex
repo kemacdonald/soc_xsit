@@ -1,0 +1,88 @@
+\documentclass[man]{apa2}
+
+\usepackage{pdfsync}
+\usepackage{apacite}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{topcapt}
+\usepackage{color}
+\usepackage{inputenc} 
+
+\title{The role of social information in cross-situational word-learning
+
+(Submitted for the First-Year Project Proposal)}
+\author{Kyle MacDonald}
+\affiliation{Department of Psychology, Stanford University}
+
+\vspace{3.0ex}
+
+\shorttitle{The role of social information in cross-situational word-learning}
+\rightheader{SOCIAL INFORMATION AND CROSS-SITUATIONAL LEARNING}
+\leftheader{Kyle MacDonald}
+
+\begin{document}
+\maketitle
+
+%%%%%%%%% INTRO %%%%%%%%% 
+\section{Introduction}
+Language is a powerful tool that allows us to rapidly learn from others and building a large early vocabulary creates the foundation for later language and academic success \cite{hart1995meaningful, qian2002investigating}. However, to successfully learn a new word, children must solve several problems simultaneously. They must be able to: interpret a speaker's utterance as having communicative intent, extract individual words from that utterance, map that word to the correct object in the world, and retain that link over time. Together, these social-cognitive and mapping challenges make word-learning a surprisingly difficult puzzle for the child to solve. So how do children learn words so rapidly?
+
+Different theories of early word-learning emphasize different learning tools and information sources available to the child. These proposals can be divided into two broad categories: \emph{Social-Pragmatic} and \emph{Associative} accounts. Social-Pragmatic theories characterize language acquisition as a fundamentally social process, with word-learning occurring as a result of the interaction between children's social-cognitive skills and highly structured learning moments (often labeled episodes of \emph{joint attention}). In contrast, Associative proposals highlight children's powerful statistical learning mechanisms and the rich structure of natural language. In this account, word-learning is best explained by domain-general pattern-finding abilities, attention, and memory. 
+
+My goal in this paper is to briefly review the evidence in support of these two proposals (Section 2) as well as recent experimental and computational work that attempts to integrate the two (Section 3). In the final section (Section 4), I will propose a new study that explores how social information interacts with associative learning mechanisms during cross-situational word-learning.
+
+\section{Social-Pragmatic word-learning}
+
+\subsubsection{Intention-reading Skills}
+Social-Pragmatic theories argue that children's ability to understand a speaker's communicative intent is foundational to word-learning \cite{bloom2002children, baldwin1995understanding,tomasello2009constructing}. Once the child is capable of rapidly inferring a speaker's communicative intent, the word to object mapping problem is simplified. Experimental work shows the sophistication of children's early intention-reading skills \cite{baldwin1993infants,baldwin2001links}. One powerful demonstration is a series of studies conducted by Tomasello and colleagues in which children had to track and integrate multiple cues to reference in order to successfully learn new words \cite{akhtar1996role,tomasello1996eighteen,tomasello1994learning}. For example, in \citeA{tomasello1996eighteen}, children played two versions of a "finding game." In the first version, an adult announced her intention to "find the toma" and then searched in a row of buckets, all containing novel objects. On some trials she would find the object in the first bucket, smile, and terminate her search. On other trials, she would reject the first object by scowling, replacing it in the box, and continuing her search. Critically, 18- and 24-month olds mapped "toma" to the object that the adult \emph{intended} to find, regardless of how many distractor objects were rejected during the search. 
+
+In the second version, children were familiarized with four objects hidden at four different locations, one of which was a particularly salient toy barn. Once the child had linked each object to its hiding place, an adult announced her intention to "find the gazzer." She then went to the hiding location of the toy barn, but it was locked and she frowned upon not being able to open it. She then continued her search to one of the other hiding locations, saying "Let's see what else we can find," and pulled out a distractor object while smiling. Interestingly, 18- and 24-month old children mapped the novel word "gazzer" to the toy barn, even though they had not seen the barn after hearing the word and the adult had smiled at a distractor object. 
+
+The common thread across all of these studies is that children could not have relied on saliency and co-occurrence information to learn the novel word meanings because the words and objects did not occur close in time and the distractor objects were often more salient. In addition, children were able to use social cues flexibly to determine referential intent: In the first finding game, a smile indicated referential intent, but in the second game, a frown was the relevant cue. Thus, even at 18 months, children are able to infer adults' referential intent and use this information to guide their word-learning in non-ostensive contexts.
+
+\subsubsection{Joint Attention}
+
+Social Pragmatic theories also emphasize the importance of episodes of joint attention for early word-learning. These episodes involve a caregiver and child attending to an object and understanding that the other participant is also attending to that same object \cite{carpenter1995joint, tomasello1983joint}. These contexts are highly structured, repetitive, and limited to a handful of referential intentions, thus simplifying the child's inference. Experimental data show that joint attention facilitates language acquisition \cite{brooks2008infant,farrar1993event}. More recent research suggests that joint attention episodes, in addition to making referential intent clear, provide the child with clear visual access to objects during naming, creating an ideal word-learning situation \cite{yu2012embodied}. Correlational data also show strong links between early joint attention skills (e.g. pointing and responding to parental bids for attention) and later vocabulary growth in typically-developing \cite{tomasello1986joint, carpenter1998social,farrant2012early} and children diagnosed with autism \cite{mundy1990longitudinal}.
+
+Additional evidence in support of the importance of rich social interactions for language acquisition comes from recent research investigating the relationship between children's early language environments and language skills. \citeA{weisleder2013talking} measured children's language processing skills, vocabulary, and recorded parent-infant interactions at home using a digital audio recorder that could capture up to 16 hours of speech. These audio recordings were coded for the amount of speech directed to the child and the amount of speech overhead by the child. Importantly, infants who experienced more child-directed speech, but \emph{not overhead speech}, were more efficient in processing language and had larger vocabularies. 
+
+Together, there is sufficient evidence that rich, social interactions are high in information value and facilitate early word-learning. However, these episodes make up only a portion of the word-learning contexts that young children experience \cite{frank2013social} and children can learn language without experiencing much direct social interaction with adults \cite{shneidman2012language}. So how might children, in the absence of rich, social information, learn the meanings of words? 
+
+\section{Associative word-learning}
+
+Associative accounts of word-learning highlight children's powerful statistical learning mechanisms, which track the regularity present in natural language, allowing the learner to map words to objects over time. Researchers in support of this proposal point out that children in early stages of word-learning, before 18 months of age, often have difficulty disambiguating referential intent and infants at much younger ages (8 months) show sensitivity to statistical information in both the auditory \cite{saffran1996statistical} and visual \cite{fiser2002statistical} domains. In this account, word-learning is best explained by domain-general pattern-finding abilities, attention, and memory and words are often mapped to the most salient object in the visual scene.
+
+Empirical data show that in the absence of social cues to word meaning, adults and children are able to rapidly learn words by tracking the co-occurrence of labels and objects across multiple, ambiguous exposures \cite{smith2008infants,vouloumanos2008fine}. For example, \citeA{smith2008infants} taught children three novel words simply by repeating consistent novel word-object pairings across 10 ambiguous exposure trials. Each exposure consisted of two novel objects and one novel word, with no social cues to reference. Importantly, there was no way for children to infer the correct meaning of the novel word on any one trial, but over time, they accumulated statistical information that led them to make the correct mapping. These results provide strong evidence of children's ability to track the co-occurence statistics of words and objects in the service of word-learning. 
+
+In summary, a substantive body of research supports both the Social-Pragmatic and Associative accounts of early word-learning. However, word-learning requires solving both social-cognitive and mapping challenges simultaneously. Thus, it is likely that children use multiple skills and a variety of information sources to learn words, both social and data-driven. In the next section, I will review experimental and computational work that attempts to take this complexity into account and integrate Social-Pragmatic and Associative accounts. 
+
+\section{Integrating Social and Associative Learning}
+
+Integrated accounts of early word-learning emphasize the impact of multiple factors on children's ability to learn new words. For example, \citeA{hollich2000breaking} propose an Emergentist Coalitional Model in which they suggest that children take advantage of a "coalition" of cues - social, associative, and linguistic - to learn words. Importantly, these cues are always available to the learner and what changes is how children use each cue. Empirical work provides support for the idea that children do use different sources of information to learn words and the use of specific types of cues changes with development. Using a preferential looking task, \citeA{hollich2000breaking} asked children aged 10, 12, 19, and 24 months to learn novel words for objects, and pitted social and perceptual cues against each other to test the usefulness of each information source for making the correct object?word mapping at each age. Interestingly, the youngest children ignored the social cue of experimenter eye gaze (i.e., child-guided joint attention), preferring to map the novel word to the more visually salient object (in line with predictions made by the Associative account);  however, the older children (20 months and older) preferred to map novel words to the object that the adult labeled. 
+
+Recent computational models attempt to formalize how social and statistical cues can be integrated to facilitate word-learning \cite{yu2007unified,frank2009using}. These models, however, treat social information in fundamentally different ways. In \citeA{yu2007unified} Unified Model, social information, such as eye gaze or prosody, is characterized as a "spotlight" that directs the child's attention to objects in the visual scene. In this account, social cues are considered, but intention reading is secondary to attention and saliency. Put another way, social cue simply adds weights to the words and objects that allow statistical learning to operate more effectively. 
+
+In contrast, \cite{frank2009using} propose an \emph{Intentional} model that characterizes social information as providing evidence of a speaker's referential intent, which in turn facilitates word-learning. This model assumes that the relationship between words and objects is mediated by the speaker's goals to refer to some object. By making inferences about a speaker's referential intent, the model is able to simultaneously solve both the social-cognitive and mapping inference problems inherent to word-learning. In addition, Frank and colleagues were able to capture many seminal findings in the early word-learning literature, including cross-situational learning and the use of inferred intentions to disambiguate reference.
+
+In the final section, I propose a new study that follows this line of empirical work and modeling\cite{johnson2012exploiting,frank2009using,yu2007unified,hollich2000breaking} and tries to explore the interaction of social and statistical learning.
+
+\section{Proposed Research}
+
+Several studies show that in the absence of social cues to word meaning, adults and children are able to rapidly learn words by tracking the co-occurrence of labels and objects across exposures (i.e. cross-situational learning) \cite{smith2008infants,vouloumanos2008fine}. However, some researchers question the psychological plausibility of these gradualist accounts, suggesting that children's rapid word learning is better described by a single hypothesis tracking mechanism \cite{trueswell2013propose,medina2011words}. 
+
+Recent experimental work shows that both adults and children can track and recall 
+multiple referents (Yurovsky & Frank, in prep). In Yurovsky and Frank's task, participants saw a set of novel objects and heard a novel word (e.g. Grink), and were asked to make a guess about the "correct"\footnote{There was actually no "correct" answer on exposure trials; rather these trials gave participants evidence about potential word-object mappings and allowed them to form an initial hypothesis.} word-object mapping. In subsequent test trials, participants heard the novel word again, this time paired with another set of novel objects. Critically, one of the objects in the set was either the participant's initial hypothesis (Same trials) or one of the objects that was \emph{not} the initial hypothesis (Switch trials). On Switch trials, adults reliably selected the object that was not their initial hypothesis, even when there were eight objects in the initial exposure set, providing strong evidence that learners track multiple referents when learning new words. 
+
+However, this task did not include any of the rich, social cues that typically accompany real world 
+word-learning. So it is still an open question as to how social information interacts with learners' 
+demonstrated ability to track multiple referents. Perhaps the presence of additional evidence about 
+a speaker's referential intent strengthens the learner's initial hypothesis, reducing the need to track 
+alternative hypotheses. Or social information could strengthen the initial hypothesis 
+without reducing multiple referent tracking. The proposed study asks if the presence of social information changes how learners track multiple referents when learning new words?
+
+The answer to this question will increase our understanding of how social information interacts with statistical learning mechanisms with the overarching goal of clarifying the unique contribution of each information source to children's early word learning. 
+
+\bibliographystyle{plain}
+\bibliography{fyp_p}
+
+\end{document}
