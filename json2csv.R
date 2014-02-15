@@ -7,32 +7,31 @@ library(plyr)
 library(chron)
 library(stringr)
 
-#utility functions for eyeballing significance
+# sets up utility functions for eyeballing significance
 sem <- function(x) {sd(x)/sqrt(length(x))}
 ci95 <- function(x) {1.96*sem(x)}
 
-## get the .results file that submiterator script spits out
+## gets all .results files at one time
+all_results <- list.files(path = "/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/raw_data", pattern = '*.results', all.files = FALSE)
 
-#all_results <- list.files(path = "/Applications/MAMP/htdocs/projects/ja_xsit/ja_xsit_social_4_3_pilot2/", pattern = '*.results', all.files = FALSE);
-all_results <-  list.files(path = "/Applications/MAMP/htdocs/projects/ja_xsit/ja_xsit_social_4_3_pilot2/", pattern = '*nosoc.results', all.files = FALSE);
-
-## Create empty data frame
+## creates empty data frame
 all.data <- as.data.frame(matrix(ncol = 0, nrow = 0))
 
-# the main loop through all of the conditions
+## loops through all of the results files, grabbing relevant data from JSON, creating columns for 
+## the following: condition (soc/no_soc), number of pics each trial, interval between exposure and test  
+## also flags test and exposure trials
+
 for(f in 1:length(all_results)) {
-  
-  data <- read.table(paste("/Applications/MAMP/htdocs/projects/ja_xsit/ja_xsit_social_4_3_pilot2/", all_results[f],sep=""),sep="\t",header=TRUE, 
+  data <- read.table(paste("/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/raw_data/", all_results[f],sep=""),sep="\t",header=TRUE, 
                      stringsAsFactors=FALSE)
-  
   long.data <- as.data.frame(matrix(ncol = 0, nrow = 20*nrow(data)))
-}
-  
   c <- 1
   
+  # loops over each participant
   for (i in 1:nrow(data)) {
-    d <- fromJSON(as.character(data$Answer.data[i]))
     
+    d <- fromJSON(as.character(data$Answer.data[i]))
+    # grab fields from JSON
     for (j in 1:length(d)) {
       
       #grab relevant fields from the JSON mess
@@ -56,103 +55,75 @@ for(f in 1:length(all_results)) {
       c <- c + 1
     }
   }
+  
   #get numpic from file names
   subs <- strsplit(all_results[f],'\\.');
   subs <- strsplit(unlist(subs)[1],'_');
-  long.data$numPic <- unlist(subs)[4];
-
+  long.data$numPic <- unlist(subs)[3];
+  
   # get interval from file names
-  interval <- unlist(subs)[5];
+  interval <- unlist(subs)[4];
   long.data$interval <- interval;
-
-#grab only the continuation trials
+  
+  # get condition from file names 
+  condition <- unlist(subs)[6]
+  long.data$condition <- condition;
+  
+  # flag the continuation trials
   long.data$test <- 0 
-
-  # this is super ugly
+  
   if (interval == 0) {
     long.data$test[long.data$trial.num==6 |
-                     long.data$trial.num==8 |
-                     long.data$trial.num==10 |
-                     long.data$trial.num==12 |
-                     long.data$trial.num==14 |
-                     long.data$trial.num==16 |
-                     long.data$trial.num==18 |
-                     long.data$trial.num==20] <- 1;
-  } else if(interval == 1){
-    long.data$test[long.data$trial.num==7 |
-                     long.data$trial.num==8 |
-                     long.data$trial.num==11 |
-                     long.data$trial.num==12 |
-                     long.data$trial.num==15 |
-                     long.data$trial.num==16 |
-                     long.data$trial.num==19 |
-                     long.data$trial.num==20] <- 1;
-  } else if(interval == 3){
+                    long.data$trial.num==8 |
+                    long.data$trial.num==10 |
+                    long.data$trial.num==12 |
+                    long.data$trial.num==14 |
+                    long.data$trial.num==16 |
+                    long.data$trial.num==18 |
+                    long.data$trial.num==20] <- 1;
+  } else if (interval == 3) {
     long.data$test[long.data$trial.num==9 |
-                     long.data$trial.num==10 |
-                     long.data$trial.num==11 |
-                     long.data$trial.num==12 |
-                     long.data$trial.num==17 |
-                     long.data$trial.num==18 |
-                     long.data$trial.num==19 |
-                     long.data$trial.num==20] <- 1;  
-  } else if(interval == 7){
-    long.data$test[long.data$trial.num==13 |
-                     long.data$trial.num==14 |
-                     long.data$trial.num==15 |
-                     long.data$trial.num==16 |
-                     long.data$trial.num==17 |
-                     long.data$trial.num==18 |
-                     long.data$trial.num==19 |
-                     long.data$trial.num==20] <- 1;  
+                    long.data$trial.num==10 |
+                    long.data$trial.num==11 |
+                    long.data$trial.num==12 |
+                    long.data$trial.num==17 |
+                    long.data$trial.num==18 |
+                    long.data$trial.num==19 |
+                    long.data$trial.num==20] <- 1;  
+  } 
+  
+  # flag exposure trials
+  
+  long.data$exposure <- 0 
+  
+  if (interval == 0) {
+    long.data$exposure[long.data$trial.num==5 |
+                        long.data$trial.num==7 |
+                        long.data$trial.num==9 |
+                        long.data$trial.num==11 |
+                        long.data$trial.num==13 |
+                        long.data$trial.num==15 |
+                        long.data$trial.num==17 |
+                        long.data$trial.num==19] <- 1;
+    
+  } else if (interval == 3) {
+    long.data$exposure[long.data$trial.num==5 |
+                        long.data$trial.num==6 |
+                        long.data$trial.num==7 |
+                        long.data$trial.num==8 |
+                        long.data$trial.num==13 |
+                        long.data$trial.num==14 |
+                        long.data$trial.num==15 |
+                        long.data$trial.num==16] <- 1;    
   }
   
-#grab only the exposure trials
-# this is super ugly
-
-long.data$exposure <- 0 
-
-if (interval == 0) {
-  long.data$exposure[long.data$trial.num==5 |
-                   long.data$trial.num==7 |
-                   long.data$trial.num==9 |
-                   long.data$trial.num==11 |
-                   long.data$trial.num==13 |
-                   long.data$trial.num==15 |
-                   long.data$trial.num==17 |
-                   long.data$trial.num==19] <- 1;
-} else if(interval == 1){
-  long.data$exposure[long.data$trial.num==7 |
-                   long.data$trial.num==8 |
-                   long.data$trial.num==11 |
-                   long.data$trial.num==12 |
-                   long.data$trial.num==15 |
-                   long.data$trial.num==16 |
-                   long.data$trial.num==19 |
-                   long.data$trial.num==20] <- 1;
-} else if(interval == 3){
-  long.data$exposure[long.data$trial.num==5 |
-                   long.data$trial.num==6 |
-                   long.data$trial.num==7 |
-                   long.data$trial.num==8 |
-                   long.data$trial.num==13 |
-                   long.data$trial.num==14 |
-                   long.data$trial.num==15 |
-                   long.data$trial.num==16] <- 1;  
-} else if(interval == 7){
-  long.data$exposure[long.data$trial.num==13 |
-                   long.data$trial.num==14 |
-                   long.data$trial.num==15 |
-                   long.data$trial.num==16 |
-                   long.data$trial.num==17 |
-                   long.data$trial.num==18 |
-                   long.data$trial.num==19 |
-                   long.data$trial.num==20] <- 1;  
+  all.data <- rbind(all.data,long.data);
+  
 }
 
-all.data <- rbind(all.data,long.data);
+## -------------- CLEAN DATASET -------------- ##
 
-#compute day/time of each hit for excluding multiples
+## computes day/time of each hit for excluding multiples
 all.data$day.and.time <- chron(dates = all.data$submit.date,
                                times = all.data$submit.time,
                                format=c("mon d y","h:m:s"))
@@ -161,69 +132,27 @@ all.data <- all.data[with(all.data,order(subid,day.and.time)),]
 
 drop.subs <- ddply(all.data,.(subid),
                       function(x) {nrow(x) > 20})
-drop.subs <- drop.subs[drop.subs$V1,1]
 
-#grab earliest HIT for each participant
+drop.subs <- drop.subs[drop.subs$V1,1] # grabs subs who participated more than once
+
+## grabs earliest HIT for each participant
 all.drops <- matrix(0,nrow(all.data))
+
 for(sub in drop.subs) {
   rows <- as.integer(all.data$subid == sub)
   all.drops[rows & (cumsum(rows) > 20)] <- 1
 }
-all.data <- subset(all.data,!all.drops)
+all.data <- subset(all.data,!all.drops) ## subsets data without subs who participated twice
 
-## recode subid as factor and recode trial type as factor with two levels: Same and Switch
+## recodes subid as factor and recode trial type as factor with two levels: Same and Switch
 all.data$subid <- as.factor(all.data$subid)
 all.data$trialType <- factor(all.data$trialType, labels = c('Same','Switch'))
-example.data <- all.data[nchar(all.data$kept) == 0,]
 
-#Grab exposure data
-exposure.data <- all.data[all.data$exposure == 1,]
-# check if participants are selecting the target of eye gaze on exposure trials
-exposure.data$faceIdx <- revalue(exposure.data$face, c("eyesleft"=0, "eyesdownleftarrow"=1, "eyesdownrightarrow"=2, "eyesrightarrow"=3, "eyescenter"=-1))
-exposure.data$choseSocial <- exposure.data$faceIdx == exposure.data$chosenIdx
-exposure.data$choseSocial[exposure.data$faceIdx==-1] <- NA
-
-# calculate means for correctly choosing exposure data
-mean(exposure.data$choseSocial,na.rm=TRUE)
-# only look at first trial
-mean(exposure.data$choseSocial[exposure.data$trial.num==5],na.rm=TRUE)
-
-### Grab test data
-
-test.data <- all.data[all.data$test ==  1,]
-test.data$correct <- test.data$chosen == test.data$kept
-mean(test.data$correct)
-
-test.data$trialType <- factor(test.data$trialType, labels = c('Same','Switch'))
-test.data <- test.data[with(test.data, order(subid,trial.num)),]
-
-# exclude for getting examples wrong
-include.subs <- ddply(example.data,.(subid),
-            function(x) {x$chosen[1] == "squirrel" & 
-                           x$chosen[2] == "squirrel" & 
-                           x$chosen[3] == "tomato" &
-                           x$chosen[4] == "tomato"})
-
-names(include.subs) <- c("subid","include")
-test.data <- merge(test.data,include.subs,sort = FALSE)
-
-keep.data <- subset(test.data,include)
-
-keep.data$first.trial <- FALSE
-keep.data$first.trial[(keep.data$interval==0 & keep.data$trial.num==6) |
-                        (keep.data$interval==1 & keep.data$trial.num==7) |
-                        (keep.data$interval==3 & keep.data$trial.num==9) |
-                        (keep.data$interval==7 & keep.data$trial.num==13)] <- TRUE
-
-
-keep.data$numPicN <- as.numeric(keep.data$numPic)
-keep.data$intervalN <- as.numeric(keep.data$interval)
-
-#renumber trials to be consistent across conditions
+# renumbers trials to be consistent across conditions
 trial.nums <- function(x) {
   xmod <- x
   nums <- x$trial.num
-
+  
   for (i in 1:length(nums)) {
     xmod$trial.num[xmod$trial.num==nums[i]] <- i
   }
@@ -231,20 +160,40 @@ trial.nums <- function(x) {
   return(xmod)
 }
 
-# just some quick aggregate calls to look at means by condition
-mss <- aggregate(correct ~ numPic + intervalN + trialType + subid , data=keep.data,FUN=mean)
-mssrt <- aggregate(rt ~ numPic + intervalN + trialType + subid , data=keep.data,FUN=mean)
+## excludes subjects for getting example trials wrong
 
-ms <- aggregate(correct ~ numPic + intervalN + trialType , data=mss,FUN=mean)
-msrt <- aggregate(rt ~ numPic + intervalN + trialType , data=mssrt,FUN=mean)
+# grabs example data
+example.data <- all.data[all.data$trial.num == 1:4, ]
+include.subs <- ddply(example.data,.(subid),
+            function(x) {x$chosen[1] == "squirrel" & 
+                           x$chosen[2] == "squirrel" & 
+                           x$chosen[3] == "tomato" &
+                           x$chosen[4] == "tomato"})
 
-ms$err <- aggregate(correct ~ numPic + interval + trialType, data=mss,FUN=ci95)$correct
+names(include.subs) <- c("subid","include")
+
+# merges include column to data frame
+all.data <- merge(all.data,include.subs,sort = FALSE)
+
+# keeps just the subs who responded accurately on example trials
+keep.data <- subset(all.data,include)
+
+## flag first trials ##  
+keep.data$first.trial <- FALSE
+keep.data$first.trial[(keep.data$interval==0 & keep.data$trial.num==6) |
+                        (keep.data$interval==3 & keep.data$trial.num==9)] <- TRUE
+
+# creates numeric vars for data analysis 
+keep.data$numPicN <- as.numeric(keep.data$numPic)
+keep.data$intervalN <- as.numeric(keep.data$interval)
+
+# flags correct/incorrect on same/switch trials
+keep.data$correct <- keep.data$chosen == keep.data$kept
+
+# removes example trials to just keep test and exposure in final dataset
+keep.data <- subset(keep.data, keep.data$trial.num > 4)
+
+## -------------- SAVE OUTPUT -------------- ##
 
 ## Save test and exposure tables as .csv
-
-write.csv(keep.data,"/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/data/ja_xsit_pilot2_4_3_nosocial_test.csv")
-write.csv(exposure.data,"/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/data/ja_xsit_pilot2_4_3_social_exposure.csv")
-
-
-# write.csv(mss,"/Applications/MAMP/htdocs/projects/ja_xsit/ja_xsit_4_0_no_soc_means.csv")
-# write.csv(keep.data,"/Applications/MAMP/htdocs/projects/ja_xsit/ja_xsit_4_0_no_soc_long.csv")
+write.csv(keep.data, "/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/processed_data/soc_xsit_all_data.csv")

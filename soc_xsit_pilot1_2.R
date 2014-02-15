@@ -77,6 +77,75 @@ qplot(x=trialType,y=correct,
 m1 <- glmer(correct ~ trialType * condition * interval + (trialType | subid), 
            data=d, family=binomial)
 
+## -------------- TARGET OF EYE GAZE ON EXPOSURE ANALYSIS  -------------- 
+
+# subset data 
+d.sub <- subset(d, select=c(subid, trial.num, trialType, rt, correct, interval, condition))
+ed.sub <- subset(ed, select=c(subid, trial.num, trialType, rt, choseSocial, choseSocialEasy, condition))
+
+
+# # sort data
+# d.sub$subid <- as.character(d.sub$subid)
+# d.sub <- d.sub[order(d.sub$subid, d.sub$trial.num) , ]
+# 
+# ed.sub$subid <- as.character(ed.sub$subid)
+# ed.sub <- ed.sub[order(ed.sub$subid, ed.sub$trial.num) , ]
+# 
+# # convert trial numbers to 1:8 for merging
+# d.sub <- ddply(d.sub, .(subid), function(x) {
+#   #   stopifnot(length(x$trial.num)==8)
+#   x$trial.num.rev <- (1:8)[1:length(x$trial.num)] # still ugly
+#   return(x)
+# })
+# 
+# ed.sub <- ddply(ed.sub, .(subid), function(x) {
+#   #   stopifnot(length(x$trial.num)==8)
+#   x$trial.num.rev <- (1:8)[1:length(x$trial.num)] # still ugly
+#   return(x)
+# })
+# 
+
+# get the right exposure trial to match up
+d.sub$exposure.trial <- d.sub$trial.num - (d.sub$interval + 1)
+
+# merge by subject and trial
+d.merged <- merge(d.sub, ed.sub, 
+                  by.x = c("subid","exposure.trial"), 
+                  by.y = c("subid","trial.num"))
+
+# sanity check
+length(d.sub$subid)
+length(unique(d.sub$subid))
+length(ed.sub$subid)
+length(unique(ed.sub$subid))
+length(d.merged$subid)
+length(unique(d.merged$subid))
+
+# merge subsetted data by subid
+d.merged <- merge(d.sub, ed.sub, by = c("subid", "trial.num.rev"))
+
+# now get the just the trials on which participants selected the target of eye gaze
+d.gaze.tar <- subset(d.merged, choseSocial == TRUE | condition.x == "No Social", select=c(subid:condition.y))
+
+# now aggregate to get means (need to rename condition - x = social vs. no social, y = arrow information - and trialType columns x = Same/switch, y doesn't make sense here)
+mss.gaze.tar <- aggregate(correct ~ trialType.x + condition.y + subid + interval, data=d.gaze.tar, FUN=mean)
+ms.gaze.tar <- aggregate(correct ~ trialType.x + condition.y + interval, data=mss.gaze.tar, FUN=mean)
+ms.gaze.tar$corr.cih <- aggregate(correct ~ trialType.x + condition.y + interval, data=mss.gaze.tar, FUN=ci.high)$correct
+ms.gaze.tar$corr.cil <- aggregate(correct ~ trialType.x + condition.y + interval, data=mss.gaze.tar, FUN=ci.low)$correct
+
+# now plot 
+qplot(x=trialType.x,y=correct,
+      ymin=correct-corr.cil, ymax=correct+corr.cih,
+      colour=condition.y,group=condition.y, size = I(1),
+      geom=c("line","pointrange"),
+      position=position_dodge(width=.02),
+      data=ms.gaze.tar) + 
+  ylim(.2,1) +
+  xlab("Trial Type") +
+  ylab("Propotion Correct") +
+  theme_bw(base_size = 14)  +
+  facet_grid(. ~ interval)
+
 
 ## -------------- BY TRIAL ANALYSIS  -------------- 
 d <- ddply(d, .(subid), function(x) {
@@ -110,15 +179,6 @@ m1 <- glmer(correct ~ trialType * condition * interval + (trialType | subid),
 
 
 ## -------------- RT ANALYSIS -------------- 
-
-social.same.rt <- subset(mss.rt, mss.rt$trialType == "Same" & mss.rt$condition == "Social")
-social.switch.rt <- subset(mss.rt, mss.rt$trialType == "Switch" & mss.rt$condition == "Social")
-
-nonsocial.same.rt <- subset(mss.rt, mss.rt$trialType == "Same" & mss.rt$condition == "NoSocial")
-nonsocial.switch.rt <- subset(mss.rt, mss.rt$trialType == "Switch" & mss.rt$condition == "NoSocial")
-
-t.test(social.same.rt$rt, nonsocial.same.rt$rt)
-t.test(social.switch.rt$rt, nonsocial.switch.rt$rt)
 
 
 ## now plot accuracy with 95% ci
@@ -263,9 +323,9 @@ qplot(log(rt), data=mss.exp.rt)
 
 ## plots mean reaction time for the four different exposure conditions 
 
-# reorder factor levels for graphing
+# reorder factor levels for plotting
 ms.exp.rt$condition <- factor(ms.exp.rt$condition, levels=c("No Social", "Social 4_0 No Arrows", "Social 4_0 Arrows", "Social 4_3 Arrows"))
-
+# now plot
 qplot(data=ms.exp.rt, x=condition, y=rt, 
       ymin=rt-rt.cil, ymax=rt+rt.cih, 
       group=1) +
@@ -280,7 +340,7 @@ qplot(data=ms.exp.rt, x=condition, y=rt,
 
 ## -------------- STATS  -------------- 
 
-## calculate the probability of getting 0, 1, 2, 3, or 4 correct given a 0.25 chance of success on each trial number correct
+## calculate the probability of getting 0, 1, 2, 3, or 4 correct given a 0.25 chance of success on each trial 
 nulls <- dbinom(c(0,1,2,3,4),4,1/4)
 
 ## get the total number correct by trial type and condition 
