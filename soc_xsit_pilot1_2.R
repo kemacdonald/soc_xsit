@@ -19,11 +19,11 @@ ci.high <- function(x,na.rm=T) {
 ## -------------- READ IN AND CLEAN DATA --------------
 
 ### read data
-social_4_3 <- read.csv("/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/data/ja_xsit_pilot2_4_3_social_test.csv")
-social_4_0 <- read.csv("/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/data/ja_xsit_4_0_pilot1_soc_test.csv")
+social_4_3 <- read.csv("/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/processed_data/ja_xsit_4_3_arrows_soc_test.csv")
+social_4_0 <- read.csv("/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/processed_data/ja_xsit_4_0_arrows_soc_test.csv")
 
-nonsocial_4_3 <- read.csv("/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/data/ja_xsit_pilot2_4_3_nosocial_test.csv")
-nonsocial_4_0 <- read.csv("/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/data/ja_xsit_4_0_pilot1_nosoc_test.csv")
+nonsocial_4_3 <- read.csv("/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/processed_data/ja_xsit_4_3_arrows_nosoc_test.csv")
+nonsocial_4_0 <- read.csv("/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/processed_data/ja_xsit_4_0_noarrows_nosoc_test.csv")
 
 # merge social and nonsocial
 social <- rbind.fill(social_4_0,social_4_3)
@@ -61,17 +61,24 @@ ms$rt.cih <- aggregate(rt ~ trialType + condition, data=mss.rt, FUN=ci.high)$rt
 ms$rt.cil <- aggregate(rt ~ trialType + condition, data=mss.rt, FUN=ci.low)$rt
 
 ## graph accuracy with three factors: condition, delay, and trialType
-qplot(x=trialType,y=correct,
+quartz()
+qplot(x=interval,y=correct,linetype=trialType,
       ymin=correct-corr.cil, ymax=correct+corr.cih,
-      colour=condition,group=condition, size = I(1),
+      colour=condition, 
       geom=c("line","pointrange"),
       position=position_dodge(width=.02),
       data=ms) + 
+  ylim(0,1) +
+  xlim(-.02,7) +
+  theme_bw()
+
++ 
   ylim(.2,1) +
   xlab("Trial Type") +
   ylab("Propotion Correct") +
-  theme_bw(base_size = 14)  +
-  facet_grid(. ~ interval)
+  theme_bw(base_size = 14)  
+
+
 
 ## use LMER to test
 m1 <- glmer(correct ~ trialType * condition * interval + (trialType | subid), 
