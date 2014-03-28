@@ -1,1 +1,1 @@
-Code for soc_xsit project
+experiment/analysis code & writeups for soc_xsit project
