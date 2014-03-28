@@ -1,5 +1,4 @@
 rm(list=ls())
-
 ## load model ##
 source("/Users/kylemacdonaldadmin/Documents/Projects/SOC_XSIT/soc_xsit_model.R")
 
