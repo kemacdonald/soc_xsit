@@ -1,3 +1,5 @@
+##### Model Code for soc_xsit #####
+
 compute.probs <- function(gamma, lambda, sigma, numPic, int) {
   sn <- gamma * sigma * (int+1)^-lambda
   on <- gamma * ((1-sigma) / (numPic-1))*(int+1)^-lambda;
