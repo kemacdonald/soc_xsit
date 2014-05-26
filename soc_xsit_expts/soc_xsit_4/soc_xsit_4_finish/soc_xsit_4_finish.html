@@ -1,0 +1,159 @@
+<html>
+    <head>
+        <title>Word Learning</title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+
+        <script src="mmturkey.js"></script>
+
+    <link type="text/css" href ="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" rel="stylesheet" /> 
+
+        <link rel="stylesheet" href="style.css" />
+
+    </head>
+    <body>
+        
+        <!--INSTRUCTIONS SLIDE-->
+        <div class="slide" id="instructions">
+            <img src="images/stanford.png" alt="Stanford University">
+                <p id='logo-text'>Stanford Language and Cognition Lab</p>
+                <p class="block-text">In this experiment, you will meet a speaker named Tina, who will look at some objects and talk about them. Your task is to figure out which word goes with each object.<br><br><br>
+          
+        <b>Please ensure that your volume is loud enough that you will 
+        be able to hear the words.</b></p><br><br>
+                
+                <button type="button" onClick="this.blur(); 
+                showSlide('instructions2')">My volume is turned up and I am 
+                ready to begin</button>
+                
+        <br>
+        <br>
+                <p class="block-text" id="legal">By answering the following
+                 questions, you are participating in a study being 
+                 performed by cognitive scientists in the Stanford Department of
+                  Psychology. If you have questions about this research, please 
+                  contact Kyle MacDonald at <a href="mailto://kyle.macdonald@stanford.edu">
+                  kyle.macdonald@stanford.edu</a>.
+                
+                You must be at least 18 years old to participate. Your 
+                participation in this research is voluntary. You may decline to 
+                answer any or all of the following questions. You may decline 
+                further participation, at any time, without adverse 
+                consequences. Your anonymity is assured; the researchers who 
+                have requested your participation will not receive any personal 
+                information about you.
+                <br><br>
+                We have recently been made aware that your public <a href="http://www.amazon.com">Amazon.com</a> profile can be accessed via your worker ID if you do not choose to opt out. If you would like to opt out of this feature, you may follow instructions available here:
+                <br>
+                <a href="http://www.amazon.com/gp/help/customer/display.html?nodeId=16465241">http://www.amazon.com/gp/help/customer/display.html?nodeId=16465241</a>
+                
+                </p>
+
+        </div>
+        
+    <!--INSTRUCTIONS 2 SLIDE-->
+    <div class="slide" id="instructions2">
+                <p class="block-text">First, you will see two examples in 
+                English to familiarize you with the task.<br><br>
+                On each trial, you will see four pictures of common objects and 
+                hear Tina say an English word. Please click on the object that you think each word 
+                goes with.<br><br>Click the Continue button to begin.</p>
+                
+                <center><button type="button" onClick="this.blur(); 
+                experiment.next()">Continue</button></center>
+        </div>
+
+    <!--INSTRUCTIONS 3 SLIDE-->
+    <div class="slide" id="instructions3">
+              <p class="block-text">You have finished the examples. 
+              You will now begin learning the new language. <br><br>
+              On each trial, you will see four pictures of unfamiliar objects and 
+              hear Tina say a word in the new language. Please click on the object that you think 
+              each word goes with. <br><br>
+              Click the Continue button to begin.</p>
+
+              <center><button type="button" onClick="this.blur(); 
+              experiment.next()">Continue</button></center>
+          </div>
+
+
+    <!--MAIN EXPERIMENT SLIDE-->
+    <div class="slide" id="stage">
+            <table align="center" cellpadding="75">
+                        <tr>
+                
+                            
+                            <td align="center"><div class="face_pic" id="pic0">
+                <img src="stimuli/images/eyescenter.jpg" 
+                width="225" border="5px solid white"></div></td>
+                            
+              
+                            
+                        </tr>
+            </table>
+        
+         <!--PICS 1-4 -->
+      <table align="center" cellpadding="30">
+                        <tr>     
+              <td align="center"><div class="xsit_pic" id="pic1">
+                <img  src="stimuli/images/Novel6.jpg" 
+                width="200" border="5px solid white"></div></td>
+                            
+              <td align="center"><div class="xsit_pic" id="pic2">
+                <img  src="stimuli/images/Novel13.jpg" 
+                width="200" border="5px solid white"></div></td>
+                            
+              <td align="center"><div class="xsit_pic" id="pic3">
+                <img  src="stimuli/images/Novel13.jpg" 
+                width="200" border="5px solid white"></div></td>
+                            
+              <td align="center"><div class="xsit_pic" id="pic4">
+                <img  src="stimuli/images/Novel13.jpg" 
+                width="200" border="5px solid white"></div></td>
+                            
+            </tr>
+                
+            <tr><td align="center" colspan="4">Click on the picture 
+            that the word goes with <br>
+            (If you are not sure, take your best guess)</td></tr>
+      </table>
+      <br>
+      <center><p>Progress:</p></center>
+      <center><div id="progressbar" style="width: 300px;"></div><center>
+      <audio id="sound_player">
+        <source src="stimuli/sounds/squirrel.mp3" type="audio/mp3">
+      </audio>  
+    </div>
+    
+    <div class="slide" id="blankSlide"> </div>
+        
+        <div class="slide" id="finished">
+            You're finished - thanks for participating! Submitting to 
+            Mechanical Turk...
+        </div>
+
+
+    <!--Q&A Slide-->
+    <div class="slide" id="qanda">
+      <center>
+                <p class="block-text">Please answer these questions to complete 
+                this HIT</p>
+          <br>
+          <p>What do you think this experiment is about?</p>
+          <textarea id="about" rows="7" cols="70" resize="none">
+          </textarea><br>
+          <br>
+          <br>
+          <p>Do you have any comments? Is anything broken?</p>
+          <textarea id="broken" rows="7" cols="70" resize="none">
+          </textarea><br>
+          <br>
+                
+               <button type="button" onClick="this.blur(); experiment.end()">
+               Finish</button></center>
+        </div>
+        
+        <script src="soc_xsit_4_finish.js"></script>
+    </body>
+</html>

@@ -187,7 +187,7 @@ trim = function(item) {
 
 // Variable assignment for use later in experiment
 var numImgsConds = [2, 4, 6];
-var imgsPerSlide = numImgsConds[0]; // 4 images per slide 
+var imgsPerSlide = numImgsConds[0]; // 2 images per slide 
 var numBlocks = 8;
 var numOccurs = 2;
 
@@ -197,15 +197,14 @@ var numUsedSounds = numBlocks;
 var numImgs = 140;
 var numSounds = 87;
 
-allImgs = range(1,numImgs);
-allImgs = shuffle(allImgs);
-allImgs = allImgs.slice(0,numUsedImgs); // slice() returns selected elements as a new array object.
+var allImgs = range(1,numImgs);
+    allImgs = shuffle(allImgs);
+    allImgs = allImgs.slice(0,numUsedImgs); // slice() returns selected elements as a new array object.
 
 var blank = blank;
-
-allSounds = range(1,numSounds);
-allSounds = shuffle(allSounds);
-allSounds = allSounds.slice(0,numUsedSounds);
+var allSounds = range(1,numSounds);
+    allSounds = shuffle(allSounds);
+    allSounds = allSounds.slice(0,numUsedSounds);
 
 //make sure all images are loaded at runtime
 allImgs = allImgs.map(function(elem){return 'Novel'+elem;});
@@ -213,31 +212,103 @@ $(allImgs.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 
 // an array to generate the order that should be used
 var allOrders = [[1, 2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 1, 2, 1, 2, 1]];
-
 //SamePos for One Kind of Trial (Switch or Keep)
 var allSamePosOne = [[1, 1, 0, 0], [1, 0, 1, 0], [1, 0, 0, 1],
-                     [0, 1, 1, 0], [0, 1, 0, 1], [0, 0, 1, 1]];
+                     [0, 1, 1, 0], [0, 1, 0, 1], [0, 0, 1, 1]]; 
+var numExamples = 2; // Number of examples 
+var startTime = 0; // Starts the clock for recording RT 
 
-// controls the number of intervening words between exposure and test
-var allSpacings = [[1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8],
-                   [1, 2, 1, 2, 3, 4, 3, 4, 5, 6, 5, 6, 7, 8, 7, 8],
-                   [1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8],
-                   [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8]];
-var allSpacingsConds = ['Zero', 'One', "Three", "Seven"];
+/* Call Maker getter to get cond variables
+ * Takes number and counts for each condition
+ * Returns a condition number (for this experiment 1-8)
+ */
 
-// conditions: social vs. no-social
-var socialConds = ["Social", "No-Social"];
+try {
+    var filename = "KM_soc_xsit_2_good";
+    var condCounts = "1,50;2,50;3,50;4,50;5,50;6,50;7,50;8,50"; //Filling in participants needed for each condition
+    var xmlHttp = null;
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", "https://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
+    xmlHttp.send( null );
+    var cond = xmlHttp.responseText; // For actual experimental runs
+    // var cond = random(8); // for testing experiment
+} catch (e) {
+    var cond = 1;
+}
 
-/* Number of examples */
-var numExamples = 2;
 
-/* Starts the clock for recording RT */ 
-var startTime = 0;
-
-/* code for experiment randomization */
-var socialCondIdx = random();    // 0 - social , 1 = no social
+/* code for condition randomization */
+switch (cond) {
+        case "1": 
+            cond_name = "No-Social-0";
+            social_cond = "No-Social";
+            int_cond = "Zero"
+            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8];
+            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
+            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
+            break;
+        case "2": 
+            cond_name = "No-Social-1";
+            social_cond = "No-Social";
+            int_cond = "One";
+            delay = [1, 2, 1, 2, 3, 4, 3, 4, 5, 6, 5, 6, 7, 8, 7, 8];
+            test_trials = [0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1];
+            exposure_trials = [1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0];
+            break;
+        case "3": 
+            cond_name = "No-Social-3";
+            social_cond = "No-Social";
+            int_cond = "Three";
+            delay = [1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8];
+            test_trials = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1];
+            exposure_trials = [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0];
+            break;
+        case "4": 
+            cond_name = "No-Social-7";
+            social_cond = "No-Social";
+            int_cond = "Seven";
+            delay = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8];
+            test_trials = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1];
+            exposure_trials = [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0];
+            break;
+        case "5": 
+            cond_name = "Social-0";
+            social_cond = "Social";
+            int_cond = "Zero";
+            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8] 
+            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
+            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
+            break;
+        case "6": 
+            cond_name = "Social-1";
+            social_cond = "Social";
+            int_cond = "One";
+            delay = [1, 2, 1, 2, 3, 4, 3, 4, 5, 6, 5, 6, 7, 8, 7, 8];
+            test_trials = [0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1];
+            exposure_trials = [1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0];
+            break;
+        case "7": 
+            cond_name = "Social-3";
+            social_cond = "Social";
+            int_cond = "Three";
+            delay = [1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8];
+            test_trials = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1];
+            exposure_trials = [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0];
+            break;
+        case "8": 
+            cond_name = "Social-7";
+            social_cond = "Social";
+            int_cond = "Seven";
+            delay = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8];
+            test_trials = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1];
+            exposure_trials = [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0];
+            break;
+        default:
+}
+        
+        
+/* Randomize trial order */
 var trialOrder = random();       // same/switch order 
-var numIntWordsIdx = random(4);  // randomizes number of intervening words
 var samePosOrderOne = random(6); // keep/move order
 var samePosOrderTwo = random(6); // keep/move order
 
@@ -247,9 +318,9 @@ $("#progressbar").progressbar( "option", "max", numBlocks*numOccurs +
     numOccurs*numExamples);
 
 exampleImages = [['squirrel','chair',
-                  'squirrel','toaster',
-                  'whistle','tomato',
-                  'tomato','sweater'],
+                  'toaster','squirrel',
+                  'tomato','whistle',
+                  'sweater','tomato'],
                  ['squirrel','chair','tie','trumpet',
                   'squirrel','toaster','truck','crown',
                   'whistle','tomato','tree','spoon',
@@ -264,12 +335,14 @@ showSlide("instructions"); //Show instruction slide
 // This is where we define the experiment variable, which has all the information about our experiment.
 
 var experiment = {
-  trialOrder: trialOrder, // random() = returns either a 0 or 1
-  numIntWordsIdx: numIntWordsIdx,
-  numIntWordsCond: allSpacingsConds[numIntWordsIdx],
+  condition: cond_name,
+  trialOrder: trialOrder,   
+  delay_condition: int_cond,
   numReferents: imgsPerSlide,
-  trials: allSpacings[numIntWordsIdx], // controls the number of intervening trials 
-  socialCond: socialConds[socialCondIdx],
+  trials: delay, // controls the number of intervening trials 
+  social_cond: social_cond,
+  test_trials: test_trials,
+  exposure_trials: exposure_trials,
   trialTypes: allOrders[trialOrder], // allOrders: two arrays, alternating 1 and 2
   samePosOrderOne: samePosOrderOne, 
   samePosOrderTwo: samePosOrderTwo,
@@ -287,7 +360,7 @@ var experiment = {
   trialSounds: allSounds.map(function(elem){return 'Sound'+elem;}),
   exampleSounds: ['squirrel','tomato'],
   exampleFace: 0,
-  exampleFaces: ['eyes_down_left','eyes_down_left','eyes_down_right','eyes_down_left'],
+  exampleFaces: ['eyes_down_left', 'eyes_down_right', 'eyes_down_left', 'eyes_down_right'],
   trialImages: allImgs,
   exampleImages: exampleImages[0], // chooses the set of example images to display on the example slide
   faceOther: ['eyes_down_left','eyes_down_right'], //directed looks for exposure trials
@@ -297,18 +370,25 @@ var experiment = {
   end: function() {
     experiment.about = $('#about')[0].value;
     experiment.broken = $('#broken')[0].value;
-    
     showSlide("finished"); //Show the finish slide.
-
-    // Wait 1.5 seconds and then submit the whole experiment object to Mechanical Turk 
-    // (mmturkey filters out the functions so we know we're just submitting properties [i.e. data])
-    setTimeout(function() { turk.submit(experiment);}, 1500);
-  },
+    
+    setTimeout(function() { 
+        
+      //Decrement maker - getter	
+      if (turk.workerID.length > 0) {
+        var xmlHttp = null;
+			  xmlHttp = new XMLHttpRequest()
+			  xmlHttp.open("GET", "https://langcog.stanford.edu/cgi-bin/subject_equalizer/decrementer.php?filename=" + filename + "&to_decrement=" + cond, false);
+			  xmlHttp.send(null)
+        }
+           
+      turk.submit(experiment)
+        }, 1500);
+    },
 
   /*shows a blank screen for 500 ms*/
   blank: function() {
     showSlide("blankSlide");
-
     if(experiment.exampleItem == numExamples){
       experiment.exampleItem = numExamples+1;
       setTimeout(showSlide("instructions3"),500);
@@ -318,11 +398,10 @@ var experiment = {
 
   /* lets the participant select a picture and records which one was chosen */
   makeChoice: function(event) {
-       
     $(".xsit_pic").unbind("click");
     var endTime = (new Date()).getTime();
-  
-      //visually indicates the participant's choice
+    
+    //visually indicates the participant's choice
     event.target.style.border = '5px dotted red';
     img = trim(event.target.src);
     
@@ -345,7 +424,7 @@ var experiment = {
       face_img = experiment.faceCenter; 
       faceLookIdx = -1; // if center, then face index is -1 
     } 
-    else if(experiment.keepPic[experiment.item].length == 0 & socialCondIdx == 0) {
+    else if(experiment.keepPic[experiment.item].length == 0 & social_cond == "Social") {
             face_img = experiment.faceOther[faceLook];
             faceLookIdx = faceLook;
     } else {
@@ -397,11 +476,7 @@ var experiment = {
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
     
-    var i,
-        next_imgs = [],
-        sound,
-        face_img,
-        blank;
+    var i, next_imgs = [],sound, face_img, blank;
     
     //show example trials
     if(Math.floor(experiment.exampleItem) < numExamples) { 
@@ -425,7 +500,7 @@ var experiment = {
         sound = experiment.trialSounds[experiment.item];
     
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
-      if(experiment.keepPic[experiment.item].length == 0 & socialCondIdx == 0) {
+      if(experiment.keepPic[experiment.item].length == 0 & social_cond == "Social") {
         faceLook = random(2);
         face_img = experiment.faceOther[faceLook];
       } else {
@@ -440,10 +515,9 @@ var experiment = {
            
           //need to put the kept object in a new place
           if(experiment.samePos[experiment.item] != 1){         
-          
-            var all_pos = range(0,imgsPerSlide-1); // 
-          all_pos.splice(idx,1);
-          all_pos = shuffle(all_pos);
+            var all_pos = range(0,imgsPerSlide-1); 
+            all_pos.splice(idx,1);
+            all_pos = shuffle(all_pos);
             idx = all_pos[0];
           }
         } else{idx = -1;}    // this is how to set up the first trial for this object!
