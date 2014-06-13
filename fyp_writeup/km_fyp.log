@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  1 JUN 2014 16:49
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013) (format=pdflatex 2013.5.30)  2 JUN 2014 19:32
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**km_fyp_p.tex
-(./km_fyp_p.tex
+**km_fyp.tex
+(./km_fyp.tex
 LaTeX2e <2011/06/27>
 Babel <3.9f> and hyphenation patterns for 78 languages loaded.
 (./apa2.cls
@@ -179,25 +179,34 @@ Package: inputenc 2008/03/30 v1.1d Input encoding file
 \inpenc@prehook=\toks20
 \inpenc@posthook=\toks21
 )
-(./km_fyp_p.aux)
-\openout1 = `km_fyp_p.aux'.
+(/usr/local/texlive/2013/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count103
+\float@exts=\toks22
+\float@box=\box29
+\@float@everytoks=\toks23
+\@floatcapt=\box30
+) (./km_fyp.aux)
+\openout1 = `km_fyp.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 23.
-LaTeX Font Info:    ... okay on input line 23.
- (/usr/local/texlive/2013/texmf-dist/tex/latex/apa/english.apa
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 25.
+LaTeX Font Info:    ... okay on input line 25.
+
+(/usr/local/texlive/2013/texmf-dist/tex/latex/apa/english.apa
 File: english.apa 2006/01/01
 )
-\c@maskedRefs=\count103
+\c@maskedRefs=\count104
+
 (/usr/local/texlive/2013/texmf-dist/tex/latex/apacite/english.apc
 File: english.apc 2012/02/25 v6.01 apacite language file
 LaTeX Info: Redefining \BPBI on input line 129.
@@ -205,33 +214,33 @@ LaTeX Info: Redefining \BHBI on input line 130.
 )
 Configuring pdfsync
 \PDFSYNC@ut=\write3
-\openout3 = `km_fyp_p.pdfsync'.
+\openout3 = `km_fyp.pdfsync'.
 
-\PDFSYNCf@li@=\count104
-\PDFSYNC@rder=\count105
+\PDFSYNCf@li@=\count105
+\PDFSYNC@rder=\count106
 **** pdfsync.sty: Synchronizing at \everypar
-\PDFSYNCeveryp@r=\toks22
+\PDFSYNCeveryp@r=\toks24
 **** pdfsync.sty: Synchronizing at \everymath
-\PDFSYNCeverym@th=\toks23
+\PDFSYNCeverym@th=\toks25
 **** pdfsync.sty: Synchronizing at \everyhbox
-\PDFSYNCeveryhb@x=\toks24
+\PDFSYNCeveryhb@x=\toks26
 **** pdfsync.sty: Synchronizing at \everyvbox
-\PDFSYNCeveryvb@x=\toks25
+\PDFSYNCeveryvb@x=\toks27
 **** pdfsync.sty: started
 
 (/usr/local/texlive/2013/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count106
+\scratchcounter=\count107
 \scratchdimen=\dimen114
-\scratchbox=\box29
-\nofMPsegments=\count107
-\nofMParguments=\count108
-\everyMPshowfont=\toks26
-\MPscratchCnt=\count109
+\scratchbox=\box31
+\nofMPsegments=\count108
+\nofMParguments=\count109
+\everyMPshowfont=\toks28
+\MPscratchCnt=\count110
 \MPscratchDim=\dimen115
-\MPnumerator=\count110
-\makeMPintoPDFobject=\count111
-\everyMPtoPDFconversion=\toks27
+\MPnumerator=\count111
+\makeMPintoPDFobject=\count112
+\everyMPtoPDFconversion=\toks29
 ) (/usr/local/texlive/2013/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
 Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
 )
@@ -286,78 +295,117 @@ Class apa Warning: Abstract not defined.
 [1{/usr/local/texlive/2013/texmf-var/fonts/map/pdftex/updmap/pdftex.map}
 
 ]
-[2] [3] [4] [5] [6] [7] [8]
-./km_fyp_p.tex:99: Misplaced alignment tab character &.
-l.99 multiple referents (Yurovsky &
-                                    Frank, in prep). In Yurovsky and Frank's...
+[2] [3] <plots_figures/ref_uncertainty.png, id=18, 560.3334pt x 376.2858pt>
+File: plots_figures/ref_uncertainty.png Graphic file (type png)
 
-? 
-[9]
-./km_fyp_p.tex:131: Misplaced alignment tab character &.
-l.131 ...r the familiar objects as produced by AT&
+<use plots_figures/ref_uncertainty.png>
+Package pdftex.def Info: plots_figures/ref_uncertainty.png used on input line 5
+4.
+(pdftex.def)             Requested size: 252.14769pt x 169.32703pt.
+ [4 <./plots_figures/ref_uncertainty.png>] [5] [6] [7] <plots_figures/stimuli2.
+png, id=34, 667.7748pt x 292.4526pt>
+File: plots_figures/stimuli2.png Graphic file (type png)
+
+<use plots_figures/stimuli2.png>
+Package pdftex.def Info: plots_figures/stimuli2.png used on input line 103.
+(pdftex.def)             Requested size: 400.66797pt x 175.47292pt.
+ [8]
+./km_fyp.tex:112: Misplaced alignment tab character &.
+l.112 ...r the familiar objects as produced by AT&
                                                   T Natural VoicesTM (voice:...
 
 ? 
+[9 <./plots_figures/stimuli2.png>] [10]
+<plots_figures/exp_all.png, id=45, 704.8734pt x 316.5426pt>
+File: plots_figures/exp_all.png Graphic file (type png)
 
-LaTeX Warning: File `stimuli2.png' not found on input line 135.
+<use plots_figures/exp_all.png>
+Package pdftex.def Info: plots_figures/exp_all.png used on input line 150.
+(pdftex.def)             Requested size: 281.94437pt x 126.61479pt.
+ [11]
+./km_fyp.tex:158: Text line contains an invalid character.
+l.158 ...om those expected by chance (smallest ^^_
+                                                  $\chi^{2}(4) = 12.07, p < ...
 
-
-./km_fyp_p.tex:135: Package pdftex.def Error: File `stimuli2.png' not found.
-
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.135 ...ncludegraphics[scale=0.22]{stimuli2.png}}
-                                                  
 ? 
-[10]
+[12 <./plots_figures/exp_all.png>]
+<plots_figures/acc_test.png, id=55, 616.2222pt x 379.1766pt>
+File: plots_figures/acc_test.png Graphic file (type png)
 
-LaTeX Warning: File `stimuli1.png' not found on input line 143.
+<use plots_figures/acc_test.png>
+Package pdftex.def Info: plots_figures/acc_test.png used on input line 163.
+(pdftex.def)             Requested size: 246.48451pt x 151.66795pt.
+ [13 <./plots_figures/acc_test.png>] [14]
+<plots_figures/rt_test.png, id=66, 604.659pt x 420.1296pt>
+File: plots_figures/rt_test.png Graphic file (type png)
 
+<use plots_figures/rt_test.png>
+Package pdftex.def Info: plots_figures/rt_test.png used on input line 201.
+(pdftex.def)             Requested size: 272.09402pt x 189.05656pt.
+ [15 <./plots_figures/rt_test.png>] [16]
+<plots_figures/model_sims1.png, id=77, 576.2328pt x 307.8702pt>
+File: plots_figures/model_sims1.png Graphic file (type png)
 
-./km_fyp_p.tex:143: Package pdftex.def Error: File `stimuli1.png' not found.
+<use plots_figures/model_sims1.png>
+Package pdftex.def Info: plots_figures/model_sims1.png used on input line 259.
+(pdftex.def)             Requested size: 316.92902pt x 169.32912pt.
+ [17] [18 <./plots_figures/model_sims1.png>] <plots_figures/soc_boost.png, id=8
+8, 579.6054pt x 355.0866pt>
+File: plots_figures/soc_boost.png Graphic file (type png)
 
-See the pdftex.def package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.143 ...includegraphics[scale=0.2]{stimuli1.png}}
-                                                  
-? 
-[11] [12] [13] [14]
+<use plots_figures/soc_boost.png>
+Package pdftex.def Info: plots_figures/soc_boost.png used on input line 272.
+(pdftex.def)             Requested size: 289.80199pt x 177.54285pt.
 
-Class apa Warning: \bibliographystyle command ignored on input line 234.
+<plots_figures/mod_data_fit.png, id=89, 2107.875pt x 1053.9375pt>
+File: plots_figures/mod_data_fit.png Graphic file (type png)
 
-(./km_fyp_p.bbl [15] [16
+<use plots_figures/mod_data_fit.png>
+Package pdftex.def Info: plots_figures/mod_data_fit.png used on input line 283.
 
-] [17] [18]) [19] (./km_fyp_p.aux) ) 
+(pdftex.def)             Requested size: 358.33401pt x 179.167pt.
+ [19 <./plots_figures/soc_boost.png>]
+[20 <./plots_figures/mod_data_fit.png>] [21]
+Overfull \hbox (38.2115pt too wide) in paragraph at lines 311--327
+[][][][] 
+ []
+
+[22] [23]
+
+Class apa Warning: \bibliographystyle command ignored on input line 360.
+
+(./km_fyp.bbl [24] [25
+
+] [26] [27]) [28] (./km_fyp.aux) ) 
 Here is how much of TeX's memory you used:
- 3185 strings out of 493315
- 43612 string characters out of 6137904
- 112342 words of memory out of 5000000
- 6573 multiletter control sequences out of 15000+600000
- 13538 words of font info for 48 fonts, out of 8000000 for 9000
+ 3281 strings out of 493315
+ 45327 string characters out of 6137904
+ 115471 words of memory out of 5000000
+ 6658 multiletter control sequences out of 15000+600000
+ 13729 words of font info for 48 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
- 42i,22n,29p,1418b,391s stack positions out of 5000i,500n,10000p,200000b,80000s
-</usr/local/texlive/2013/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2013/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2013/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type
-1/public/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmr10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmr6.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/
-amsfonts/cm/cmr8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmr9.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmsy10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfont
-s/cm/cmsy8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/
-cm/cmti10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmtt10.pfb>
-Output written on km_fyp_p.pdf (19 pages, 180410 bytes).
+ 42i,24n,29p,1197b,403s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/local/texlive/2013/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmbx10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmbxti10.pfb></usr/local/texlive/2013/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmex10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmmi10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi6.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/pub
+lic/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmmi9.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmr6.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmr8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmr9.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm
+/cmsy10.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/
+cmsy6.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+sy8.pfb></usr/local/texlive/2013/texmf-dist/fonts/type1/public/amsfonts/cm/cmti
+10.pfb>
+Output written on km_fyp.pdf (28 pages, 1945911 bytes).
 PDF statistics:
- 118 PDF objects out of 1000 (max. 8388607)
- 83 compressed objects within 1 object stream
+ 176 PDF objects out of 1000 (max. 8388607)
+ 112 compressed objects within 2 object streams
  0 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 41 words of extra memory for PDF output out of 10000 (max. 10000000)
 

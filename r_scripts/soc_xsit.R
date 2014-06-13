@@ -8,6 +8,9 @@ library(stringr)
 library(plyr)
 library(reshape2)
 library(car)
+library(dplyr)
+library(xtable)
+source('/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysis/useful.R')
 options(device="quartz")
 
 ## code for bootstrapping 95% confidence intervals 
@@ -145,11 +148,29 @@ qplot(x=intervalNum,y=correct, linetype=trialType,
 
 ## -------------- ACC ON EXPOSURE TRIALS ANALYSIS  -------------- 
 
+d.exp.soc <- subset(d.exp, condition=="Social")
+
 ## get mean chose social by trial type, condition, and sub id
-mss.exp <- aggregate(choseSocial ~ trialType + subid + condition + numPicN, data=d.exp, FUN=mean)
-ms.exp <- aggregate(choseSocial ~  condition + numPicN, data=d.exp, FUN=mean)
+mss.exp <- aggregate(choseSocial ~ trialType + subid + condition + numPicN, data=d.exp.soc, FUN=mean)
+ms.exp <- aggregate(choseSocial ~  condition + numPicN, data=mss.exp, FUN=mean)
 ms.exp$choseSocial.cih <- aggregate(choseSocial ~ condition + numPicN, data=mss.exp, FUN=ci.high)$choseSocial
 ms.exp$choseSocial.cil <- aggregate(choseSocial ~ condition + numPicN, data=mss.exp, FUN=ci.low)$choseSocial
+
+aggregate(subid ~ condition + numPicN,
+          data=d.exp.soc,FUN=function(x) {length(unique(x))})$subid
+
+
+## binom tests against chance for each condition
+ss <- aggregate(choseSocial ~  condition + numPicN, data=d.exp.soc, FUN=sum)
+ss.soc.exp <- aggregate(subid ~ condition + numPicN,
+                        data=d.exp.soc,FUN=function(x) {length(unique(x))})$subid
+ss <- cbind(ss, ss.soc.exp)
+ss$n_trials <- ss$ss.soc.exp*8 ## each sub got 8 exposure trials
+
+binom.test(1268, 1488, p=0.5, alternative="t") # 2 referent
+binom.test(2182, 2776, p=0.25, alternative="t") # 4 referent
+binom.test(1134, 1272, p=0.17, alternative="t") # 6 referent
+binom.test(1118, 1344, p=0.125, alternative="t") # 8 referent
 
 # now plot with NumPicF as a factor
 ms.exp$numPicF <- as.factor(ms.exp$numPicN)
@@ -167,6 +188,7 @@ acc_exp <- ggplot(data=ms.exp, aes(x=numPicF, y=choseSocial))
 ggsave(acc_exp, path = "/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_plots/",
        file="acc_exposure.png", width=3, height=3)
 
+
 ## -------------- ACCURACY TEST TRIALS [TARGET OF EYE GAZE ON EXPOSURE ANALYSIS]  -------------- 
 
 ## subset exposure trials, extracting only the relevant columns
@@ -181,10 +203,8 @@ d.gaze.tar <- subset(d.gaze.tar.all, choseSocial == TRUE | condition == "No-Soci
 
 # sanity checks and descriptives 
 length(unique(d.gaze.tar$subid))
-numSubs.exp <- aggregate(correct ~ subid + condition + intervalNum + numPicN, data=d.gaze.tar, FUN=mean)
-numSubs.exp.summary <- count(numSubs.exp, vars=c("condition", "intervalNum", "numPicN"))
-
-count(d.gaze.tar$correct)
+numSubs.exp <- aggregate(correct ~ subid + condition + intervalNum + numPicN + trialType, data=d.gaze.tar, FUN=mean)
+numSubs.exp.summary <- count(numSubs.exp, vars=c("condition", "intervalNum", "numPicN", "trialType"))
 
 ## remove trials with RT +/- 2SD on test trials
 d.gaze.tar$correct[log(d.gaze.tar$rt.x) > mean(log(d.gaze.tar$rt.x)) + 2* sd(log(d.gaze.tar$rt.x)) | 
@@ -208,6 +228,9 @@ ms.gaze.tar$corr.cil <- aggregate(correct ~ trialType + condition + intervalNum 
 
 # output for models
 write.csv(ms.gaze.tar,"~/Documents/Projects/SOC_XSIT/processed_data/aggregate_soc_xsit.csv",row.names=FALSE)
+
+# individual subjects output
+write.csv(d.gaze.tar, "~/Documents/Projects/SOC_XSIT/processed_data/indSubs_soc_xsit.csv",row.names=FALSE)
 
 # now plot 
 quartz(width=10,height=6,title = "Experiment 2 Accuracy: Filtered")
@@ -367,6 +390,28 @@ m1.l2 <- glmer(correct ~ (trialType + condition +
                  (trialType | subid), 
                data=d.gaze.tar, family=binomial, nAGQ=0)
 
+# TABLE 1
+e1.tab <- as.data.frame(summary(m1.l2)$coef)
+e1.tab$Predictor <- c("Intercept","Switch Trial","Social Condition",
+                      "Log(Interval)","Log(Referents)",
+                      "Switch Trial*Social Condition",
+                      "Switch Trial*Log(Interval)",
+                      "Switch Trial*Log(Referent)",
+                      "Social Condition*Log(Interval)",
+                      "Social Condition*Log(Referent)",
+                      "Log(Interval)*Log(Referent")
+rownames(e1.tab) <- NULL
+e1.tab <- e1.tab[,c(5,1:4)]
+e1.tab$stars <- sapply(e1.tab[,5],getstars)
+names(e1.tab)[6] <- ""
+
+names(e1.tab)[4:5] <- c("$z$ value","$p$ value")
+
+print(xtable(e1.tab,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:exp1_reg"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e1.tab)),
+      sanitize.text.function=function(x){x})
 
 ### plots
 lm1 <- glm(correct ~ (trialType + condition + 
@@ -414,7 +459,7 @@ m.6only <- glmer(correct ~ trialType * condition * intervalNum + (trialType | su
                  data=subset(d.gaze.tar,numPicN==6), family=binomial, nAGQ=0) 
 
 ## -------------- BY TRIAL ANALYSIS  -------------- 
-# Goal: Plot mean proportion correct for each trial 1 - 8
+# Plot mean proportion correct for each trial 1 - 8
 
 d.test <- ddply(d.test, .(subid), function(x) {
 #   stopifnot(length(x$trial.num)==8)
@@ -443,7 +488,7 @@ qplot(x=trial.num.rev,y=correct, linetype=trialType,
   theme_bw()  
 
 
-## -------------- RT on Test Trials: Plot -------------- 
+## -------------- RT on Test Trials -------------- 
 
 rt_plot <- qplot(x=intervalNum,y=rt, linetype=trialType,
                   ymin=rt-rt.cil, ymax=rt+rt.cih,
@@ -467,6 +512,42 @@ rt_plot <- qplot(x=intervalNum,y=rt, linetype=trialType,
 
 ggsave(rt_plot, path = "/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_plots/",
        file="rt_test.png", width=5.5, height=4)
+
+# lmer predicting reaction time from factor: 3 way
+
+m1.rt.test <- lmer(rt ~ (trialType + condition + 
+                                 log2(intervalNum + 1) + log2(numPicN))^3 + 
+                      (trialType | subid), 
+                    data=d.test, NAGQ=0)
+
+# 2 way 
+m2.rt.test <- lmer(rt ~ (trialType + condition + 
+                            log2(intervalNum + 1) + log2(numPicN))^2 + 
+                 (trialType | subid), 
+               data=d.test)
+
+#TABLE 2
+e3.tab <- as.data.frame(summary(m2.rt.test)$coef)
+e3.tab$Predictor <- c("Intercept","Switch Trial","Social Condition",
+                      "Log(Interval)","Log(Referents)",
+                      "Switch Trial*Social Condition",
+                      "Switch Trial*Log(Interval)",
+                      "Switch Trial*Log(Referent)",
+                      "Social Condition*Log(Interval)",
+                      "Social Condition*Log(Referent)",
+                      "Log(Interval)*Log(Referent")
+rownames(e3.tab) <- NULL
+e3.tab <- e3.tab[,c(4,1:4)]
+e3.tab$Predictor.1 <- NULL
+
+names(e3.tab)[4] <- c("$t$ value")
+
+print(xtable(e3.tab,
+             align = c("l","l","r","r","l"),
+             label = "tab:exp1_reg"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e3.tab)),
+      sanitize.text.function=function(x){x})
+
 
 ## -------------- RT EXPOSURE TRIALS ANALYSIS  -------------- 
 
@@ -504,6 +585,34 @@ ggsave(rt_exp, path = "/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_pl
        file="rt_exp.png", width=5.5, height=4)
 
 
+## lm
+
+m1.rt <- lmer(rt ~ condition * log2(intervalNum + 1) * log2(numPicN) + (1|subid), 
+               data=d.exp)
+
+#TABLE 3
+e2.tab <- as.data.frame(summary(m1.rt)$coef)
+e2.tab$Predictor <- c("Intercept","Social Condition","Log(Interval)",
+                      "Log(Referents)",
+                      "Social Condition*Log(Interval)",
+                      "Social Condition*Log(Referent)",
+                      "Log(Interval)*Log(Referent",
+                      "Social Condition*Log(Interval)*Log(Referents)")
+
+rownames(e2.tab) <- NULL
+e2.tab <- e2.tab[,c(5,1:4)]
+e2.tab$stars <- sapply(e2.tab[,5],getstars)
+names(e2.tab)[6] <- ""
+
+names(e2.tab)[4:5] <- c("$t$ value","$p$ value")
+
+print(xtable(e2.tab,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:exp1_reg"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e2.tab)),
+      sanitize.text.function=function(x){x})
+
+
 ## -------------- BLOCK ANALYSIS - ONLY 3-DELAY CONDITION  -------------- 
 
 d.3delay <- subset(d.gaze.tar, intervalNum==3)
@@ -536,71 +645,52 @@ acc_block <- qplot(x=numPicN,y=correct, linetype=trialType,
   guides(linetype = guide_legend(keywidth = 2, keyheight = 1)) +
   theme(legend.position = "top")
 
-
-## --------------  ACC AT TEST BASED ON RT ON EXPOSURE  -------------- 
-d.acc.rt <- subset(d.gaze.tar.all, choseSocial == TRUE | (condition == "No-Social" & dataset=="km"), select=c(subid:rt.y))
-
-## aggregate 
-
-
-
 ## -------------- STATS  -------------- 
 
-## Question for Mike: What's the best way to do chi-square tests with lots of conditions in your dataset?
+## CHI-SQUARE TESTS ##
 
-## calculate the probability of getting 0, 1, 2, 3, or 4 correct given 0.25 and 0.17 chance of success on each trial 
-nulls.4ref <- dbinom(c(0,1,2,3,4), size=4, prob=1/4)
-nulls.6ref <- dbinom(c(0,1,2,3,4), size=4, prob=1/6)
+#get the null distribution expected under a binomial guessing model
+nulls <- sapply(c(1/2,1/4,1/6,1/8),
+                FUN=function(x){dbinom(c(0,1,2,3,4),4,x)})
+nulls <- matrix(nulls,nrow=16*ncol(nulls),ncol=nrow(nulls),byrow=TRUE)
   
 ## get the total number correct for each subject by trial type, condition, and number of referents
-sss <- aggregate(correct ~ trialType + condition + numPicN + intervalNum + subid, data=d.test,FUN=sum)
+mss.km <- aggregate(correct ~ trialType + condition + numPicN + intervalNum + subid,
+                 data=d.gaze.tar,FUN=sum, na.action = na.omit)
 
-## subset data for conducting chi-square (do I need to do this for each condition or is there a way to do this with a loop?)
-social.sss.4.0 <- subset(sss, sss$condition == "Social" & sss$numPicN == 4 & sss$intervalNum == 0)
+# remove subject who has 6 correct (n=1)
+mss.km <- filter(mss.km, correct <= 4)
 
-## Get values needed for chi-square
-# Number correct by each trial type
-social.ssm.4.0 <- aggregate(correct ~ trialType, data=social.sss.4.0, FUN=sum)
-# Number of subjects
-social.ss.4.0 <- aggregate(correct ~ trialType , data=social.sss.4.0, FUN = function(x) {hist(x,breaks=c(-1,0,1,2,3,4),plot=FALSE)$counts})
+#get a distribution on number of correct responses in each condition
+ss.km <- aggregate(correct ~ condition + trialType + numPicN + intervalNum, data=mss.km, 
+                FUN = function(x) {hist(x,breaks=c(-1,0,1,2,3,4),
+                                        plot=FALSE)$counts})
 
-## get the total number of subjects by trial type and condition 
-social.ss$n <- aggregate(subid ~ trialType, data=social.sss,FUN=function(x) {length(unique(x))})$subid
+# get rid of zero delay condition 
+ss.km$intervalNum <- ss.km$intervalNum+1
+numSubs.exp.summary$intervalNum <- numSubs.exp.summary$intervalNum+1
 
-## get chisquare and p values
-for(i in 1:nrow(social.ss)){
-  chisq <- chisq.test(social.ss[i,2],p=nulls,simulate.p=FALSE)
-  social.ss$chisq2[i] <- chisq$statistic
-  social.ss$pval2[i] <- chisq$p.value
-  social.ss$df[i] <- chisq$parameter
-  
+#get the number of possible correct responses for each condition
+ss.km <- merge(ss.km, numSubs.exp.summary, by = c("trialType","condition","numPicN","intervalNum"))
+
+for(i in 1:nrow(ss.km)){
+  #simulate.p=TRUE is probably better but doesn't produce dfs.
+  #sumulate.p=FALSE generates warnings, but produces all of the same results
+  chisq <- chisq.test(ss.km[i,5],p=nulls[i,],simulate.p=FALSE)
+  ss.km$chisq[i] <- chisq$statistic
+  ss.km$pval[i] <- chisq$p.value
+  ss.km$df[i] <- chisq$parameter
 }
 
-## Now do the same for nonsocial ##
-nonsocial.sss <- subset(sss, sss$condition =="NoSocial")
-nonsocial.ssm <- aggregate(correct ~ trialType,
-                        data=nonsocial.sss,FUN=sum)
 
-nonsocial.ss <- aggregate(correct ~ trialType,data=nonsocial.sss,
-                       FUN = function(x) {hist(x,breaks=c(-1,0,1,2,3,4),plot=FALSE)$counts})
+## WILCOXON TESTS##
+ws <- as.data.frame(aggregate(correct ~ numPicN + intervalNum + trialType , data=mss.km,
+                              FUN=function(x) {wilcox.test(x,mu=.125, exact=FALSE, 
+                                                           correct=TRUE)})$correct)
 
+ms$W <- ws$statistic
+ms$p <- ws$p.value
 
-## next we get the total number of subjects by trial type and condition 
+ts <- ddply(mss.km, .(numPicN,intervalNum,trialType), function(x){t.test(x$correct,1/x$numPic)$statistic})
+ts$ps <- ddply(mss.km, .(numPicN,intervalNum,trialType), function(x){t.test(x$correct,1/x$numPic)$p.value})$V1
 
-nonsocial.ss$n <- aggregate(subid ~ trialType,
-                         data=nonsocial.sss,FUN=function(x) {length(unique(x))})$subid
-
-## get chisquare and p values
-for(i in 1:nrow(nonsocial.ss)){
-  chisq <- chisq.test(nonsocial.ss[i,2],p=nulls,simulate.p=FALSE)
-  nonsocial.ss$chisq2[i] <- chisq$statistic
-  nonsocial.ss$pval2[i] <- chisq$p.value
-  nonsocial.ss$df[i] <- chisq$parameter
-  
-}
-
-## comparing exposure performance to performance expected by chance using binomial test with probability of success 1/4
-x <-sum(ed$choseSocial,na.rm=T)
-n <- 236
-  
-binom.test(x, n, p=0.25, alternative="t")
