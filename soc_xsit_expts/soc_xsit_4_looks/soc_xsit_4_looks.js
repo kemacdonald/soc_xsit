@@ -1,4 +1,4 @@
-/*  from http://www.quirksmode.org/js/detect.html
+/*  from http://www.quirksmode.org/js/detect.html testing again
   Need to know the user's browser so we know what kind of sound (mp3/ogg) to play */
 var BrowserDetect = {
   init: function () {
