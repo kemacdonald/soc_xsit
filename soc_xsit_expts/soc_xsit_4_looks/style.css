@@ -52,6 +52,17 @@ button[disabled] {
   text-align: center;
 }
 
+#video1 {
+  margin: 0 auto; 
+  position:relative; 
+  left:425px; 
+} 
+
+#pic1 {
+  margin: 0 auto;
+  left:200px;
+}
+
 .xsit_pic {
 }
 

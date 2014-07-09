@@ -79,45 +79,66 @@
     <!--MAIN EXPERIMENT SLIDE-->
     <div class="slide" id="stage">
             
-          <!-- Video -->
-
-          
-          <center>
-            <video width="320" height="240" preload id="videoElement" controls>
-              <source src="stimuli/videos/P-A-.mp4" type="video/mp4">
-              <source src="stimuli/videos/P-A-.ogg" type="video/ogg">
-              Your browser does not support the video tag.
-            </video>
-          </center>
         
-         <!--PICS 1-4 -->
-      <table align="center" cellpadding="30">
+           <!--PICS 1-2 -->
+      <table align="center" cellpadding="100">
                         <tr>     
-              <td align="center"><div class="xsit_pic" id="pic1">
+              <td align="left"><div class="xsit_pic" id="pic1">
                 <img  src="stimuli/images/Novel6.jpg" 
-                width="200" border="5px solid white"></div></td>
-                            
-              <td align="center"><div class="xsit_pic" id="pic2">
+                width="150" border="5px solid white"></div></td>
+                                    
+              <td align="right"><div class="xsit_pic" id="pic2">
                 <img  src="stimuli/images/Novel13.jpg" 
-                width="200" border="5px solid white"></div></td>
-                            
-              <td align="center"><div class="xsit_pic" id="pic3">
-                <img  src="stimuli/images/Novel13.jpg" 
-                width="200" border="5px solid white"></div></td>
-                            
-              <td align="center"><div class="xsit_pic" id="pic4">
-                <img  src="stimuli/images/Novel13.jpg" 
-                width="200" border="5px solid white"></div></td>
+                width="150" border="5px solid white"></div></td>
                             
             </tr>
-                
+      </table>
+
+    <!-- Video -->
+          <div id="video1">
+          
+            <video width="340" height="300">
+              <source src="stimuli/videos/silentLDlong.mov" type="video/mp4">
+              <source src="stimuli/videos/silentLDlong.ogg" type="video/ogg">
+              Your browser does not support the video tag.
+            </video>
+          
+          </div>
+
+          <script>
+              var video = document.getElementById("video1");
+          </script>
+
+          <div id="start_button">
+            <center>
+            <button type="button" onClick="video.play()">Start Trial</button>
+            </center>
+          </div>
+        
+         <!--PICS 3-4 -->
+      <table align="center" cellpadding="100">
+                        <tr>     
+              <td align="left"><div class="xsit_pic" id="pic3">
+                <img  src="stimuli/images/Novel6.jpg" 
+                width="150" border="5px solid white"></div></td>
+                                     
+              <td align="right"><div class="xsit_pic" id="pic4">
+                <img  src="stimuli/images/Novel13.jpg" 
+                width="150" border="5px solid white"></div></td>
+                            
+            </tr>
+      </table>
+
+      <table>   
             <tr><td align="center" colspan="4">Click on the picture 
             that the word goes with <br>
             (If you are not sure, take your best guess)</td></tr>
       </table>
-      <br>
+
       <center><p>Progress:</p></center>
-      <center><div id="progressbar" style="width: 300px;"></div><center>
+      <center><div id="progressbar" style="width: 300px;"></div>
+
+      <center>
       <audio id="sound_player">
         <source src="stimuli/sounds/squirrel.mp3" type="audio/mp3">
       </audio>  
