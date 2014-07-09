@@ -299,7 +299,7 @@ exampleImages = [['squirrel','chair',
 
 showSlide("instructions"); //Show instruction slide
 
-// This is where we define the experiment variable, which has all the information about our experiment.
+// This is where we define the experiment variable, which tracks all the information we want to know about the experiment.
 
 var experiment = {
   condition: cond_name,
@@ -379,7 +379,7 @@ var experiment = {
     
     var new_i = i, new_img = img, face_img, faceLookIdx;
     
-    /* keepPic and keepIdx that tell it what it showed and what position it was in. 
+    /* keepPic and keepIdx track what was shown and what position it was in. 
     Then, you can check if experiment.keepPic[experiment.item].length == 0. If it is, 
     this is the first trial for this object (exposure). Otherwise, it's a same/switch trial. 
     */
@@ -389,11 +389,12 @@ var experiment = {
       face_img = experiment.faceCenter; 
       faceLookIdx = -1; // if center, then face index is -1 
     } 
-    else if(experiment.keepPic[experiment.item].length == 0 & social_cond == "Social") {
+    else if(experiment.keepPic[experiment.item].length == 0 & 
+    	social_cond == "Social") {
             face_img = experiment.faceOther[faceLook];
             faceLookIdx = faceLook;
     } else {
-        face_img = experiment.faceCenter;
+        face_img = experiment.faceCenter; // non-social condition, the faceLook is always center
         faceLookIdx = -1;
     }
       
