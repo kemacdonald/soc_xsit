@@ -1,0 +1,71 @@
+&&&   This and the accompanying script "submiterator.py" are intended to streamline the process of posting external HITs to Mechanical Turk.
+
+&&&  Each line with "x::y" below is a key-value pair that the python script uses.
+
+&&&  Go through and change the values to what you want for your experiment (leave the keys alone).
+
+&&&   If you want to add comments, use three ampersands "&&&" at the beginning of a line or after a key-value pair.
+
+&&&  Remember that you will also need to have Command Line Tools installed (http://aws.amazon.com/developertools/694) and have a MTurk requester account, and be signed up for Amazon Web Services.
+
+&&&   The value of "locationofCLT&" below should be the folder where you installed CLT. Make sure that you've also modified the file mturk.properties in the /bin/ folder of your installation to include your access key and secret key. If you don't know these, go to http://s3.amazonaws.com/mturk/tools/pages/aws-access-identifiers/aws-identifier.html to get them.
+
+&&&  To start out by using the sandbox (highly recommended), insert a "#" to comment out line 24 of mturk.properties (directing the scripts to the real Mechanical Turk site) and remove the "#" to uncomment line 20 (directing the scripts to Amazon's Sandbox). Reverse this when you're ready to go live.
+
+&&&   If while modifying this file you accidentally insert any lines in this file that don't either (a) begin with "&&&" or (b) have a "::" somewhere, you'll get a "list index out of range" error when you run submiterator.py. 
+
+&&&  When you're done, cd into the folder that the script is in from your terminal and type
+&&&    python submiterator.py
+&&&    chmod +x FruitExp5-postHIT.sh
+&&&    ./FruitExp5-postHIT.sh
+&&&  (replacing "[nameofexperimentfiles]" with whatever you put after "nameofexperimentfiles" below).
+
+&&&   When it's time to get results, you should be able to download a file "[nameofexperimentfiles].results" by typing
+&&&    chmod +x FruitExp3b-getResults.sh
+&&&    ./FruitExp3b-getResults.sh    
+
+title:: Play a fun word learning game (5 mins, do only once)!
+
+description:: word-learning experiment (5 mins, do only once)!
+
+nameofexperimentfiles::soc_xsit_4_social_batch2_n50
+&&&   the files that the script generates for you will have names based on this. 
+
+experimentURL::https://www.stanford.edu/~kylem4/soc_xsit_4_batch2/soc_xsit_4.html
+&&&   the URL where you've posted your external HIT
+
+hitfolderpath::/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_4_batch2
+&&&   The full path to the folder that you want to contain the scripts for this experiment.
+
+locationofCLT::/Users/kmacdonald/Documents/aws-mturk-clt-1.3.1
+&&&   the full path to the folder where you've installed Command Line Tools.
+
+keywords::experiment, psychology, game
+
+USonly?::yes
+&&&  "yes" if you want to restrict the HIT to workers in the US, "no" otherwise
+
+minPercentPreviousHITsApproved::95
+&&&  A number between 0 and 100, or "none" if you don't want to place any restrictions here. Only workers who have had at least that percentage of previous HITs they've submitted subsequently approved by the assigner will be able to do your HIT. I think 85-95 is a frequently used threshold. This is a trade-off: too high and no one will be able to do your HIT; too low and you'll get low quality data.
+
+frameheight::800
+&&&  in pixels
+
+reward::0.20  &&& how much you're paying per HIT %% 20, or 25
+
+numberofassignments::200
+&&&  how many subjects you want
+
+assignmentduration::600     
+&&&   in seconds (900=15 min)
+
+hitlifetime::604800          
+&&&   in seconds (604800 = 1 week)
+
+autoapprovaldelay::1296000 
+
+annotation::assignmentId
+
+conditions::soc_xsit_4_social_batch2_n50
+&&&  If you want to post multiple HITs in a batch, you may be able to do it by having multiple conditions listed here, separated by a comma. I haven't tried this so it might not work.
+

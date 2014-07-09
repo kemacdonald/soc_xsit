@@ -1,0 +1,58 @@
+This is BibTeX, Version 0.99d (TeX Live 2013)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: km_probmods_12.7.aux
+The style file: apacite.bst
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=20001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Database file #1: fyp_p.bib
+apacite.bst [2009/03/01 v4.05 APA bibliography style]
+Warning--No journal in baldwin1995understanding
+Warning--No publisher in johnson2012exploiting
+Warning--No address in johnson2012exploiting
+You've used 15 entries,
+            6361 wiz_defined-function locations,
+            1284 strings with 12683 characters,
+and the built_in function-call counts, 30702 in all, are:
+= -- 3743
+> -- 255
+< -- 1633
++ -- 1746
+- -- 30
+* -- 2120
+:= -- 6012
+add.period$ -- 62
+call.type$ -- 15
+change.case$ -- 76
+chr.to.int$ -- 0
+cite$ -- 33
+duplicate$ -- 764
+empty$ -- 1093
+format.name$ -- 421
+if$ -- 5586
+int.to.chr$ -- 0
+int.to.str$ -- 30
+missing$ -- 0
+newline$ -- 368
+num.names$ -- 120
+pop$ -- 415
+preamble$ -- 1
+purify$ -- 60
+quote$ -- 0
+skip$ -- 1818
+stack$ -- 0
+substring$ -- 1905
+swap$ -- 471
+text.length$ -- 36
+text.prefix$ -- 0
+top$ -- 1
+type$ -- 1264
+warning$ -- 3
+while$ -- 146
+width$ -- 0
+write$ -- 475
+(There were 3 warnings)

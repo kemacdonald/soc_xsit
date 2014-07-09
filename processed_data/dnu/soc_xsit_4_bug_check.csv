@@ -1,0 +1,21 @@
+"","subid","submit.date","submit.time","trial.num","condition","interval","numPic","itemNum","trialType","samePos","chosen","chosenIdx","kept","keptIdx","rt","face","faceIdx","exposureTrial","testTrial","exampleTrial","day.and.time","intervalNum","include","first.trial","numPicN","correct"
+"1","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",1,"Social","Zero",4,0,"Switch",1,"squirrel",0,"",0,3980,"eyescenter",-1,0,0,1,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,FALSE
+"2","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",2,"Social","Zero",4,0,"Switch",1,"squirrel",0,"",0,32744,"eyescenter",-1,0,0,1,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,FALSE
+"3","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",3,"Social","Zero",4,0,"Switch",1,"tomato",1,"",0,8037,"eyescenter",-1,0,0,1,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,FALSE
+"4","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",4,"Social","Zero",4,0,"Switch",1,"tomato",2,"",0,11134,"eyescenter",-1,0,0,1,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,FALSE
+"5","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",5,"Social","Zero",4,0,"Switch",1,"Novel4",3,"Novel118",1,15231,"eyes_right",3,1,0,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,FALSE
+"6","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",6,"Social","Zero",4,0,"Switch",1,"Novel118",1,"Novel118",1,11062,"eyescenter",-1,0,1,0,(Apr 18 2014 13:02:09),0,TRUE,TRUE,4,TRUE
+"7","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",7,"Social","Zero",4,1,"Same",0,"Novel8",3,"Novel8",3,11088,"eyes_right",3,1,0,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
+"8","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",8,"Social","Zero",4,1,"Same",0,"Novel8",1,"Novel8",3,9874,"eyescenter",-1,0,1,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
+"9","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",9,"Social","Zero",4,2,"Switch",0,"Novel53",1,"Novel50",2,31562,"eyes_down_left",1,1,0,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,FALSE
+"10","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",10,"Social","Zero",4,2,"Switch",0,"Novel50",0,"Novel50",2,30096,"eyescenter",-1,0,1,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
+"11","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",11,"Social","Zero",4,3,"Same",0,"Novel99",3,"Novel99",3,11618,"eyes_right",3,1,0,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
+"12","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",12,"Social","Zero",4,3,"Same",0,"Novel99",1,"Novel99",3,702,"eyescenter",-1,0,1,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
+"13","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",13,"Social","Zero",4,4,"Switch",1,"Novel115",2,"Novel82",1,15398,"eyes_down_right",2,1,0,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,FALSE
+"14","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",14,"Social","Zero",4,4,"Switch",1,"Novel82",1,"Novel82",1,5789,"eyescenter",-1,0,1,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
+"15","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",15,"Social","Zero",4,5,"Same",1,"Novel122",2,"Novel122",2,3721,"eyes_down_right",2,1,0,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
+"16","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",16,"Social","Zero",4,5,"Same",1,"Novel122",2,"Novel122",2,456,"eyescenter",-1,0,1,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
+"17","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",17,"Social","Zero",4,6,"Switch",0,"Novel35",1,"Novel2",3,15398,"eyes_down_left",1,1,0,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,FALSE
+"18","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",18,"Social","Zero",4,6,"Switch",0,"Novel2",1,"Novel2",3,8648,"eyescenter",-1,0,1,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
+"19","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",19,"Social","Zero",4,7,"Same",1,"Novel47",3,"Novel47",3,152,"eyes_right",3,1,0,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
+"20","A17RRO4CXGCWT0","Apr 18 2014","13:02:09",20,"Social","Zero",4,7,"Same",1,"Novel47",3,"Novel47",3,19,"eyescenter",-1,0,1,0,(Apr 18 2014 13:02:09),0,TRUE,FALSE,4,TRUE
