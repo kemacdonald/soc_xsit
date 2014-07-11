@@ -514,22 +514,21 @@ var experiment = {
     //Re-Display the experiment slide
       showSlide("stage");
 
-    //Wait, Play eye gaze video (TODO: write different timeout functions for different conditions)
+    //Wait, Play eye gaze video 
     setTimeout(function(){
       //myVideo.play();
       $("#video1")[0].play();
     }, 1300)
 
+    //Start recording responses when video finishes (at end of longest eye gaze)
+    setTimeout(function(){
+      startTime = (new Date()).getTime();
+      $(".xsit_pic").bind("click", experiment.makeChoice);
+    }, 5300)
+
     //Wait, Play a sound
       setTimeout(function(){
-        $("#sound_player")[0].play();
-        
-    //Get the current time so we can compute reaction time later.
-      startTime = (new Date()).getTime();
-      
-    //Allow Response
-      $(".xsit_pic").bind("click",experiment.makeChoice);
-      
+        $("#sound_player")[0].play();      
       }, 2000);
     }
   };
