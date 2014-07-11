@@ -231,12 +231,12 @@ try {
     xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
     xmlHttp.send( null );
-    // var cond = xmlHttp.responseText; // For actual experimental runs
-    var cond = 3; // for testing experiment
+    var cond = xmlHttp.responseText; // For actual experimental runs
+    //var cond = random(1,3); // for testing experiment
 } catch (e) {
     var cond = 1;
 }
-
+console.log(cond);
 cond = String(cond);
 
 /* code for condition randomization. This only includes Social Condition for Second Batch */
@@ -339,7 +339,7 @@ var experiment = {
   trialImages: allImgs,
   exampleImages: exampleImages[1], // chooses the set of example images to display on the example slide
   faceVids: testFaces[testFaceIdx], //directed looks for exposure trials
-  faceCenter: 'eyescenter', // eyes center for example/same/switch trials
+  faceCenter: 'straightahead', // eyes center for example/same/switch trials
 
   /*The function that gets called when the sequence is finished. */
   end: function() {
@@ -402,7 +402,7 @@ var experiment = {
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
     } else {
-        face_img = experiment.faceCenter; // non-social condition, the faceLook is always center
+        face_vid = experiment.faceCenter; // non-social condition, the faceLook is always center
         faceLookIdx = -1;
     }
     
@@ -438,6 +438,7 @@ var experiment = {
         faceIdx: faceLookIdx,
     };  
     experiment.data.push(data);
+    console.log(data.face);
     
     //update progress bar
     $("#progressbar").progressbar("option", "value", 
