@@ -220,59 +220,53 @@ var startTime = 0; // Starts the clock for recording RT
 
 /* Call Maker getter to get cond variables
  * Takes number and counts for each condition
- * Returns a condition number (for this experiment 1-8)
+ * Returns a condition number (for this experiment 1-3 
+ * for the 3 different gaze length conditions)
  */
 
 try {
-    var filename = "KM_soc_xsit_4_social_batch2";
-    var condCounts = "1,50;2,50;3,50;4,50"; //Filling in participants needed for each condition
+    var filename = "KM_soc_xsit_4_looks";
+    var condCounts = "1,50;2,50;3,50";  
     var xmlHttp = null;
     xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
     xmlHttp.send( null );
-    var cond = xmlHttp.responseText; // For actual experimental runs
-    // var cond = random(8); // for testing experiment
+    // var cond = xmlHttp.responseText; // For actual experimental runs
+    var cond = 1; // for testing experiment
 } catch (e) {
     var cond = 1;
 }
 
+cond = String(cond);
 
 /* code for condition randomization. This only includes Social Condition for Second Batch */
 switch (cond) {
         case "1": 
-            cond_name = "Social-0";
-            social_cond = "Social";
-            int_cond = "Zero";
-            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8] 
-            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
-            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
-            break;
-        case "2": 
-            cond_name = "Social-1";
-            social_cond = "Social";
-            int_cond = "One";
-            delay = [1, 2, 1, 2, 3, 4, 3, 4, 5, 6, 5, 6, 7, 8, 7, 8];
-            test_trials = [0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1];
-            exposure_trials = [1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0];
-            break;
-        case "3": 
-            cond_name = "Social-3";
+            cond_name = "Short";
             social_cond = "Social";
             int_cond = "Three";
             delay = [1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8];
             test_trials = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1];
             exposure_trials = [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0];
             break;
-        case "4": 
-            cond_name = "Social-7";
+        case "2": 
+            cond_name = "Medium";
             social_cond = "Social";
-            int_cond = "Seven";
-            delay = [1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3, 4, 5, 6, 7, 8];
-            test_trials = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1];
-            exposure_trials = [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0];
+            int_cond = "Three";
+            delay = [1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8];
+            test_trials = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1];
+            exposure_trials = [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0];
+            break;
+        case "3": 
+            cond_name = "Long";
+            social_cond = "Social";
+            int_cond = "Three";
+            delay = [1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8];
+            test_trials = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1];
+            exposure_trials = [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0];
             break;
         default:
-}
+};
         
 /* Randomize trial order */
 var trialOrder = random();       // same/switch order 
@@ -501,6 +495,11 @@ var experiment = {
     }
 
     
+  // get video 
+  var video = "silentLUlong"
+  $("#video1")[0].src = "stimuli/videos/"+video+".mov";
+  
+
   //get the appropriate sound
     if(BrowserDetect.browser == "Chrome" ||
         BrowserDetect.browser == "Firefox"){
@@ -515,15 +514,22 @@ var experiment = {
     //Re-Display the experiment slide
       showSlide("stage");
 
+    //Wait, Play eye gaze video (TODO: write different timeout functions for different conditions)
+    setTimeout(function(){
+      //myVideo.play();
+      $("#video1")[0].play();
+    }, 1300)
+
     //Wait, Play a sound
-      setTimeout(function(){$("#sound_player")[0].play();
-      
+      setTimeout(function(){
+        $("#sound_player")[0].play();
+        
     //Get the current time so we can compute reaction time later.
       startTime = (new Date()).getTime();
       
     //Allow Response
       $(".xsit_pic").bind("click",experiment.makeChoice);
       
-      }, 1000);
+      }, 2000);
     }
   };

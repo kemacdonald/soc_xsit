@@ -79,63 +79,89 @@
     <!--MAIN EXPERIMENT SLIDE-->
     <div class="slide" id="stage">
             
-        
-           <!--PICS 1-2 -->
+    <div id="main">
 
-      <table>
-          <tr>     
-              <td align="left"><div class="xsit_pic" id="pic1">
-                <img  src="stimuli/images/Novel6.jpg" 
-                width="175" border="5px solid white"></div>
-                </td>
+
+    <table>
+    
+    <!--PICS 1-2 -->
+      <tr>
+        <td>
+          <div class="xsit_pic" id="pic1">
+          <img src="stimuli/images/Novel6.jpg" 
+          width="200" border="5px solid white"></div>
+        </td>
+
+        <td></td>
+
+        <td>
+          <div class="xsit_pic" id="pic2">
+          <img src="stimuli/images/Novel13.jpg" 
+          width="200" border="5px solid white"></div>  
+        </td> 
+      </tr>
+
                                     
-              <td align="right"><div class="xsit_pic" id="pic2">
-                <img  src="stimuli/images/Novel13.jpg" 
-                width="175" border="5px solid white"></div>
-              </td>
-                            
-            </tr>
-      </table> 
+      <tr>
+        <td></td>
 
+        <td>
 
-    <!-- Video -->
-          <div id="video1" align="center">
+      <!-- Video -->
+          <div id="video_player" align="center">
             
-            <video width="300" height="250" controls>
+            <video id="video1" width="300" height="250">
               <source src="stimuli/videos/silentLDlong.mov" type="video/mp4">
               <source src="stimuli/videos/silentLDlong.ogg" type="video/ogg">
               Your browser does not support the video tag.
             </video>
           </div>
+        </td>
 
-          <div id="start_button">
+        <td></td>
+
+      </tr>
+
+         <!--  <div id="start_button">
             <center>
             <button type="button" onClick="video.play()">Start Trial</button>
             </center>
-          </div>
+          </div> -->
         
          <!--PICS 3-4 -->
-      <table>
-          <tr>     
-              <td><div class="xsit_pic" id="pic3">
-                <img  src="stimuli/images/Novel6.jpg" 
-                width="175" border="5px solid white"></div></td>
+      <tr>
+        <td>
+          <div class="xsit_pic" id="pic3">
+          <img src="stimuli/images/Novel6.jpg" 
+          width="200" border="5px solid white"></div>
+        </td>
 
-              <td><div id="text1"><p>Click on the picture 
-                that the word goes with <br>
-                (If you are not sure, take your best guess)<p></div></td>
-                                     
-              <td><div class="xsit_pic" id="pic4">
-                <img  src="stimuli/images/Novel13.jpg" 
-                width="175" border="5px solid white"></div></td>
-                            
-          </tr>
-      </table>
+         <td></td>
+             
+        <td>                        
+          <div class="xsit_pic" id="pic4">
+          <img src="stimuli/images/Novel13.jpg" 
+          width="200" border="5px solid white"></div>
+        </td>
+      </tr>
+    </table>
 
-      <table>   
-        <center><p>Progress:</p></center>
-        <center><div id="progressbar" style="width: 300px;"></div><center>
 
+    </div>
+
+    <div id="sidebar">
+
+
+        <p>Progress:</p>
+        <div id="progressbar" style="width: 300px;"></div>
+        
+      <div id="text1">
+        <p>Click on the picture that the word goes with <br>
+        (If you are not sure, take your best guess)</p>
+      </div>
+
+    </div>
+    
       <audio id="sound_player">
         <source src="stimuli/sounds/squirrel.mp3" type="audio/mp3">
       </audio>  
