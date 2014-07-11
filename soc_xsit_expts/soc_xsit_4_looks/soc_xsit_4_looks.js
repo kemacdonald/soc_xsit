@@ -232,7 +232,7 @@ try {
     xmlHttp.open( "GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
     xmlHttp.send( null );
     // var cond = xmlHttp.responseText; // For actual experimental runs
-    var cond = 1; // for testing experiment
+    var cond = 3; // for testing experiment
 } catch (e) {
     var cond = 1;
 }
@@ -245,6 +245,8 @@ switch (cond) {
             cond_name = "Short";
             social_cond = "Social";
             int_cond = "Three";
+            exampleFaceIdx = 0;
+            testFaceIdx = 0;
             delay = [1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8];
             test_trials = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1];
             exposure_trials = [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0];
@@ -253,6 +255,8 @@ switch (cond) {
             cond_name = "Medium";
             social_cond = "Social";
             int_cond = "Three";
+            exampleFaceIdx = 1;
+            testFaceIdx = 1;
             delay = [1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8];
             test_trials = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1];
             exposure_trials = [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0];
@@ -261,6 +265,8 @@ switch (cond) {
             cond_name = "Long";
             social_cond = "Social";
             int_cond = "Three";
+            exampleFaceIdx = 2;
+            testFaceIdx = 2;
             delay = [1, 2, 3, 4, 1, 2, 3, 4, 5, 6, 7, 8, 5, 6, 7, 8];
             test_trials = [0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1];
             exposure_trials = [1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0];
@@ -290,6 +296,14 @@ exampleImages = [['squirrel','chair',
                   'toaster','truck', 'crown','squirrel','ruler', 'grapes', 
                   'helicopter', 'lion','whistle','tomato','tree','spoon',
                   'plug', 'shoe', 'guitar', 'kettle', 'sweater','oven']],
+
+exampleFaces = [['silentLUshort', 'silentLUshort', 'silentRUshort', 'silentLDshort'],
+                ['silentLUmedium', 'silentLUmedium', 'silentRUmedium', 'silentLDmedium'],
+                ['silentLUlong', 'silentLUlong', 'silentRUlong', 'silentLDlong']],
+
+testFaces = [['silentLDshort', 'silentLUshort', 'silentRDshort', 'silentRUshort'],
+             ['silentLDmedium', 'silentLUmedium', 'silentRDmedium', 'silentRUmedium'],
+             ['silentLDlong', 'silentLUlong', 'silentRDlong', 'silentRUlong']],
 
 showSlide("instructions"); //Show instruction slide
 
@@ -321,10 +335,10 @@ var experiment = {
   trialSounds: allSounds.map(function(elem){return 'Sound'+elem;}),
   exampleSounds: ['squirrel','tomato'],
   exampleFace: 0,
-  exampleFaces: ['eyes_left','eyes_left','eyes_down_left','eyes_down_right'],
+  exampleFaces: exampleFaces[exampleFaceIdx], // chooses which example faces to show
   trialImages: allImgs,
   exampleImages: exampleImages[1], // chooses the set of example images to display on the example slide
-  faceOther: ['eyes_left','eyes_down_left','eyes_down_right','eyes_right'], //directed looks for exposure trials
+  faceVids: testFaces[testFaceIdx], //directed looks for exposure trials
   faceCenter: 'eyescenter', // eyes center for example/same/switch trials
 
   /*The function that gets called when the sequence is finished. */
@@ -371,7 +385,7 @@ var experiment = {
       if(tmpImg == img){break;}
     }
     
-    var new_i = i, new_img = img, face_img, faceLookIdx;
+    var new_i = i, new_img = img, face_vid, faceLookIdx;
     
     /* keepPic and keepIdx track what was shown and what position it was in. 
     Then, you can check if experiment.keepPic[experiment.item].length == 0. If it is, 
@@ -380,18 +394,18 @@ var experiment = {
     
     /* Exposure trial */
     if(Math.floor(experiment.exampleItem) <= numExamples) {
-      face_img = experiment.faceCenter; 
+      face_vid = experiment.faceCenter; 
       faceLookIdx = -1; // if center, then face index is -1 
     } 
     else if(experiment.keepPic[experiment.item].length == 0 & 
     	social_cond == "Social") {
-            face_img = experiment.faceOther[faceLook];
+            face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
     } else {
         face_img = experiment.faceCenter; // non-social condition, the faceLook is always center
         faceLookIdx = -1;
     }
-      
+    
     /* Same/Switch trial */
     if(Math.floor(experiment.exampleItem) > numExamples &
         experiment.trialTypes[experiment.item] != 1){ 
@@ -406,7 +420,6 @@ var experiment = {
     
     if(Math.floor(experiment.exampleItem) > numExamples & 
         experiment.keepPic[experiment.item].length == 0){
-      
         experiment.keepPic[experiment.item] = new_img;
         experiment.keepIdx[experiment.item] = new_i;
     }
@@ -421,7 +434,7 @@ var experiment = {
         kept: experiment.keepPic[experiment.item],
         kept_idx: experiment.keepIdx[experiment.item],
         rt: endTime - startTime,
-        face: face_img,
+        face: face_vid,
         faceIdx: faceLookIdx,
     };  
     experiment.data.push(data);
@@ -436,12 +449,12 @@ var experiment = {
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
     
-    var i, next_imgs = [],sound, face_img, blank;
-    
+    var i, next_imgs = [],sound, face_vid, blank;
+
     //show example trials
     if(Math.floor(experiment.exampleItem) < numExamples) { 
         sound = experiment.exampleSounds[Math.floor(experiment.exampleItem)]
-        face_img = experiment.exampleFaces[experiment.exampleFace];
+        face_vid = experiment.exampleFaces[experiment.exampleFace];
         for(i = 0; i < imgsPerSlide; i++) { //update the images shown
             next_imgs[i] = experiment.exampleImages.shift();
         }
@@ -462,9 +475,9 @@ var experiment = {
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
       if(experiment.keepPic[experiment.item].length == 0 & social_cond == "Social") {
         faceLook = random(4);
-        face_img = experiment.faceOther[faceLook];
+        face_vid = experiment.faceVids[faceLook];
       } else {
-        face_img = experiment.faceCenter;
+        face_vid = experiment.faceCenter;
           }
       
         var idx;
@@ -496,8 +509,7 @@ var experiment = {
 
     
   // get video 
-  var video = "silentLUlong"
-  $("#video1")[0].src = "stimuli/videos/"+video+".mov";
+  $("#video1")[0].src = "stimuli/videos/"+face_vid+".mov";
   
 
   //get the appropriate sound
