@@ -31,7 +31,7 @@ description:: word-learning experiment (5 mins, do only once)!
 nameofexperimentfiles::soc_xsit_4_looks_pilot
 &&&   the files that the script generates for you will have names based on this. 
 
-experimentURL::https://www.stanford.edu/~kylem4/soc_xsit_4_looks
+experimentURL::https://www.stanford.edu/~kylem4/soc_xsit_4_looks/soc_xsit_4_looks.html
 &&&   the URL where you've posted your external HIT
 
 hitfolderpath::/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_4_looks

@@ -206,10 +206,6 @@ var allSounds = range(1,numSounds);
     allSounds = shuffle(allSounds);
     allSounds = allSounds.slice(0,numUsedSounds);
 
-//make sure all images are loaded at runtime
-allImgs = allImgs.map(function(elem){return 'Novel'+elem;});
-$(allImgs.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
-
 // an array to generate the order that should be used
 var allOrders = [[1, 2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 1, 2, 1, 2, 1]];
 //SamePos for One Kind of Trial (Switch or Keep)
@@ -236,8 +232,6 @@ try {
 } catch (e) {
     var cond = 1;
 }
-console.log(cond);
-cond = String(cond);
 
 /* code for condition randomization. This only includes Social Condition for Second Batch */
 switch (cond) {
@@ -304,6 +298,13 @@ exampleFaces = [['silentLUshort', 'silentLUshort', 'silentRUshort', 'silentLDsho
 testFaces = [['silentLDshort', 'silentLUshort', 'silentRDshort', 'silentRUshort'],
              ['silentLDmedium', 'silentLUmedium', 'silentRDmedium', 'silentRUmedium'],
              ['silentLDlong', 'silentLUlong', 'silentRDlong', 'silentRUlong']],
+
+//make sure all images are loaded at runtime
+allImgs = allImgs.map(function(elem){return 'Novel'+elem;});
+allImgs = allImgs.concat(exampleImages[1]);
+$(allImgs.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
+
+
 
 showSlide("instructions"); //Show instruction slide
 
@@ -438,7 +439,6 @@ var experiment = {
         faceIdx: faceLookIdx,
     };  
     experiment.data.push(data);
-    console.log(data.face);
     
     //update progress bar
     $("#progressbar").progressbar("option", "value", 
