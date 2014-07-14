@@ -427,8 +427,6 @@ quartz()
     geom_line(aes(x=intervalNum, y=inv.logit(preds), col=condition, lty=trialType))
 
 
-
-
 ### OTHER LMS
 m2 <- glmer(correct ~ trialType * condition * intervalNum * factor(numPicN) + (trialType | subid), 
             data=d.gaze.tar, family=binomial, nAGQ=0) 
@@ -551,7 +549,7 @@ print(xtable(e3.tab,
 
 ## -------------- RT EXPOSURE TRIALS ANALYSIS  -------------- 
 
-mss.exp.rt <- aggregate(rt ~  + condition + subid + intervalNum + numPicN, data=d.exp, FUN=mean)
+mss.exp.rt <- aggregate(rt ~  condition + subid + intervalNum + numPicN, data=d.exp, FUN=mean)
 
 # remove +/- 2SD
 mss.exp.rt$rt[log(mss.exp.rt$rt) > mean(log(mss.exp.rt$rt)) + 2* sd(log(mss.exp.rt$rt)) | 

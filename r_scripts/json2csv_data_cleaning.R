@@ -11,7 +11,7 @@ library(stringr)
 ##### GET RELEVANT FIELDS FROM JSON OUTPUT #####
 
 ## gets all .results files at one time
-all_results <- list.files(path = "/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_8", 
+all_results <- list.files(path = "/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_4_looks/", 
                           pattern = '*.results', all.files = FALSE)
 
 ## creates empty data frame
@@ -22,7 +22,7 @@ all.data <- data.frame()
 ## also flags test and exposure trials
 
 for(f in 1:length(all_results)) {
-  data <- read.table(paste("/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_8/", 
+  data <- read.table(paste("/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_4_looks/", 
                             all_results[f],sep=""),sep="\t",header=TRUE, 
                             stringsAsFactors=FALSE)
   long.data <- as.data.frame(matrix(ncol = 0, nrow = 20*nrow(data)))
@@ -42,9 +42,11 @@ for(f in 1:length(all_results)) {
       long.data$submit.time[c] <-  word(data$assignmentsubmittime[i]
                                               ,start=4)
       long.data$trial.num[c] <- j
+      long.data$gazeLength[c] <- fromJSON(as.character(data$Answer.condition[i]))       
       long.data$condition[c] <- fromJSON(as.character(data$Answer.social_cond[i]))       
       long.data$interval[c] <- fromJSON(as.character(data$Answer.delay_condition[i]))  
       long.data$numPic[c] <- fromJSON(as.character(data$Answer.numReferents[i]))
+      long.data$browser[c] <- fromJSON(as.character(data$Answer.browser[i]))
       long.data$itemNum[c] <- d[[j]]$itemNum
       long.data$trialType[c] <- d[[j]]$trialType
       long.data$samePos[c] <- d[[j]]$samePos
@@ -237,4 +239,4 @@ keep.data$correct <- keep.data$chosen == keep.data$kept
 
 ##### SAVE OUTPUT  #####
 
-write.csv(keep.data, "/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/replicate_processing/soc_xsit_8.csv")
+write.csv(keep.data, "/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/soc_xsit_4_looks_pilot.csv")

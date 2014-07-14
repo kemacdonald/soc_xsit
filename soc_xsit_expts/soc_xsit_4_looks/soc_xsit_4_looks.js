@@ -220,7 +220,7 @@ var startTime = 0; // Starts the clock for recording RT
  * for the 3 different gaze length conditions)
  */
 
-try {
+/*try {
     var filename = "KM_soc_xsit_4_looks";
     var condCounts = "1,50;2,50;3,50";  
     var xmlHttp = null;
@@ -231,7 +231,9 @@ try {
     //var cond = random(1,3); // for testing experiment
 } catch (e) {
     var cond = 1;
-}
+}*/
+
+var cond = "1";
 
 /* code for condition randomization. This only includes Social Condition for Second Batch */
 switch (cond) {
