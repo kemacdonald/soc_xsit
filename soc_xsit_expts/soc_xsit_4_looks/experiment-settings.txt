@@ -28,10 +28,10 @@ title:: Play a fun word learning game (5 mins, do only once)!
 
 description:: word-learning experiment (5 mins, do only once)!
 
-nameofexperimentfiles::soc_xsit_4_looks_pilot
+nameofexperimentfiles::soc_xsit_4_looks_pilot_2
 &&&   the files that the script generates for you will have names based on this. 
 
-experimentURL::https://www.stanford.edu/~kylem4/soc_xsit_4_looks/soc_xsit_4_looks.html
+experimentURL::https://www.stanford.edu/~kylem4/soc_xsit_4_looks/soc_xsit_4_looks_2.html
 &&&   the URL where you've posted your external HIT
 
 hitfolderpath::/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_4_looks
@@ -53,7 +53,7 @@ frameheight::800
 
 reward::0.25  &&& how much you're paying per HIT %% 20, or 25
 
-numberofassignments::150
+numberofassignments::100
 &&&  how many subjects you want
 
 assignmentduration::600     

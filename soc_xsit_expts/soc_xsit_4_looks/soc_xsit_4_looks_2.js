@@ -230,8 +230,8 @@ var startTime = 0; // Starts the clock for recording RT
  */
 
 try {
-    var filename = "KM_soc_xsit_4_looks_good";
-    var condCounts = "1,50;2,50;3,50";  
+    var filename = "KM_soc_xsit_4_looks_2";
+    var condCounts = "1,50;2,50";  
     var xmlHttp = null;
     xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
@@ -242,7 +242,9 @@ try {
     var cond = 1;
 }
 
-/* code for condition randomization. This only includes Social Condition for Second Batch */
+var cond = "2";
+
+/* code for condition randomization. This includes a replication of social-short and a new condition: no-social-short */
 switch (cond) {
         case "1": 
             cond_name = "Short";
@@ -255,21 +257,11 @@ switch (cond) {
             exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
             break;
         case "2": 
-            cond_name = "Medium";
-            social_cond = "Social";
+            cond_name = "Short";
+            social_cond = "No-social";
             int_cond = "Zero";
-            exampleFaceIdx = 1;
+            exampleFaceIdx = 0;
             testFaceIdx = 1;
-            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8] 
-            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
-            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
-            break;
-        case "3": 
-            cond_name = "Long";
-            social_cond = "Social";
-            int_cond = "Zero";
-            exampleFaceIdx = 2;
-            testFaceIdx = 2;
             delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8] 
             test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
             exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
