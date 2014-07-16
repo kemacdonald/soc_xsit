@@ -25,13 +25,13 @@ library(reshape2)
 library(car)
 library(dplyr)
 library(xtable)
-source('/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysis/useful.R')
+source('/Users/Allison/soc_xsit/XSIT-MIN/analysis/Ranalysis/useful.R')
 ```
 
 Read in data. 
 
 ```{r read data}
-d <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/soc_xsit_4_looks_pilot.csv")
+d <- read.csv("/Users/Allison/soc_xsit/processed_data/soc_xsit_4_looks_pilot.csv")
 ```
 
 Get the number of subjects in each condition.
