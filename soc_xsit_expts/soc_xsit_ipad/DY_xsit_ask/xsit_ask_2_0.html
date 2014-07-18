@@ -1,0 +1,133 @@
+<html>
+    <head>
+        <title>Alien Word Learning</title>
+
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+
+        <script src="mmturkey.js"></script>
+        <script src="utils.js"></script>
+        <script src="spriteData.js"></script>
+
+
+		<link type="text/css" href ="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" rel="stylesheet" /> 
+
+        <link rel="stylesheet" href="style.css" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    </head>
+    <body>
+        
+        <!--INSTRUCTIONS SLIDE-->
+        <div class="slide" id="instructions">
+            <img src="images/stanford.png" alt="Stanford University">
+                <p id='logo-text'>Stanford Language and Cognition Lab</p>
+                <p class="block-text">
+					
+				<b>Please ensure that your volume is loud enough that you will 
+				be able to hear the words.</b></p><br><br>
+                
+                <button type="button" onClick="this.blur(); 
+                experiment.training()"><font size="24">Dots</font></button>
+                <!-- experiment.next()"><font size="24">Dots</font></button> -->
+
+        </div>
+        
+		<!--INSTRUCTIONS 2 SLIDE-->
+		<div class="slide" id="instructions2">
+                <br><br><br><br><br><br><br>
+                <center> <button type="button" onClick="this.blur(); 
+                experiment.next()"><font size="24">Start</font></button></center>
+        </div>
+
+		<!--INSTRUCTIONS 3 SLIDE-->
+		<div class="slide" id="instructions3">
+
+                <br><br><br><br><br><br><br>
+	            <center><button type="button" onClick="this.blur(); 
+	            experiment.next()"><font size="24">Go</font></button></center>
+	        </div>
+
+
+		<!--AMBIGUOUS TRIAL SLIDE-->
+		<div class="slide" id="stage2">
+            <p><br/><br/><br/><br/></p>
+			<table align="center" cellpadding="30">
+                        <tr></tr>
+                            
+						<tr>
+							<td align="center"><div class="xsit_pic" id="pic1">
+								<img  src="stimuli/images/Novel6.jpg" 
+								width="400" border="5px solid white"></div></td>
+							<td align="center"><div class="xsit_pic" id="pic2">
+								<img  src="stimuli/images/Novel13.jpg"
+								width="400" border="5px solid white"></div></td>
+                                    </div></td>
+						</tr>
+                
+			</table>
+			<br>
+			<audio id="sound_player">
+			  <source src="stimuli/sounds/audio_sprite.mp3" type="audio/mp3">
+			</audio>	
+		</div>
+
+
+		<!--UNAMBIGUOUS TRIAL SLIDE-->
+		<div class="slide" id="stage1">
+            <p><br/><br/><br/><br/></p>
+			<table align="center" cellpadding="30">
+                        <tr></tr>
+                            
+						<tr>
+							<td align="center"><div class="xsit_pic" id="pic0">
+								<img  src="stimuli/images/Novel6.jpg" 
+								width="400" border="5px solid white"></div></td>
+                                    </div></td>
+						</tr>
+                
+			</table>
+			<br>
+	<!-- 		<audio id="sound_player">
+			  <source src="stimuli/sounds/audio_sprite.mp3" type="audio/mp3">
+			</audio>	 -->
+		</div>
+		
+		<div class="slide" id="blankSlide"> </div>
+        
+        <div class="slide" id="finished">
+            You're finished - thanks for participating! Submitting to 
+            Mechanical Turk...
+        </div>
+
+        <!-- DOT GAME SLIDE-->
+        <div class="slide" id="training"></div>
+
+
+		<!--Q&A Slide-->
+		<div class="slide" id="qanda">
+			<center>
+                 <img src="images/elmo.jpg">
+                
+                <br><br><br><br>
+               <button type="button" onClick="this.blur(); experiment.codeqs()">
+               <font size="24">Coding</font></button></center>
+        </div>
+
+        <!--Coding Slide-->
+		<div class="slide" id="coding">
+			<center>
+                <p class="block-text">Question Coding</p>
+					<br>
+					<p>Code for Questions asked in Binary</p>
+					<textarea id="qcode" rows="1" cols="6" style="resize:none">
+					</textarea><br>
+					<br>
+                
+               <button type="button" onClick="this.blur(); experiment.end()">
+               Finish</button></center>
+        </div>
+        
+        <script src="xsit_ask_2_0.js"></script>
+    </body>
+</html>

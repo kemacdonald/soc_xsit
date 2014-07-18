@@ -2,7 +2,6 @@ rm(list=ls())
 library(plotrix)
 library(lattice)
 library(rjson)
-library(ggplot2)
 library(plyr)
 library(chron)
 library(car)
@@ -239,4 +238,4 @@ keep.data$correct <- keep.data$chosen == keep.data$kept
 
 ##### SAVE OUTPUT  #####
 
-write.csv(keep.data, "/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/soc_xsit_4_looks_pilot.csv")
+write.csv(keep.data, "/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/soc_xsit_4_looks_pilot_2.csv")

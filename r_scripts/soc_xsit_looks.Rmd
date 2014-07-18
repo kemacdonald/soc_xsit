@@ -1,6 +1,6 @@
 ---
 title: "Social Cross-Situational Word Learning"
-author: "Kyle MacDonald"
+author: "Kyle MacDonald & Allison Dods"
 date: "July 14, 2014"
 output: html_document
 ---
@@ -25,24 +25,31 @@ library(reshape2)
 library(car)
 library(dplyr)
 library(xtable)
-source('/Users/Allison/soc_xsit/XSIT-MIN/analysis/Ranalysis/useful.R')
+source("/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysis/useful.R")
 ```
 
 Read in data. 
+- d is the first pilot (manipulated gaze length, 4-referents, 0 delay)
+- d1 is the second pilot (just ran the short gaze condition and added the no-social condition )
 
 ```{r read data}
-d <- read.csv("/Users/Allison/soc_xsit/processed_data/soc_xsit_4_looks_pilot.csv")
+d <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/soc_xsit_4_looks_pilot.csv")
+d1 <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/soc_xsit_4_looks_pilot_2.csv")
 ```
 
 Get the number of subjects in each condition.
 
 ```{r get number of subs, echo=FALSE}
-numSubs <- aggregate(correct ~ subid + gazeLength + condition, data=d, FUN=mean)
-numSubs.summary <- count(numSubs, vars=c("gazeLength", "condition"))
-numSubs.summary
+d.numSubs <- aggregate(correct ~ subid + gazeLength + condition, data=d, FUN=mean)
+d.numSubs.summary <- count(d.numSubs, vars=c("gazeLength", "condition"))
+d.numSubs.summary
+
+d1.numSubs <- d.numSubs <- aggregate(correct ~ subid + gazeLength + condition, data=d1, FUN=mean)
+d.numSubs.summary <- count(d1.numSubs, vars=c("gazeLength", "condition"))
+d.numSubs.summary
 ```
 
-Subset data for analysis.
+Subset pilot 1 data for analysis.
 
 ```{r subset data}
 d.test <- subset(d, testTrial==1)                               # test trials
@@ -95,8 +102,6 @@ d.test.choseGazeTar <- subset(d.test.gazeTar,
                               choseSocial == TRUE, 
                               select=c(subid:rt.y))             # test trils: just chose gazeTar on exp
 
-## TODO relabel Test RT and Exp RT columns!!!!
-
 ```
 
 Clean out trials with extremely slow RTs (+/- 2SD).
@@ -122,7 +127,9 @@ ms.gaze.tar$corr.cil <- aggregate(correct ~ trialType + gazeLength,
                                   data=mss.gaze.tar, FUN=ci.low, na.action = na.omit)$correct
 
 # plot accuracy by gazeLength and trialType
-acc_plot <- qplot(data=ms.gaze.tar,x=gazeLength, y=correct, linetype=trialType, 
+exp.gazeLength <- factor(ms.gaze.tar$gazeLength, c("Short", "Medium", "Long"))
+
+acc_plot <- qplot(data=ms.gaze.tar,x=exp.gazeLength, y=correct, linetype=trialType, 
                   ymin=correct-corr.cil, ymax=correct+corr.cih,
                     colour=gazeLength, 
                     geom=c("pointrange", "line"),
@@ -175,3 +182,105 @@ rt_test_plot <- qplot(data=ms.test.rt,x=gazeLength, y=rt)
 rt_test_plot
 ```
 
+Subset pilot 2 data for analysis.
+
+```{r subset pilot 2}
+d1.test <- subset(d1, testTrial==1)                               # test trials
+d1.first.trial <- subset(d1, testTrial==1 & first.trial==TRUE)    # first test trial for each sub
+d1.exp <- subset(d1, exposureTrial==1)                            # exposure trials
+```
+
+```{r exposure gaze target pilot 2, echo=FALSE}
+## match faceIdx to chosenIdx
+d1.exp$faceIdx <- revalue(d1.exp$face, c("silentLDlong"=2, "silentLDmedium"=2, "silentLDshort"=2, 
+                                        "silentLUlong"=0, "silentLUmedium"=0, "silentLUshort"=0, 
+                                        "silentRDlong"=3, "silentRDmedium"=3, "silentRDshort"=3,
+                                        "silentRUlong"=1, "silentRUmedium"=1, "silentRUshort"=1, 
+                                        "straightahead"=-1))
+## flag as true if subs chose target of gaze
+d1.exp$choseSocial <- NA 
+d1.exp$choseSocial <- d1.exp$faceIdx == d1.exp$chosenIdx
+
+## get mean chose target of gaze by trial type, gazeLength condition, and sub id
+mss.exp.1 <- aggregate(choseSocial ~ trialType + subid + condition, data=d1.exp, FUN=mean)
+ms.exp.1 <- aggregate(choseSocial ~  condition, data=mss.exp.1, FUN=mean)
+ms.exp.1$choseSocial.cih <- aggregate(choseSocial ~ condition, data=mss.exp.1, FUN=ci.high)$choseSocial
+ms.exp.1$choseSocial.cil <- aggregate(choseSocial ~ condition, data=mss.exp.1, FUN=ci.low)$choseSocial
+
+## plot accuracy for three different gaze conditions
+acc_exp_pilot2 <- ggplot(data=ms.exp.1, aes(x=condition, y=choseSocial)) +
+                geom_bar(stat="identity", fill="dodgerblue") +
+                geom_errorbar(aes(ymin=choseSocial-choseSocial.cil, ymax=choseSocial+choseSocial.cih),
+                              width=.2) +
+                ylim(0,1) +
+                xlab("Gaze Length") +
+                ylab("Proportion of Subjects Chose Gaze Target") +
+                theme_bw() 
+acc_exp_pilot2
+```
+
+Now subset test trials to include only those on which participants chose the target of gaze on exposure.
+
+```{r clean test trials pilot 2}
+d1.choseSocial <- subset(d1.exp, select=c("subid", "itemNum",
+                                        "choseSocial", "rt"))   # exposure trials chose gazeTar
+
+d1.test.gazeTar <- merge(d1.test, d1.choseSocial, 
+                             by=c("subid", "itemNum"), 
+                             all=TRUE)                          # test trials with exp trial info
+
+d1.test.choseGazeTar <- subset(d1.test.gazeTar, 
+                              choseSocial == TRUE || condition == "No-social", 
+                              select=c(subid:rt.y))             # test trials: just chose gazeTar on exp
+```
+
+Now plot accuracy on test trials
+
+```{r pilot2 acc on test, echo=F, warning=FALSE}
+# now aggregate to get means 
+mss.gaze.tar.1 <- aggregate(correct ~ trialType + condition + subid, data=d1.test.choseGazeTar, 
+                          FUN=mean, na.action = na.omit)
+
+ms.gaze.tar.1 <- aggregate(correct ~ trialType + condition, data=mss.gaze.tar.1, 
+                         FUN=mean, na.action = na.omit)
+
+ms.gaze.tar.1$corr.cih <- aggregate(correct ~ trialType + condition, data=mss.gaze.tar.1, 
+                                  FUN=ci.high, na.action = na.omit)$correct
+
+ms.gaze.tar.1$corr.cil <- aggregate(correct ~ trialType + condition, 
+                                  data=mss.gaze.tar.1, FUN=ci.low, na.action = na.omit)$correct
+
+# plot accuracy by condition and trialType
+acc_plot_test_p1 <- qplot(data=ms.gaze.tar.1,x=condition, y=correct, linetype=trialType, 
+                  ymin=correct-corr.cil, ymax=correct+corr.cih,
+                    colour=condition, 
+                    geom=c("pointrange", "line"),
+                    position=position_dodge(width=.02)) +
+        scale_y_continuous(limits = c(0,1),breaks=c(0,.25,.5,.75,1),
+                       name = "Prop. Choosing Repeated Referent") +
+        geom_hline(aes(yintercept=1/4),lty=2)
+
+acc_plot_test_p1
+```
+
+Lmer to see if difference between social and no-social is reliable 
+
+```{r lmer pilot 2}
+m1.l <- glm(correct ~ trialType * condition, 
+            data=d1.test.choseGazeTar, family=binomial)
+aggregate(correct ~ trialType + condition, d1.test.choseGazeTar, mean)
+aggregate(subid ~ trialType + condition, d1.test.choseGazeTar, n.unique)
+
+summary(m1.l)
+```
+
+
+```{r}
+
+m2.l <- glmer(correct ~ condition + 
+            (1|subid), 
+            data=subset(d1.test.choseGazeTar, trialType=="Same"), family=binomial, nAGQ=0)
+
+summary(m2.l)
+
+```

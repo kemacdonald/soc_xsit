@@ -242,7 +242,7 @@ try {
     var cond = 1;
 }
 
-var cond = "2";
+var cond = "1";
 
 /* code for condition randomization. This includes a replication of social-short and a new condition: no-social-short */
 switch (cond) {

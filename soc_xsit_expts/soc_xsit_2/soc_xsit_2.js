@@ -236,6 +236,7 @@ try {
     var cond = 1;
 }
 
+var cond = "5";
 
 /* code for condition randomization */
 switch (cond) {
