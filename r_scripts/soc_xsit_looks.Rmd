@@ -25,11 +25,7 @@ library(reshape2)
 library(car)
 library(dplyr)
 library(xtable)
-<<<<<<< HEAD
 source("/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysis/useful.R")
-=======
-source('/Users/Allison/soc_xsit/XSIT-MIN/useful.R')
->>>>>>> 47cf6dad14065d943577da5184d831623bbec709
 ```
 
 Read in data. 
@@ -57,10 +53,8 @@ Subset pilot 1 data for analysis.
 
 ```{r subset data}
 d.test <- subset(d, testTrial==1)                               # test trials
-names(d.test)[names(d.test)=="rt"] <- "rt.test"
 d.first.trial <- subset(d, testTrial==1 & first.trial==TRUE)    # first test trial for each sub
-d.exp <- subset(d, exposureTrial==1)   # exposure trials
-names(d.exp)[names(d.exp)=="rt"] <- "rt.exp"
+d.exp <- subset(d, exposureTrial==1)                            # exposure trials
 ```
 
 Did subjects choose target of gaze on exposure trials?
@@ -83,8 +77,7 @@ ms.exp$choseSocial.cih <- aggregate(choseSocial ~ gazeLength, data=mss.exp, FUN=
 ms.exp$choseSocial.cil <- aggregate(choseSocial ~ gazeLength, data=mss.exp, FUN=ci.low)$choseSocial
 
 ## plot accuracy for three different gaze conditions
-exp.gazeLength <- factor(ms.exp$gazeLength, levels = c("Short", "Medium", "Long"))
-acc_exp <- ggplot(data=ms.exp, aes(x=exp.gazeLength, y=choseSocial)) +
+acc_exp <- ggplot(data=ms.exp, aes(x=gazeLength, y=choseSocial)) +
                 geom_bar(stat="identity", fill="dodgerblue") +
                 geom_errorbar(aes(ymin=choseSocial-choseSocial.cil, ymax=choseSocial+choseSocial.cih),
                               width=.2) +
@@ -99,7 +92,7 @@ Now subset test trials to include only those on which participants chose the tar
 
 ```{r clean test trials}
 d.choseSocial <- subset(d.exp, select=c("subid", "itemNum",
-                                        "choseSocial", "rt.exp"))   # exposure trials chose gazeTar
+                                        "choseSocial", "rt"))   # exposure trials chose gazeTar
 
 d.test.gazeTar <- merge(d.test, d.choseSocial, 
                              by=c("subid", "itemNum"), 
@@ -107,18 +100,14 @@ d.test.gazeTar <- merge(d.test, d.choseSocial,
 
 d.test.choseGazeTar <- subset(d.test.gazeTar, 
                               choseSocial == TRUE, 
-                              select=c(subid:rt.exp))             # test trils: just chose gazeTar on exp
+                              select=c(subid:rt.y))             # test trils: just chose gazeTar on exp
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 47cf6dad14065d943577da5184d831623bbec709
 ```
 
 Clean out trials with extremely slow RTs (+/- 2SD).
 
 ```{r clean RTs}
-d.test.choseGazeTar$correct[log(d.test.choseGazeTar$rt.test) > mean(log(d.test.choseGazeTar$rt.test)) + 2* sd(log(d.test.choseGazeTar$rt.test)) | log(d.test.choseGazeTar$rt.test) < mean(log(d.test.choseGazeTar$rt.test)) - 2* sd(log(d.test.choseGazeTar$rt.test))] <- NA
+d.test.choseGazeTar$correct[log(d.test.choseGazeTar$rt.x) > mean(log(d.test.choseGazeTar$rt.x)) + 2* sd(log(d.test.choseGazeTar$rt.x)) | log(d.test.choseGazeTar$rt.x) < mean(log(d.test.choseGazeTar$rt.x)) - 2* sd(log(d.test.choseGazeTar$rt.x))] <- NA
 ```
 
 Accuracy on test trials (Same/Switch).
@@ -138,14 +127,9 @@ ms.gaze.tar$corr.cil <- aggregate(correct ~ trialType + gazeLength,
                                   data=mss.gaze.tar, FUN=ci.low, na.action = na.omit)$correct
 
 # plot accuracy by gazeLength and trialType
-<<<<<<< HEAD
 exp.gazeLength <- factor(ms.gaze.tar$gazeLength, c("Short", "Medium", "Long"))
 
 acc_plot <- qplot(data=ms.gaze.tar,x=exp.gazeLength, y=correct, linetype=trialType, 
-=======
-tar.gazeLength <- factor(ms.gaze.tar$gazeLength, c("Short", "Medium", "Long"))
-acc_plot <- qplot(data=ms.gaze.tar,x=tar.gazeLength, y=correct, linetype=trialType, 
->>>>>>> 47cf6dad14065d943577da5184d831623bbec709
                   ymin=correct-corr.cil, ymax=correct+corr.cih,
                     colour=gazeLength, 
                     geom=c("pointrange", "line"),
@@ -171,8 +155,7 @@ ms.exp.rt$rt.cih <- aggregate(rt ~ gazeLength, data=mss.exp.rt, FUN=ci.high)$rt
 ms.exp.rt$rt.cil <- aggregate(rt ~ gazeLength, data=mss.exp.rt, FUN=ci.low)$rt
 
 ## plots mean reaction time for the different exposure conditions 
-exprt.gazeLength <- factor(ms.exp.rt$gazeLength, c("Short", "Medium", "Long"))
-rt_exp <- ggplot(data=ms.exp.rt, aes(x=exprt.gazeLength, y=rt, fill=gazeLength)) +
+rt_exp <- ggplot(data=ms.exp.rt, aes(x=gazeLength, y=rt, fill=gazeLength)) +
                 geom_bar(stat="identity") +
                 geom_errorbar(aes(ymin=rt-rt.cil, ymax=rt+rt.cih,),
                               width=.2) +
@@ -186,7 +169,7 @@ rt_exp
 RT on test trials.
 
 ```{r RT on test trials}
-mss.test.rt <- aggregate(rt.test ~  gazeLength + trialType + subid, data=d.test.choseGazeTar, FUN=mean)
+mss.test.rt <- aggregate(rt.x ~  gazeLength + trialType + subid, data=d.test.choseGazeTar, FUN=mean)
 # remove +/- 2SD
 mss.test.rt$rt[log(mss.test.rt$rt) > mean(log(mss.test.rt$rt)) + 2* sd(log(mss.test.rt$rt)) | 
                 log(mss.test.rt$rt) < mean(log(mss.test.rt$rt)) - 2* sd(log(mss.test.rt$rt))] <- NA
@@ -194,13 +177,7 @@ ms.test.rt <- aggregate(rt ~ gazeLength + trialType, data=mss.test.rt, FUN=mean)
 ms.test.rt$rt.cih <- aggregate(rt ~ gazeLength + trialType, data=mss.test.rt, FUN=ci.high)$rt
 ms.test.rt$rt.cil <- aggregate(rt ~ gazeLength + trialType, data=mss.test.rt, FUN=ci.low)$rt
 
-testrt.gazeLength <- factor(ms.test.rt$gazeLength, c("Short", "Medium", "Long"))
-
-rt_test_plot <- qplot(data=ms.test.rt, x=testrt.gazeLength, y=rt, linetype=trialType,
-                      ymin=rt-rt.cil, ymax=rt+rt.cih,
-                      colour=gazeLength,
-                      geom=c("pointrange", "line"),
-                      position=position_dodge(width=.02))
+rt_test_plot <- qplot(data=ms.test.rt,x=gazeLength, y=rt)
 
 rt_test_plot
 ```
@@ -289,7 +266,7 @@ acc_plot_test_p1
 Lmer to see if difference between social and no-social is reliable 
 
 ```{r lmer pilot 2}
-m1.l <- glm(correct ~ trialType * condition, 
+m1.l <- glmer(correct ~ trialType * condition + (1|subid), 
             data=d1.test.choseGazeTar, family=binomial)
 aggregate(correct ~ trialType + condition, d1.test.choseGazeTar, mean)
 aggregate(subid ~ trialType + condition, d1.test.choseGazeTar, n.unique)
