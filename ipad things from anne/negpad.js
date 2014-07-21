@@ -192,7 +192,7 @@ var experiment = {
 		showSlide("training")
 		$('.dot').one('touchstart', function(event) {
 			var dotID = $(event.currentTarget).attr('id')
-			document.getElementById(dotID).src = "dots/x.jpg"
+			document.getElementById(dotID).src = "images/dots/x.jpg"
 			xcounter++
 			if (xcounter === dotCount) {
 				training.removeChild(dot_1)

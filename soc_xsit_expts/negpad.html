@@ -1,0 +1,119 @@
+<html>
+
+  <head>
+    <title>Find Elmo's friends!</title>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <meta name="viewport" content="initial-scale=1.0" />
+  </head>
+
+  <body>
+
+    <div class="slide" id="instructions">
+      <img src="images/stanford.png" alt="Stanford University">
+      <p id='logo-text'>Stanford Language and Cognition Lab</p>  
+      <p class="block-text">
+        password: <br>
+        <input type="text" id="pswd" name="pswd" size="30"> 
+      </p>
+      <p class="block-text">
+        subject ID (enter "debug" for debug mode): <br>
+        <input type="text" id="subjectID" name="subjectID" size="30"> 
+      </p>
+      <button type="button" onClick="this.blur(); $('#bloop_player')[0].load(); experiment.check()"><font size="24">Start</font></button>
+      <p id="pleaseWait"></p>
+    </div>
+
+    <div class="slide" id="condition">
+      <br><br><br><br><br><br><br>
+       <center>
+        <button type="button" class="conditionButton" id="noContext" onClick="this.blur(); $('#reward_player')[0].load(); experiment.training()"><font size="24">No Context</font></button>
+      </center>
+      <center>
+        <button type="button" class="conditionButton" id="context" onClick="this.blur(); $('#reward_player')[0].load(); experiment.training()"><font size="24">Context</font></button>
+      </center>
+    </div>
+
+    <div class="slide" id="training"></div>
+
+    <div class="slide" id="instructions2">
+      <br><br><br><br><br><br><br>
+      <center>
+        <button type="button" onClick="this.blur(); experiment.training()"><font size="24">More Training</font></button>
+      </center>
+      <center>
+        <button type="button" onClick="this.blur(); $('#wrong_player')[0].load(); experiment.initStars(practiceNumber); experiment.practice_blank()"><font size="24">Start Game Practice</font></button>
+      </center>
+    </div>
+
+    <div class="slide" id="instructions3">
+      <br><br><br><br><br><br><br>
+      <center>
+        <button type="button" onClick="this.blur(); $('#sound_player')[0].load(); experiment. initStars(number); experiment.blank()"><font size="24">Start Game</font></button>
+      </center>
+    </div>
+
+    <div class="slide" id="blankSlide"> </div>
+
+    <div class="slide" id="stage">
+      <div id="progress">
+      </div>
+
+      <div id="objects" style="position: relative"> 
+
+        <div class="cdiv" id="c1">
+          <img width = '300' class='pic' id= 'leftPic'/>
+          <img width = '300' class='bpic' id='leftChar'/>
+        </div>
+        <div class="cdiv" id="c2">
+          <img width = '300' class='pic' id= 'centerPic'/>
+          <img width = '300' class='bpic' id='centerChar'/>
+          <div id="listenDiv">
+            <img height = '120' src='images/listen.jpg' id= 'listenButton'/>
+          </div>
+        </div>
+        <div class="cdiv" id="c3">
+          <img width = '300' class='pic' id= 'rightPic'/>
+          <img width = '300' class='bpic' id='rightChar'/>
+        </div>
+        
+      </div> 
+
+      <audio id="sound_player"> 
+        <source src="sentences/target_sentences/bread_positive.mp3" type="audio/mp3">
+      </audio>
+
+      <audio id="bloop_player">
+        <source src="sentences/BLOOP.mp3" type="audio/mp3">
+      </audio>
+
+      <audio id="wrong_player">
+        <source src="sentences/wrong2.mp3" type="audio/mp3">
+      </audio>
+
+      <audio id="reward_player">
+        <source src="sentences/chimes_quiet.mp3" type="audio/mp3">
+      </audio>
+
+    </div>
+
+    <div class="slide" id="finished">
+      <br>
+      <center>
+      <font size = 24>
+      <font color = "red" >
+      "THE END!"
+      <div id="endStars">
+        <img src="images/starOn.png" class="bigStar" id="big1"/>
+        <img src="images/starOn.png" class="bigStar" id="big2"/>
+        <img src="images/starOn.png" class="bigStar" id="big3"/>
+      </div>
+      </center>
+    </div>
+
+    <script src="negpad.js"></script>
+
+</body>
+</html>

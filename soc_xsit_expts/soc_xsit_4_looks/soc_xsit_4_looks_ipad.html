@@ -5,10 +5,6 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
         <script src="mmturkey.js"></script>
-
-        <!--Added sprite file-->
-        <script src="spriteData.js"></script>
-        
         <link type="text/css" href ="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" rel="stylesheet" />
         <link rel="stylesheet" href="style.css" />
 
@@ -20,14 +16,15 @@
         <div class="slide" id="instructions">
             <img src="images/stanford.png" alt="Stanford University">
                 <p id='logo-text'>Stanford Language and Cognition Lab</p>
-                <p class="block-text">In this experiment, you will meet a character, who will look at some objects and talk about them. Your task is to figure out which word goes with each object.<br><br><br>
+                <p class="block-text">In this experiment, you will meet a character named Taylor, who will look at some objects and talk about them. Your task is to figure out which word goes with each object.<br><br><br>
           
         <b>Please ensure that your volume is loud enough that you will 
-        be able to hear the words.</b></p><br><br>
+        be able to hear the words.</b><br><br>
+
+        <b>We recommend using Chrome or Safari for this experiment</b> (Firefox will not work).</p><br><br>
                 
-                <!--<button type="button" onClick="this.blur(); 
-                showSlide('instructions2')">My volume is turned up and I am 
-                ready to begin</button>-->
+                <button type="button" onClick="this.blur(); 
+                experiment.training()"><font size="24">Dots</font></button>
                 
         <br>
         <br>
@@ -51,9 +48,6 @@
                 <a href="http://www.amazon.com/gp/help/customer/display.html?nodeId=16465241">http://www.amazon.com/gp/help/customer/display.html?nodeId=16465241</a>
                 
                 </p>
-
-                <button type="button" onClick="this.blur(); 
-                experiment.training()"><font size="24">Dots</font></button>
 
         </div>
         
@@ -122,7 +116,7 @@
       <!-- Video -->
           <div id="video_player" align="center">
             
-            <video id="video1" width="300" height="250" preload="auto">
+            <video id="video1" width="300" height="250">
               <source src="stimuli/videos/silentLDlong.mov" type="video/mp4">
               <source src="stimuli/videos/silentLDlong.ogg" type="video/ogg">
               Your browser does not support the video tag.
@@ -212,6 +206,6 @@
                Finish</button></center>
         </div>
         
-        <script src="soc_xsit_4_looks.js"></script>
+        <script src="soc_xsit_4_looks_ipad.js"></script>
     </body>
 </html>

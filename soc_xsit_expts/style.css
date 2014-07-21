@@ -1,0 +1,158 @@
+/**
+## General styles
+This stuff can be ported from experiment to experiment.*/
+
+/** We want the page to sit flush inside the browser window - that means no margins or padding. Also, use a nice-looking serif font. */
+
+.ui-header .ui-title {margin-right:20px;margin-left:20px;}
+.ui-footer .ui-title {margin-right:20px;margin-left:20px;white-space:normal;}
+.ui-body-c, .ui-overlay-c { background:#FFFFFF; }
+.ui-page { background: white;}
+
+
+
+body {
+    padding: 0;
+    margin: 0;
+    font-family: Palatino Linotype, Bookman Antiqua, Palatino, serif;
+    font-size: 16px;
+    line-height: 20px;
+    text-align:center;
+    -webkit-user-select: none;
+}
+
+
+/** We manage display using "slides". A slide is a <code>div</code> that takes up the entire page. Only one slide should be visible at a time. */
+.slide {
+    width: 95%;
+    height: 95%;
+    display: none;
+    position: absolute;
+    margin: 0 auto;
+    margin-left: 0.5%;
+    padding: 1% 2% 1% 2%;
+}
+
+.bpic {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: none;
+    z-index: 10;
+    border : 10px solid white;
+}
+
+.pic {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 30;
+    border : 10px solid white;
+}
+
+#objects {
+    position: relative;
+    top: 60px;
+}
+
+#c1 {
+    position: relative;
+}
+
+#c2 {
+    position: relative;
+    left: 320px;
+}
+
+#c3 {
+    position: relative;
+    left: 640px;
+}
+
+#listenDiv{
+    position: absolute;
+    top: 400px;
+    left: 100px;
+}
+
+#listenButton {
+    display: none;
+}
+input, select, button {font-family: Georgia, serif; font-size: 14px;}
+
+
+
+
+
+
+/**
+   ## Experiment-specific styles
+   This stuff will vary by experiment.
+   */
+
+#logo-text {
+    font-weight: bold;
+}
+
+#instructions {
+    text-align: center;
+}
+
+
+.block-text {
+    width: 500px;
+    text-align: center;
+    margin: 0 auto;
+    margin-bottom: 1em;
+}
+
+table.centered {
+    width: 100%;
+    text-align: center;
+    border-spacing: 5px 10px;
+    margin-left: -5;
+    margin-right:0;
+    margin-top: 50;
+    margin-bottom: 0;
+}
+
+td.pics {
+    width: 33%;
+    vertical-align:center;
+    text-align:center;
+}
+
+td.fillers {
+    height: 100px;
+}
+
+td.listening {
+    height: 120px;
+}
+
+.star {
+    float: left;
+    width: 50px;
+}
+
+#progress {
+    position: absolute;
+    top: 20px;
+    left: 100px;
+}
+ 
+.selectedPic{
+   border : 10px solid #7CFC00;
+}
+
+#endStars{
+    position: absolute;
+    top: 100px;
+    left: 350px;
+}
+
+.bigStar {
+    float: left;
+    width: 100px;
+}
+
