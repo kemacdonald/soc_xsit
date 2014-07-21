@@ -1,0 +1,181 @@
+<html>
+    <head>
+        <title>Word Learning</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+        <link type="text/css" href ="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" rel="stylesheet" />
+        <link rel="stylesheet" href="style.css" />
+        <script src="mmturkey.js"></script>
+        <script src="utils.js"></script>
+        <script src="spriteData.js"></script>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+    </head>
+    
+    <body>
+
+     <!--INSTRUCTIONS SLIDE-->
+        <div class="slide" id="instructions">
+            <img src="images/stanford.png" alt="Stanford University">
+                <p id='logo-text'>Stanford Language and Cognition Lab</p>
+                <p class="block-text">
+          
+        <b>Please ensure that your volume is loud enough that you will 
+        be able to hear the words.</b></p><br><br>
+                
+                <button type="button" onClick="this.blur(); experiment.training()"><font size="24">Start</font></button>
+        <p id="pleaseWait"></p>
+                <!-- experiment.next()"><font size="24">Dots</font></button> -->
+
+        </div> 
+  
+    <!-- CONDITION SLIDE-->
+   <div class="slide" id="condition">
+      <br><br><br><br><br><br><br>
+       <center>
+        <button type="button" class="conditionButton" id="noContext" onClick="this.blur(); $('#reward_player')[0].load(); experiment.training()"><font size="24">No Context</font></button>
+      </center>
+      <center>
+        <button type="button" class="conditionButton" id="context" onClick="this.blur(); $('#reward_player')[0].load(); experiment.training()"><font size="24">Context</font></button>
+      </center>
+    </div>
+
+    <div class="slide" id="training"></div>
+
+    <div class="slide" id="instructions2">
+      <br><br><br><br><br><br><br>
+      <center>
+        <button type="button" onClick="this.blur(); experiment.training()"><font size="24">More Training</font></button>
+      </center>
+      <center>
+        <button type="button" onClick="this.blur(); $('#wrong_player')[0].load(); experiment.initStars(practiceNumber); experiment.practice_blank()"><font size="24">Start Game Practice</font></button>
+      </center>
+    </div>
+
+
+    <!--MAIN EXPERIMENT SLIDE-->
+    <div class="slide" id="stage">
+            
+    <div id="main">
+
+
+    <table>
+    
+    <!--PICS 1-2 -->
+      <tr>
+        <td>
+          <div class="xsit_pic" id="pic1">
+          <img src="stimuli/images/Novel6.jpg" 
+          width="200" border="5px solid white"></div>
+        </td>
+
+        <td></td>
+
+        <td>
+          <div class="xsit_pic" id="pic2">
+          <img src="stimuli/images/Novel13.jpg" 
+          width="200" border="5px solid white"></div>  
+        </td> 
+      </tr>
+
+                                    
+      <tr>
+        <td></td>
+
+        <td>
+
+      <!-- Video -->
+          <div id="video_player" align="center">
+            
+            <video id="video1" width="300" height="250">
+              <source src="stimuli/videos/silentLDlong.mov" type="video/mp4">
+              <source src="stimuli/videos/silentLDlong.ogg" type="video/ogg">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </td>
+
+        <td></td>
+
+      </tr>
+
+         <!--  <div id="start_button">
+            <center>
+            <button type="button" onClick="video.play()">Start Trial</button>
+            </center>
+          </div> -->
+        
+         <!--PICS 3-4 -->
+      <tr>
+        <td>
+          <div class="xsit_pic" id="pic3">
+          <img src="stimuli/images/Novel6.jpg" 
+          width="200" border="5px solid white"></div>
+        </td>
+
+         <td></td>
+             
+        <td>                        
+          <div class="xsit_pic" id="pic4">
+          <img src="stimuli/images/Novel13.jpg" 
+          width="200" border="5px solid white"></div>
+        </td>
+      </tr>
+    </table>
+
+
+    </div>
+
+    <div id="sidebar">
+
+
+        <p>Progress:</p>
+        <div id="progressbar" style="width: 300px;"></div>
+        
+      <div id="text1">
+        <p>Click on the picture that the word goes with <br>
+        (If you are not sure, take your best guess.) <br><br> Recall that
+        there is a short delay between the word and when your response will
+        be accepted.</p>
+      </div>
+
+    </div>
+    
+      <audio id="sound_player">
+        <source src="stimuli/sounds/squirrel.mp3" type="audio/mp3">
+      </audio>   
+
+    </div>
+    
+    <div class="slide" id="blankSlide"> </div>
+        
+        <div class="slide" id="finished">
+            You're finished - thanks for participating! Submitting to 
+            Mechanical Turk...
+        </div>
+
+        <!-- DOT GAME SLIDE-->
+        <div class="slide" id="training"></div>
+
+    <!--Q&A Slide-->
+    <div class="slide" id="qanda">
+      <center>
+                <p class="block-text">Please answer these questions to complete 
+                this HIT</p>
+          <br>
+          <p>What do you think this experiment is about?</p>
+          <textarea id="about" rows="7" cols="70" resize="none">
+          </textarea><br>
+          <br>
+          <br>
+          <p>Do you have any comments? Is anything broken?</p>
+          <textarea id="broken" rows="7" cols="70" resize="none">
+          </textarea><br>
+          <br>
+                
+               <button type="button" onClick="this.blur(); experiment.end()">
+               Finish</button></center>
+        </div>
+        
+        <script src="soc_xsit_4_looks_ipad.js"></script>
+    </body>
+</html>
