@@ -447,6 +447,11 @@ var experiment = {
         document.getElementById(dotID).src = "images/dots/x.jpg";
         xcounter++
         if (xcounter === dotCount) {
+             training.removeChild(dot_1)
+             training.removeChild(dot_2)
+             training.removeChild(dot_3)
+             training.removeChild(dot_4)
+             training.removeChild(dot_5)
           setTimeout(function () {
             $("#training").hide();
           //  document.body.style.background = "black";
