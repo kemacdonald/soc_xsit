@@ -385,6 +385,7 @@ var experiment = {
   /*shows a blank screen for 500 ms*/
   blank: function() {
     showSlide("blankSlide");
+    console.log("Example item is " + exampleItem);
     if(experiment.exampleItem == numExamples){
       experiment.exampleItem = numExamples+1;
       setTimeout(showSlide("instructions3"),500);

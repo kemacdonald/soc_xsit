@@ -340,11 +340,11 @@ var experiment = {
   trialImages: allImgs,
   exampleImages: exampleImagesSingle,
   exampleImages2: exampleImages2Double,
+  exampleFace: 0,
   exampleFaces: exampleFaces[0], // chooses which example faces to show
-
+  faceCenter: 'straightahead', // eyes center for example/same/switch trials
 
  // faceVids: testFaces[testFaceIdx], //directed looks for exposure trials
-  // faceCenter: 'straightahead', // eyes center for example/same/switch trials
 
 
   /*The function that gets called when the sequence is finished. */
@@ -366,9 +366,9 @@ var experiment = {
 
   condition: function() {
     showSlide("condition")
-    console.log("test");
     $(".conditionButton").one("touchstart", function(event) {
       testCondition = $(this).attr('id')
+      console.log(testCondition);
     })
 
   },
@@ -494,6 +494,7 @@ var experiment = {
     if(Math.floor(experiment.exampleItem) < numExamples) { 
         sound = experiment.exampleSounds[Math.floor(experiment.exampleItem)]
         face_vid = experiment.exampleFaces[experiment.exampleFace];
+        console.log("Face vid is " + face_vid);
         for(i = 0; i < imgsPerSlide; i++) { //update the images shown
             next_imgs[i] = experiment.exampleImages.shift();
         }
@@ -553,7 +554,7 @@ var experiment = {
   videoElement = document.getElementById("video1");
 
    if (videoElement.canPlayType("video/mp4")) {
-          $("#video1")[0].src = "stimuli/videos/"+face_vid+".mov";           
+          $("#video1")[0].src = "stimuli/videos/"+face_vid+".mov";          
        }
        else if (videoElement.canPlayType("video/ogg")) {
             $("#video1")[0].src = "stimuli/videos/"+face_vid+".ogv";          
