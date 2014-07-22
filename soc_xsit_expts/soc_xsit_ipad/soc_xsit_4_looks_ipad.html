@@ -13,6 +13,7 @@
     
     <body>
 
+
      <!--INSTRUCTIONS SLIDE-->
         <div class="slide" id="instructions">
             <img src="images/stanford.png" alt="Stanford University">
@@ -22,13 +23,22 @@
         <b>Please ensure that your volume is loud enough that you will 
         be able to hear the words.</b></p><br><br>
                 
-                <button type="button" onClick="this.blur(); experiment.next()"><font size="24">Start</font></button>
+                <button type="button" onClick="this.blur(); experiment.condition()"><font size="24">Start</font></button>
         <p id="pleaseWait"></p>
-                <!-- experiment.next()"><font size="24">Dots</font></button> -->
-
         </div> 
   
-  
+  <!--CONDITIONS SLIDE-->
+      <div class="slide" id="condition">
+      <br><br><br><br><br><br><br>
+       <center>
+        <button type="button" class="conditionButton" id="No-social" onClick="this.blur(); experiment.next()"><font size="24">No-social</font></button>
+      </center>
+      <center>
+        <button type="button" class="conditionButton" id="Social" onClick="this.blur(); experiment.next()"><font size="24">Social</font></button>
+      </center>
+    </div>
+
+
     <!--DOTS SLIDE-->
     <div class="slide" id="training"></div>
 

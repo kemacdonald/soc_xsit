@@ -230,118 +230,71 @@ trim = function(item) {
 };
 
 // Variable assignment for use later in experiment
-var numImgsConds = [2, 4, 6];
-var imgsPerSlide = numImgsConds[0]; // 4 images per slide 
-var numBlocks = 8;
+
+var imgsPerSlide = 2;
+var numBlocks = 4;
 var numOccurs = 2;
 
-var numUsedImgs = ((imgsPerSlide*numOccurs)-1)*numBlocks;
+var numUsedImgs = ((imgsPerSlide*numOccurs)-1)*numBlocks; //((imgsPerSlide*numOccurs)-1)*numBlocks;
 var numUsedSounds = numBlocks;
 
-var numImgs = 140;
-var numSounds = 87;
+var numImgs = 28;
+var numSounds = 6;
 
-var allImgs = range(1,numImgs);
-    allImgs = shuffle(allImgs);
-    allImgs = allImgs.slice(0,numUsedImgs); // slice() returns selected elements as a new array object.
+allImgs = range(1,numImgs);
+allImgs = shuffle(allImgs);
+allImgs = allImgs.slice(0,numUsedImgs);
 
-var blank = blank;
-var allSounds = range(1,numSounds);
-    allSounds = shuffle(allSounds);
-    allSounds = allSounds.slice(0,numUsedSounds);
+allSounds = range(1,numSounds);
+allSounds = shuffle(allSounds);
+allSounds = allSounds.slice(0,numUsedSounds);
 
-// an array to generate the order that should be used
-var allOrders = [[1, 2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 1, 2, 1, 2, 1]];
+allImgs = allImgs.map(function(elem){return 'Novel'+elem;});
+$(allImgs.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
+
+var allTypes = [[1, 1, 2, 2]]; //only same first
+
 //SamePos for One Kind of Trial (Switch or Keep)
-var allSamePosOne = [[1, 1, 0, 0], [1, 0, 1, 0], [1, 0, 0, 1],
-                     [0, 1, 1, 0], [0, 1, 0, 1], [0, 0, 1, 1]]; 
-var numExamples = 2; // Number of examples 
-var startTime = 0; // Starts the clock for recording RT 
+var allSamePosOne = [[1, 0], [0, 1]];
 
-/* Call Maker getter to get cond variables
- * Takes number and counts for each condition
- * Returns a condition number (for this experiment 1-3 
- * for the 3 different gaze length conditions)
- */
+var allSpacings = [[1, 1, 2, 2, 3, 3, 4, 4],
+                   [1, 2, 1, 2, 3, 4, 3, 4],
+                   [1, 2, 3, 4, 1, 2, 3, 4]];
 
-try {
-    var filename = "KM_soc_xsit_4_looks_2";
-    var condCounts = "1,50;2,50";  
-    var xmlHttp = null;
-    xmlHttp = new XMLHttpRequest();
-    xmlHttp.open( "GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
-    xmlHttp.send( null );
-    var cond = xmlHttp.responseText; // For actual experimental runs
-    //var cond = random(1,3); // for testing experiment
-} catch (e) {
-    var cond = 1;
-}
 
-var cond = "1";
+var numExamples = 2;
+var startTime = 0;
 
-/* code for condition randomization. This includes a replication of social-short and a new condition: no-social-short */
-switch (cond) {
-        case "1": 
-            cond_name = "Short";
-            social_cond = "Social";
-            int_cond = "Zero";
-            exampleFaceIdx = 0;
-            testFaceIdx = 0;
-            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8] 
-            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
-            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
-            break;
-        case "2": 
-            cond_name = "Short";
-            social_cond = "No-social";
-            int_cond = "Zero";
-            exampleFaceIdx = 0;
-            testFaceIdx = 1;
-            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8] 
-            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
-            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
-            break;
-        default:
-};
-        
-/* Randomize trial order */
-var trialOrder = random();       // same/switch order 
-var samePosOrderOne = random(6); // keep/move order
-var samePosOrderTwo = random(6); // keep/move order
+var trialOrder = 0;//random();
+var samePosOrderOne = random(2);
+var samePosOrderTwo = random(2);
+var cont = 0;
 
-//initialize progress bar
-$("#progressbar").progressbar();
-$("#progressbar").progressbar( "option", "max", numBlocks*numOccurs + 
-    numOccurs*numExamples);
+var audioSprite = $("#sound_player")[0];
+var handler;
 
-exampleImages = [['squirrel','chair',
-                  'squirrel','toaster',
-                  'tomato','whistle',
-                  'sweater','tomato'],
-                 ['squirrel','chair','tie','trumpet',
-                  'squirrel','toaster','truck','crown',
-                  'whistle','tomato','tree','spoon',
-                  'sweater','oven','tomato','well'],
-                 ['chair','tie','trumpet','squirrel',' basket', 'door',
-                  'toaster','truck', 'crown','squirrel','ruler', 'grapes', 
-                  'helicopter', 'lion','whistle','tomato','tree','spoon',
-                  'plug', 'shoe', 'guitar', 'kettle', 'sweater','oven']],
+exampleImagesSingle = ['shoe',
+                  'shoe','toaster',
+                  'cup',
+                  'sweater','cup'],
 
-exampleFaces = [['silentLUshort', 'silentLUshort', 'silentRUshort', 'silentLDshort'],
-                ['silentLUmedium', 'silentLUmedium', 'silentRUmedium', 'silentLDmedium'],
-                ['silentLUlong', 'silentLUlong', 'silentRUlong', 'silentLDlong']],
+
+exampleImages2Double = ['lion','flower',
+          'tomato','flower',
+          'scissors','truck',
+          'truck','tie'],
+
+$(exampleImagesSingle.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
+$(exampleImages2Double.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
+
+exampleFaces = [['silentLUshort', 'silentLUshort', 'silentRUshort', 'silentLDshort']],
 
 testFaces = [['silentLDshort', 'silentLUshort', 'silentRDshort', 'silentRUshort'],
              ['silentLDmedium', 'silentLUmedium', 'silentRDmedium', 'silentRUmedium'],
              ['silentLDlong', 'silentLUlong', 'silentRDlong', 'silentRUlong']],
 
-//make sure all images are loaded at runtime
-allImgs = allImgs.map(function(elem){return 'Novel'+elem;});
-allImgs = allImgs.concat(exampleImages[1]);
-$(allImgs.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
-
 // flatten the faces array
-var allFaces = testFaces.reduce(function(a, b) {
+allFaces = testFaces.reduce(function(a, b) {
   return a.concat(b);
 });
 // preload movies into cache
@@ -367,54 +320,38 @@ showSlide("instructions"); //Show instruction slide
 // This is where we define the experiment variable, which tracks all the information we want to know about the experiment.
 
 var experiment = {
-  condition: cond_name,
-  trialOrder: trialOrder,   
-  delay_condition: int_cond,
-  numReferents: imgsPerSlide,
-  trials: delay, // controls the number of intervening trials 
-  social_cond: social_cond,
-  test_trials: test_trials,
-  exposure_trials: exposure_trials,
-  trialTypes: allOrders[trialOrder], // allOrders: two arrays, alternating 1 and 2
-  samePosOrderOne: samePosOrderOne, 
+  cond: 'soc_xsit_2_0',
+  trialOrder: trialOrder,
+  trials: allSpacings[0],
+  trialTypes: allTypes[trialOrder],
+  samePosOrderOne: samePosOrderOne,
   samePosOrderTwo: samePosOrderTwo,
-  samePos: [allSamePosOne[samePosOrderOne][0], allSamePosOne[samePosOrderTwo][0],
-            allSamePosOne[samePosOrderOne][1], allSamePosOne[samePosOrderTwo][1],
-            allSamePosOne[samePosOrderOne][2], allSamePosOne[samePosOrderTwo][2],
-            allSamePosOne[samePosOrderOne][3], allSamePosOne[samePosOrderTwo][3]],
+  samePos: [allSamePosOne[samePosOrderOne][0], allSamePosOne[samePosOrderOne][1],
+            allSamePosOne[samePosOrderTwo][0], allSamePosOne[samePosOrderTwo][1]],
   data: [],
-  about: "",
-  broken: "",
-  keepPic: ['','','','','','','',''],
-  keepIdx: [0, 0, 0, 0, 0, 0, 0, 0],
+  keepPic: ['','','',''],
+  keepIdx: [0, 0, 0, 0],
   item: 0,
   exampleItem: 0,
+  exampleItem2: 80,
   trialSounds: allSounds.map(function(elem){return 'Sound'+elem;}),
-  exampleSounds: ['squirrel','tomato'],
-  exampleFace: 0,
-  exampleFaces: exampleFaces[exampleFaceIdx], // chooses which example faces to show
+  exampleSounds: ['shoe','cup'],
+  exampleSounds2: ['flower','truck'],
   trialImages: allImgs,
-  exampleImages: exampleImages[1], // chooses the set of example images to display on the example slide
-  faceVids: testFaces[testFaceIdx], //directed looks for exposure trials
-  faceCenter: 'straightahead', // eyes center for example/same/switch trials
-  browser:"",
+  exampleImages: exampleImagesSingle,
+  exampleImages2: exampleImages2Double,
+  exampleFaces: exampleFaces[0], // chooses which example faces to show
+
+
+ // faceVids: testFaces[testFaceIdx], //directed looks for exposure trials
+  // faceCenter: 'straightahead', // eyes center for example/same/switch trials
+
 
   /*The function that gets called when the sequence is finished. */
   end: function() {
     experiment.about = $('#about')[0].value;
     experiment.broken = $('#broken')[0].value;
     showSlide("finished"); //Show the finish slide.
-    
-    setTimeout(function() { 
-        
-        //Decrement maker - getter	
-            var xmlHttp = null;
-			xmlHttp = new XMLHttpRequest()
-			xmlHttp.open("GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/decrementer.php?filename=" + filename + "&to_decrement=" + cond, false);
-			xmlHttp.send(null)
-        
-            turk.submit(experiment)
-        }, 1500);
     },
 
   /*shows a blank screen for 500 ms*/
@@ -427,8 +364,16 @@ var experiment = {
         
   },
 
+  condition: function() {
+    showSlide("condition")
+    console.log("test");
+    $(".conditionButton").one("touchstart", function(event) {
+      testCondition = $(this).attr('id')
+    })
+
+  },
+
    training: function() {
-    console.log("Hello");
     var xcounter = 0;
     var dotCount = 5;
 
@@ -463,7 +408,6 @@ var experiment = {
       });    
   },
 
-
   /* lets the participant select a picture and records which one was chosen */
   makeChoice: function(event) {
     $(".xsit_pic").unbind("click");
@@ -493,7 +437,7 @@ var experiment = {
       faceLookIdx = -1; // if center, then face index is -1 
     } 
     else if(experiment.keepPic[experiment.item].length == 0 & 
-    	social_cond == "Social") {
+    	testCondition == "Social") {
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
     } else {
@@ -568,7 +512,7 @@ var experiment = {
         sound = experiment.trialSounds[experiment.item];
     
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
-      if(experiment.keepPic[experiment.item].length == 0 & social_cond == "Social") {
+      if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
         faceLook = random(4);
         face_vid = experiment.faceVids[faceLook];
       } else {
