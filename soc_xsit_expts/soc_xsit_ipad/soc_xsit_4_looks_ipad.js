@@ -372,7 +372,7 @@ var experiment = {
   condition: function() {
     showSlide("condition")
     $(".conditionButton").one("touchstart", function(event) {
-      testCondition = $(this).attr('id')
+      var testCondition = $(this).attr('id');
     })
   },
 
@@ -492,7 +492,8 @@ var experiment = {
 
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
-    
+    console.log("Test condition is " + testCondition);
+
     console.log("Item is: " + experiment.item);
     var i, next_imgs = [],sound, face_vid, blank;
 
@@ -527,7 +528,10 @@ var experiment = {
       } else {
         face_vid = experiment.faceCenter;
           }
-      
+        
+        console.log("Face vid is " + face_vid);
+
+
         var idx;
         
         //this was a continuation
