@@ -273,10 +273,18 @@ var cont = 0;
 var audioSprite = $("#sound_player")[0];
 var handler;
 
-exampleImagesSingle = ['shoe',
-                  'shoe','toaster',
-                  'cup',
-                  'sweater','cup'],
+var testFaceIdx;
+var testCondition;
+//if(testCondition == "Social"){
+//  testFaceIdx = 0;
+//  } else{
+//   testFaceIdx = 1;
+//}
+
+//exampleImagesSingle = ['shoe',
+//                  'shoe','toaster',
+//                  'cup',
+//                  'sweater','cup'],
 
 
 exampleImages2Double = ['lion','flower',
@@ -284,14 +292,12 @@ exampleImages2Double = ['lion','flower',
           'scissors','truck',
           'truck','tie'],
 
-$(exampleImagesSingle.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
+//$(exampleImagesSingle.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 $(exampleImages2Double.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 
-exampleFaces = [['silentLUshort', 'silentLUshort', 'silentRUshort', 'silentLDshort']],
+exampleFaces = [['silentRDlongnew', 'silentRDlongnew', 'silentRDlongnew', 'silentLDlongnew']],
 
-testFaces = [['silentLDshort', 'silentLUshort', 'silentRDshort', 'silentRUshort'],
-             ['silentLDmedium', 'silentLUmedium', 'silentRDmedium', 'silentRUmedium'],
-             ['silentLDlong', 'silentLUlong', 'silentRDlong', 'silentRUlong']],
+testFaces = [['silentRDlongnew', 'silentLDlongnew']],
 
 // flatten the faces array
 allFaces = testFaces.reduce(function(a, b) {
@@ -338,13 +344,12 @@ var experiment = {
   exampleSounds: ['shoe','cup'],
   exampleSounds2: ['flower','truck'],
   trialImages: allImgs,
-  exampleImages: exampleImagesSingle,
+  //exampleImages: exampleImagesSingle,
   exampleImages2: exampleImages2Double,
   exampleFace: 0,
   exampleFaces: exampleFaces[0], // chooses which example faces to show
   faceCenter: 'straightahead', // eyes center for example/same/switch trials
-
- // faceVids: testFaces[testFaceIdx], //directed looks for exposure trials
+  faceVids: ['silentRDlongnew', 'silentLDlongnew'], //directed looks for exposure trials
 
 
   /*The function that gets called when the sequence is finished. */
@@ -368,9 +373,7 @@ var experiment = {
     showSlide("condition")
     $(".conditionButton").one("touchstart", function(event) {
       testCondition = $(this).attr('id')
-      console.log(testCondition);
     })
-
   },
 
    training: function() {
@@ -380,8 +383,8 @@ var experiment = {
     var dotx = [];
     var doty = [];
 
-    //audioSprite.play();
-    //audioSprite.pause();
+    audioSprite.play();
+    audioSprite.pause();
 
     for (i = 0; i < dotCount; i++) {
       createDot(dotx, doty, i);
@@ -436,8 +439,8 @@ var experiment = {
       face_vid = experiment.faceCenter; 
       faceLookIdx = -1; // if center, then face index is -1 
     } 
-    else if(experiment.keepPic[experiment.item].length == 0 & 
-    	testCondition == "Social") {
+    //put in if statement: experiment.keepPic[experiment.item].length == 0 
+    else if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
     } else {
@@ -446,6 +449,8 @@ var experiment = {
     }
     
     /* Same/Switch trial */
+
+
     if(Math.floor(experiment.exampleItem) > numExamples &
         experiment.trialTypes[experiment.item] != 1){ 
       var all_pos = range(0,imgsPerSlide-1);
@@ -488,21 +493,22 @@ var experiment = {
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
     
+    console.log("Item is: " + experiment.item);
     var i, next_imgs = [],sound, face_vid, blank;
 
     //show example trials
     if(Math.floor(experiment.exampleItem) < numExamples) { 
-        sound = experiment.exampleSounds[Math.floor(experiment.exampleItem)]
+        sound = experiment.exampleSounds2[Math.floor(experiment.exampleItem)]
         face_vid = experiment.exampleFaces[experiment.exampleFace];
-        console.log("Face vid is " + face_vid);
         for(i = 0; i < imgsPerSlide; i++) { //update the images shown
-            next_imgs[i] = experiment.exampleImages.shift();
+            next_imgs[i] = experiment.exampleImages2.shift();
         }
         experiment.exampleItem = experiment.exampleItem + (1/numOccurs);
         experiment.exampleFace = experiment.exampleFace + 1;
     } else {
       //Get the current trial: shift() removes the first element of the array 
       //and returns it.
+
         trial = experiment.trials.shift();
     
       //If the current trial is undefined, it means the trials array was 
@@ -511,10 +517,12 @@ var experiment = {
       
         experiment.item = trial-1;
         sound = experiment.trialSounds[experiment.item];
+
+        console.log("Experiment keep pic is: " + experiment.keepPic[0]);
     
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
       if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
-        faceLook = random(4);
+        faceLook = random(2);
         face_vid = experiment.faceVids[faceLook];
       } else {
         face_vid = experiment.faceCenter;
@@ -564,15 +572,31 @@ var experiment = {
        }
 
     $("#video1")[0].load();
-  
+
+  if(experiment.keepPic[experiment.item].length != 0){
+    sound=sound+'_find';
+  }
+  else{
+    if(Math.floor(experiment.exampleItem2) <= numExamples)
+      sound=sound+'_one';
+    else
+      sound=sound+'_this';
+
+    if(Math.floor(experiment.exampleItem) > numExamples & Math.floor(experiment.exampleItem2) >=numExamples){
+      console.log("Pocky");
+      var idx = random(0, experiment.trialTypes[experiment.item]-1);
+      experiment.keepIdx[experiment.item] = idx;
+      experiment.keepPic[experiment.item] = next_imgs[idx];
+    }
+  }
 
   //get the appropriate sound
-    if(BrowserDetect.browser == "Chrome" ||
-        BrowserDetect.browser == "Firefox"){
-      $("#sound_player")[0].src = "stimuli/sounds/"+sound+".ogg";
-    } else {
-      $("#sound_player")[0].src = "stimuli/sounds/"+sound+".mp3";
-    }
+  //  if(BrowserDetect.browser == "Chrome" ||
+  //      BrowserDetect.browser == "Firefox"){
+  //    $("#sound_player")[0].src = "stimuli/sounds/"+sound+".ogg";
+  //  } else {
+  //    $("#sound_player")[0].src = "stimuli/sounds/"+sound+".mp3";
+  //  }
              
    //blank out all borders so no item is pre-selected
       $(".xsit_pic").each(function(){this.children[0].style.border = '5px solid white';});
@@ -580,9 +604,9 @@ var experiment = {
     //Re-Display the experiment slide
       showSlide("stage");
 
+
     //Wait, Play eye gaze video 
     setTimeout(function(){
-      //myVideo.play();
       $("#video1")[0].play();
     }, 1300)
 
@@ -590,11 +614,24 @@ var experiment = {
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 5300)
+    }, 200) //used to be 5300
 
     //Wait, Play a sound
       setTimeout(function(){
-        $("#sound_player")[0].play();      
-      }, 2000);
+        audioSprite.removeEventListener('timeupdate', handler);
+        audioSprite.currentTime = spriteData[sound].start;
+        audioSprite.play();
+
+        handler = function(){
+          if(this.currentTime >= spriteData[sound].start + spriteData[sound].length){
+              this.pause();
+          }
+        };
+        audioSprite.addEventListener('timeupdate', handler, false);
+
+
+
+        //$("#sound_player")[0].play();      
+      }, 200); //used to be 2000
     }
   };
