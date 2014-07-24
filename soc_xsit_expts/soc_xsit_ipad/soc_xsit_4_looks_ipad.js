@@ -217,11 +217,12 @@ $.fn.preload = function() {
 /* loads all of the videos into the cache so they don't need to be individually
  * loaded at time of presentation. Ensures that experiment time happens as intended
  */
-$.fn.preloadVids = function() {
+
+/*$.fn.preloadVids = function() {
   this.each(function(){
         $('<video/>')[0].src = this;
     });
-};
+};*/
 
 /* strips off the directory and suffix of image/sound/etc file names */
 trim = function(item) {
@@ -269,23 +270,12 @@ var trialOrder = 0;//random();
 var samePosOrderOne = random(2);
 var samePosOrderTwo = random(2);
 var cont = 0;
+var testCondition;
 
 var audioSprite = $("#sound_player")[0];
 var handler;
 
 var testFaceIdx;
-var testCondition;
-//if(testCondition == "Social"){
-//  testFaceIdx = 0;
-//  } else{
-//   testFaceIdx = 1;
-//}
-
-//exampleImagesSingle = ['shoe',
-//                  'shoe','toaster',
-//                  'cup',
-//                  'sweater','cup'],
-
 
 exampleImages2Double = ['lion','flower',
           'tomato','flower',
@@ -295,31 +285,23 @@ exampleImages2Double = ['lion','flower',
 //$(exampleImagesSingle.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 $(exampleImages2Double.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 
-exampleFaces = [['silentRDlongnew', 'silentRDlongnew', 'silentRDlongnew', 'silentLDlongnew']],
+exampleFaces = [['RDkids', 'RDkids', 'RDkids', 'LDkids']],
+testFaces = ['RDkids', 'LDkids'],
 
-testFaces = [['silentRDlongnew', 'silentLDlongnew']],
+// preload face movies into cache
 
-// flatten the faces array
-allFaces = testFaces.reduce(function(a, b) {
-  return a.concat(b);
-});
-// preload movies into cache
-videoElement = document.getElementById("video1");
+/*videoElement = document.getElementById("video1");
 
 if (videoElement.canPlayType("video/mp4")) {
-    $(allFaces.map(function(elem){return 'stimuli/videos/'+elem+'.mov';l})).preloadVids();
+    $(testFaces.map(function(elem){return 'stimuli/videos/'+elem+'.mov';l})).preloadVids();
        }
        else if (videoElement.canPlayType("video/ogg")) {
-          $(allFaces.map(function(elem){return 'stimuli/videos/'+elem+'.ogv';l})).preloadVids();
+          $(testFaces.map(function(elem){return 'stimuli/videos/'+elem+'.ogv';l})).preloadVids();
        }
        else {
            window.alert("Can't play anything");
        }
-
-if (BrowserDetect.browser != 'Chrome' && BrowserDetect.browser != 'Safari' && BrowserDetect.browser != 'Firefox') {
-    alert ("Warning: We have not tested this HIT with your browser. We recommend Chrome, Firefox or Safari");
-    $("#startButton").attr("disabled", "disabled");
-}
+*/
 
 showSlide("instructions"); //Show instruction slide
 
@@ -327,6 +309,7 @@ showSlide("instructions"); //Show instruction slide
 
 var experiment = {
   cond: 'soc_xsit_2_0',
+  social_cond: '',
   trialOrder: trialOrder,
   trials: allSpacings[0],
   trialTypes: allTypes[trialOrder],
@@ -348,9 +331,8 @@ var experiment = {
   exampleImages2: exampleImages2Double,
   exampleFace: 0,
   exampleFaces: exampleFaces[0], // chooses which example faces to show
-  faceCenter: 'straightahead', // eyes center for example/same/switch trials
-  faceVids: ['silentRDlongnew', 'silentLDlongnew'], //directed looks for exposure trials
-
+  faceCenter: 'straightaheadkids', // eyes center for example/same/switch trials
+  faceVids: testFaces, //directed looks for exposure trials
 
   /*The function that gets called when the sequence is finished. */
   end: function() {
@@ -371,10 +353,11 @@ var experiment = {
 
   condition: function() {
     showSlide("condition")
-    $(".conditionButton").one("touchstart", function(event) {
-      var testCondition = $(this).attr('id');
+    $(".conditionButton").click(function() {
+          testCondition = this.id;
     })
   },
+
 
    training: function() {
     var xcounter = 0;
@@ -417,7 +400,7 @@ var experiment = {
     var endTime = (new Date()).getTime();
     
     //visually indicates the participant's choice
-    event.target.style.border = '5px dotted red';
+    event.target.style.border = '5px solid green';
     img = trim(event.target.src);
     
     //find the screen position of the clicked object
@@ -492,9 +475,8 @@ var experiment = {
 
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
-    console.log("Test condition is " + testCondition);
-
     console.log("Item is: " + experiment.item);
+
     var i, next_imgs = [],sound, face_vid, blank;
 
     //show example trials
