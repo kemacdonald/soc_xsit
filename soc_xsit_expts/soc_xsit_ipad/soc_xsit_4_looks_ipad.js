@@ -354,6 +354,7 @@ var experiment = {
     showSlide("condition")
     $(".conditionButton").click(function() {
           testCondition = this.id;
+
     })
   },
 
@@ -410,6 +411,7 @@ var experiment = {
     img = trim(event.target.src);
 
     // chimes 
+
     $("#reward_player")[0].play();
     
     //find the screen position of the clicked object
@@ -432,7 +434,7 @@ var experiment = {
       faceLookIdx = -1; // if center, then face index is -1 
     } 
     //put in if statement: experiment.keepPic[experiment.item].length == 0 
-    else if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
+    else if(experiment.keepPic[experiment.item].length == 0 & experiment.social_cond == "Social") {
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
     } else {
@@ -484,7 +486,6 @@ var experiment = {
 
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
-    console.log("Item is: " + experiment.item);
 
     var i, next_imgs = [],sound, face_vid, blank;
 
@@ -509,11 +510,9 @@ var experiment = {
       
         experiment.item = trial-1;
         sound = experiment.trialSounds[experiment.item];
-
-        console.log("Experiment keep pic is: " + experiment.keepPic[0]);
     
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
-      if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
+      if(experiment.keepPic[experiment.item].length == 0 & experiment.social_cond == "Social") {
         faceLook = random(2);
         face_vid = experiment.faceVids[faceLook];
       } else {
@@ -578,7 +577,6 @@ var experiment = {
       sound=sound+'_this';
 
     if(Math.floor(experiment.exampleItem) > numExamples & Math.floor(experiment.exampleItem2) >=numExamples){
-      console.log("Pocky");
       var idx = random(0, experiment.trialTypes[experiment.item]-1);
       experiment.keepIdx[experiment.item] = idx;
       experiment.keepPic[experiment.item] = next_imgs[idx];
