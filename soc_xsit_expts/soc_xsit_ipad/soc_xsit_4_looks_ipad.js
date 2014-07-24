@@ -336,7 +336,6 @@ var experiment = {
 
   /*The function that gets called when the sequence is finished. */
   end: function() {
-    experiment.about = $('#about')[0].value;
     experiment.broken = $('#broken')[0].value;
     showSlide("finished"); //Show the finish slide.
     },
@@ -351,10 +350,17 @@ var experiment = {
         
   },
 
-  condition: function() {
+  conditionClick: function() {
     showSlide("condition")
     $(".conditionButton").click(function() {
           testCondition = this.id;
+    })
+  },
+
+  conditionTouch: function() {
+    showSlide("condition")
+    $(".conditionButton").one("touchstart", function(event) {
+          testCondition = $(this).attr('id')
     })
   },
 
@@ -402,6 +408,9 @@ var experiment = {
     //visually indicates the participant's choice
     event.target.style.border = '5px solid green';
     img = trim(event.target.src);
+
+    // chimes 
+    $("#reward_player")[0].play();
     
     //find the screen position of the clicked object
     var i,tmpImg;

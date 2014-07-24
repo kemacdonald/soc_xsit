@@ -32,7 +32,7 @@
         <b>Please ensure that the volume is loud enough that you will 
         be able to hear the words.</b></p><br><br>
                 
-                <button type="button" onClick="this.blur(); experiment.condition()"><font size="24">Start</font></button>
+                <button type="button" onClick="this.blur(); experiment.conditionTouch()"><font size="24">Start</font></button>
         <p id="pleaseWait"></p>
         </div> 
   
@@ -102,14 +102,18 @@
         <source src="stimuli/sounds/audio_sprite.mp3" type="audio/mp3">
       </audio>  
 
+      <!-- Chime player -->
+      <audio id="reward_player">
+        <source src="stimuli/sounds/chimes_quiet.mp3" type="audio/mp3">
+      </audio>  
+
     </div>
 
     
     <div class="slide" id="blankSlide"> </div>
         
         <div class="slide" id="finished">
-            You're finished - thanks for participating! Submitting to 
-            Mechanical Turk...
+            <p> Yay!! You're finished </p>
         </div>
 
     <!--Q&A Slide-->
@@ -117,13 +121,8 @@
       <center>
                 <p class="block-text">Please answer these questions to complete 
                 this HIT</p>
-          <br>
-          <p>What do you think this experiment is about?</p>
-          <textarea id="about" rows="7" cols="70" resize="none">
-          </textarea><br>
-          <br>
-          <br>
-          <p>Do you have any comments? Is anything broken?</p>
+          
+          <p>Do you have any comments? </p>
           <textarea id="broken" rows="7" cols="70" resize="none">
           </textarea><br>
           <br>
