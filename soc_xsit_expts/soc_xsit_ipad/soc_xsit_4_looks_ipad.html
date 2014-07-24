@@ -31,7 +31,7 @@
       <div class="slide" id="condition">
       <br><br><br><br><br><br><br>
        <center>
-        <button type="button" class="conditionButton" id="No-social" onClick="this.blur(); experiment.next()"><font size="24">No-social</font></button>
+        <button type="button" class="conditionButton" id="No-social" onClick="this.blur(); $('#reward_player')[0].load(); experiment.next()"><font size="24">No-social</font></button>
       </center>
       <center>
         <button type="button" class="conditionButton" id="Social" onClick="this.blur(); experiment.next()"><font size="24">Social</font></button>
@@ -79,6 +79,10 @@
               Your browser does not support the video tag.
             </video>
           </div>
+
+          <audio id="reward_player">
+            <source src="stimuli/sounds/chimes_quiet.mp3" type="audio/mp3">
+          </audio>
 
       <table align="center" cellpadding="30">
                         <tr></tr>

@@ -373,12 +373,16 @@ var experiment = {
   condition: function() {
     showSlide("condition")
     $(".conditionButton").one("touchstart", function(event) {
+
       var testCondition = $(this).attr('id')
       if(testCondition == "Social"){
         experiment.social_cond = "Social";
       } else{
         experiment.social_cond = "No-social";
       }
+
+      var testCondition = $(this).attr('id');
+
     })
   },
 
@@ -425,6 +429,9 @@ var experiment = {
     //visually indicates the participant's choice
     event.target.style.border = '5px dotted red';
     img = trim(event.target.src);
+
+    //plays chime sound
+    $("#reward_player")[0].play();
     
     //find the screen position of the clicked object
     var i,tmpImg;
@@ -498,7 +505,6 @@ var experiment = {
 
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
-    
     var i, next_imgs = [],sound, face_vid, blank;
 
     //show example trials
@@ -530,7 +536,10 @@ var experiment = {
       } else {
         face_vid = experiment.faceCenter;
           }
-      
+        
+        console.log("Face vid is " + face_vid);
+
+
         var idx;
         
         //this was a continuation

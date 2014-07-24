@@ -94,7 +94,8 @@ var experiment = {
   exampleItem: 0,
   exampleItem2: 80,
   trialSounds: allSounds.map(function(elem){return 'Sound'+elem;}),
-  exampleVids: ['silentLDlong', 'slendRDlong'],
+  exampleVids: ['LDkids', 'RDkids'],
+  testVid: 'straightaheadkids',
   exampleSounds: ['shoe','cup'],
   exampleSounds2: ['flower','truck'],
   trialImages: allImgs,
@@ -226,7 +227,7 @@ var experiment = {
 	/*The work horse of the sequence: what to do on every trial.*/
 	next: function() {
 		
-		var i,next_imgs = [],sound;
+		var i,next_imgs = [],sound,video;
 		if(Math.floor(experiment.exampleItem) < numExamples){
 			sound = 
 				experiment.exampleSounds[Math.floor(experiment.exampleItem)];
@@ -234,6 +235,9 @@ var experiment = {
 				next_imgs[0] = experiment.exampleImages.shift();
 				if(cont)
 					next_imgs[1] = experiment.exampleImages.shift();
+
+			video = 
+				experiment.exampleVids[Math.floor(experiment.exampleItem)];
 				
 			
 			experiment.exampleItem = experiment.exampleItem + (1/numOccurs);
@@ -357,11 +361,13 @@ var experiment = {
     			showSlide("stage2");
     	}
 
-		//Wait, Play a sound
+		//Wait, Play a sound and vid
 		setTimeout(function(){
 			audioSprite.removeEventListener('timeupdate',handler);
 			audioSprite.currentTime = spriteData[sound].start;
 			audioSprite.play();
+
+			$("#video1")[0]
 
 			//console.log(sound);
 
