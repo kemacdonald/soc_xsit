@@ -327,6 +327,7 @@ showSlide("instructions"); //Show instruction slide
 
 var experiment = {
   cond: 'soc_xsit_2_0',
+  social_cond: "",
   trialOrder: trialOrder,
   trials: allSpacings[0],
   trialTypes: allTypes[trialOrder],
@@ -348,8 +349,8 @@ var experiment = {
   exampleImages2: exampleImages2Double,
   exampleFace: 0,
   exampleFaces: exampleFaces[0], // chooses which example faces to show
-  faceCenter: 'straightahead', // eyes center for example/same/switch trials
-  faceVids: ['silentRDlongnew', 'silentLDlongnew'], //directed looks for exposure trials
+  faceCenter: 'straightaheadkids', // eyes center for example/same/switch trials
+  faceVids: ['RDkids', 'LDkids'], //directed looks for exposure trials
 
 
   /*The function that gets called when the sequence is finished. */
@@ -372,7 +373,12 @@ var experiment = {
   condition: function() {
     showSlide("condition")
     $(".conditionButton").one("touchstart", function(event) {
-      testCondition = $(this).attr('id')
+      var testCondition = $(this).attr('id')
+      if(testCondition == "Social"){
+        experiment.social_cond = "Social";
+      } else{
+        experiment.social_cond = "No-social";
+      }
     })
   },
 
@@ -440,7 +446,7 @@ var experiment = {
       faceLookIdx = -1; // if center, then face index is -1 
     } 
     //put in if statement: experiment.keepPic[experiment.item].length == 0 
-    else if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
+    else if(experiment.keepPic[experiment.item].length == 0 & experiment.social_cond == "Social") {
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
     } else {
@@ -493,7 +499,6 @@ var experiment = {
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
     
-    console.log("Item is: " + experiment.item);
     var i, next_imgs = [],sound, face_vid, blank;
 
     //show example trials
@@ -517,11 +522,9 @@ var experiment = {
       
         experiment.item = trial-1;
         sound = experiment.trialSounds[experiment.item];
-
-        console.log("Experiment keep pic is: " + experiment.keepPic[0]);
     
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
-      if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
+      if(experiment.keepPic[experiment.item].length == 0 & experiment.social_cond == "Social") {
         faceLook = random(2);
         face_vid = experiment.faceVids[faceLook];
       } else {
@@ -583,7 +586,6 @@ var experiment = {
       sound=sound+'_this';
 
     if(Math.floor(experiment.exampleItem) > numExamples & Math.floor(experiment.exampleItem2) >=numExamples){
-      console.log("Pocky");
       var idx = random(0, experiment.trialTypes[experiment.item]-1);
       experiment.keepIdx[experiment.item] = idx;
       experiment.keepPic[experiment.item] = next_imgs[idx];
