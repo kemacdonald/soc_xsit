@@ -409,7 +409,7 @@ var experiment = {
     //visually indicates the participant's choice
     event.target.style.border = '5px solid green';
     img = trim(event.target.src);
-
+ 
     // chimes 
 
     $("#reward_player")[0].play();
