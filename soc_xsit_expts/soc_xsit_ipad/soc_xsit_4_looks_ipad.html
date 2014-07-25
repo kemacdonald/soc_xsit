@@ -29,7 +29,7 @@
         <b>Please ensure that the volume is loud enough that you will 
         be able to hear the words.</b></p><br><br>
                 
-                <button type="button" onClick="this.blur(); experiment.conditionTouch()"><font size="24">Start</font></button>
+                <button type="button" onClick="this.blur(); experiment.conditionClick()"><font size="24">Start</font></button>
         <p id="pleaseWait"></p>
         </div> 
   
@@ -46,7 +46,14 @@
 
 
     <!--DOTS SLIDE-->
-    <div class="slide" id="training"></div>
+    <div class="slide" id="training">
+      
+      <!-- Chime player -->
+      <audio id="reward_player">
+        <source src="stimuli/sounds/chimes_quiet.mp3" type="audio/mp3">
+      </audio> 
+
+    </div>
 
     <!--MORE TRAINING SLIDE-->
     <div class="slide" id="instructions2">
