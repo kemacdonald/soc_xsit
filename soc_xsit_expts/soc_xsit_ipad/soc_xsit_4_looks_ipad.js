@@ -309,7 +309,7 @@ showSlide("instructions"); //Show instruction slide
 
 var experiment = {
   cond: 'soc_xsit_2_0',
-  social_cond: '',
+  social_cond: testCondition,
   trialOrder: trialOrder,
   trials: allSpacings[0],
   trialTypes: allTypes[trialOrder],
@@ -336,8 +336,36 @@ var experiment = {
 
   /*The function that gets called when the sequence is finished. */
   end: function() {
-    experiment.broken = $('#broken')[0].value;
+    experiment.comments = $('#comments')[0].value;
     showSlide("finished"); //Show the finish slide.
+    
+    experiment.browser=BrowserDetect.browser;
+  
+    videoE = document.getElementById("endvideo");
+
+   if (videoE.canPlayType("video/mp4")) {
+          $("#endvideo")[0].src = "stimuli/videos/smilenew.mov";          
+       }
+       else if (videoE.canPlayType("video/ogg")) {
+            $("#endvideo")[0].src = "stimuli/videos/smilenew.ogv";          
+       }
+       else {
+           window.alert("Can't play anything");
+       }
+    $("#endvideo")[0].load();
+
+    setTimeout(function(){
+      $("#endvideo")[0].play();
+    }, 1300)
+
+    // finish audio 
+    endaud = document.getElementById("finish_player");
+    endaud.volume=1.0;
+    $("#finish_player")[0].play();
+
+
+    // submit to turk
+    setTimeout(function() { turk.submit(experiment);}, 1500);
     },
 
   /*shows a blank screen for 500 ms*/
@@ -354,7 +382,6 @@ var experiment = {
     showSlide("condition")
     $(".conditionButton").click(function() {
           testCondition = this.id;
-
     })
   },
 
@@ -409,9 +436,8 @@ var experiment = {
     //visually indicates the participant's choice
     event.target.style.border = '5px solid green';
     img = trim(event.target.src);
- 
-    // chimes 
 
+    // chimes 
     $("#reward_player")[0].play();
     
     //find the screen position of the clicked object
@@ -434,7 +460,7 @@ var experiment = {
       faceLookIdx = -1; // if center, then face index is -1 
     } 
     //put in if statement: experiment.keepPic[experiment.item].length == 0 
-    else if(experiment.keepPic[experiment.item].length == 0 & experiment.social_cond == "Social") {
+    else if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
     } else {
@@ -486,6 +512,7 @@ var experiment = {
 
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
+    console.log("Item is: " + experiment.item);
 
     var i, next_imgs = [],sound, face_vid, blank;
 
@@ -510,9 +537,11 @@ var experiment = {
       
         experiment.item = trial-1;
         sound = experiment.trialSounds[experiment.item];
+
+        console.log("Experiment keep pic is: " + experiment.keepPic[0]);
     
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
-      if(experiment.keepPic[experiment.item].length == 0 & experiment.social_cond == "Social") {
+      if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
         faceLook = random(2);
         face_vid = experiment.faceVids[faceLook];
       } else {
@@ -571,12 +600,13 @@ var experiment = {
     sound=sound+'_find';
   }
   else{
-    if(Math.floor(experiment.exampleItem2) <= numExamples)
-      sound=sound+'_one';
-    else
+    if(Math.floor(experiment.exampleItem) <= numExamples)
       sound=sound+'_this';
+    else
+      sound=sound+'_one'; // chose "one" framing to make less pedagogical
 
     if(Math.floor(experiment.exampleItem) > numExamples & Math.floor(experiment.exampleItem2) >=numExamples){
+      console.log("Pocky");
       var idx = random(0, experiment.trialTypes[experiment.item]-1);
       experiment.keepIdx[experiment.item] = idx;
       experiment.keepPic[experiment.item] = next_imgs[idx];
@@ -607,7 +637,7 @@ var experiment = {
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 200) //used to be 5300
+    }, 2000) //used to be 5300
 
     //Wait, Play a sound
       setTimeout(function(){
@@ -622,9 +652,7 @@ var experiment = {
         };
         audioSprite.addEventListener('timeupdate', handler, false);
 
-
-
         //$("#sound_player")[0].play();      
-      }, 200); //used to be 2000
+      }, 500); //used to be 2000
     }
   };
