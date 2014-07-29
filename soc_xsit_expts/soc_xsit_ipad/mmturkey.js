@@ -124,13 +124,13 @@ turk = turk || {};
       div.innerHTML = "<p><b>Debug mode</b></p>Here is the data that would have been submitted to Turk: <ul>" + htmlify(rawData) + "</ul>"
       document.body.appendChild(div);
 
-      $.post("http://langcog.stanford.edu/cgi-bin/DY_min_xsit/process_xsit_ask.php",{expHTML: htmlify(rawData)});
+      $.post("http://langcog.stanford.edu/cgi-bin/KM_soc_xsit/soc_xsit_process.php",{expHTML: htmlify(rawData)});
 
       return;
     }
 
     // Otherwise, submit the form
-    form.action = "http://langcog.stanford.edu/cgi-bin/DY_min_xsit/process_xsit_ask.php";
+    form.action = "http://langcog.stanford.edu/cgi-bin/KM_soc_xsit/soc_xsit_process.php";
     form.method = "POST";
     form.submit();
   }

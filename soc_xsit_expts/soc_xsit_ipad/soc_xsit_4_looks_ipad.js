@@ -318,8 +318,8 @@ exampleImages2Double = ['lion','flower',
 $(exampleImages2Double.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 
 
-exampleFaces = [['RDkids', 'LDkids']],
-testFaces = ['RDkids', 'LDkids'],
+exampleFaces = [['RDkidslonger', 'LDkidslonger']],
+testFaces = ['RDkidslonger', 'LDkidslonger'],
 
 
 // preload face movies into cache
@@ -394,7 +394,7 @@ var experiment = {
 
     // finish audio 
     endaud = document.getElementById("finish_player");
-    endaud.volume=4.0;
+    endaud.volume=1.0;
     $("#finish_player")[0].play();
 
 
