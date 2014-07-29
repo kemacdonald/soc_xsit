@@ -285,8 +285,8 @@ exampleImages2Double = ['lion','flower',
 //$(exampleImagesSingle.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 $(exampleImages2Double.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 
-exampleFaces = [['RDkids', 'RDkids', 'RDkids', 'LDkids']],
-testFaces = ['RDkids', 'LDkids'],
+exampleFaces = [['RDkidslonger', 'RDkidslonger', 'RDkidslonger', 'LDkidslonger']],
+testFaces = ['RDkidslonger', 'LDkidslonger'],
 
 // preload face movies into cache
 
@@ -331,7 +331,7 @@ var experiment = {
   exampleImages2: exampleImages2Double,
   exampleFace: 0,
   exampleFaces: exampleFaces[0], // chooses which example faces to show
-  faceCenter: 'straightaheadkids', // eyes center for example/same/switch trials
+  faceCenter: 'straightaheadlonger', // eyes center for example/same/switch trials
   faceVids: testFaces, //directed looks for exposure trials
 
   /*The function that gets called when the sequence is finished. */
@@ -600,10 +600,18 @@ var experiment = {
     sound=sound+'_find';
   }
   else{
-    if(Math.floor(experiment.exampleItem) <= numExamples)
+    if(Math.floor(experiment.exampleItem) <= numExamples){
+      setTimeout(function(){
+        $("#hmm_player")[0].play();
+      }, 900);
       sound=sound+'_this';
-    else
+    }
+    else{
+            setTimeout(function(){
+        $("#hmm_player")[0].play();
+      }, 900);
       sound=sound+'_one'; // chose "one" framing to make less pedagogical
+    }
 
     if(Math.floor(experiment.exampleItem) > numExamples & Math.floor(experiment.exampleItem2) >=numExamples){
       console.log("Pocky");
@@ -637,7 +645,13 @@ var experiment = {
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 2000) //used to be 5300
+    }, 4000) //used to be 5300
+
+  //    setTimeout(function(){
+  //        $("#hmm_player")[0].play();
+  //    }, 900)
+
+
 
     //Wait, Play a sound
       setTimeout(function(){
@@ -653,6 +667,6 @@ var experiment = {
         audioSprite.addEventListener('timeupdate', handler, false);
 
         //$("#sound_player")[0].play();      
-      }, 500); //used to be 2000
+      }, 1600); //used to be 2000
     }
   };
