@@ -230,11 +230,40 @@ trim = function(item) {
   return tmp.slice(tmp.lastIndexOf("/")+1,tmp.lastIndexOf(".")); 
 };
 
-// Variable assignment for use later in experiment
+/* code to resize video player on ipad based on the dimensions of the video 
+ * 
+ */
+
+/* function naturalSize() {
+  var myVideo = document.getElementById('video1');
+  var myContent = document.getElementById('video_player');
+  myVideo.height = myVideo.videoHeight;
+  myVideo.width = myVideo.videoWidth;
+  
+  //if the video is bigger than the container it'll fit
+  ratio = myVideo.videoWidth/myVideo.videoHeight;
+  if(parseInt(myContent.offsetWidth,10)<myVideo.videoWidth){
+   myVideo.height = myVideo.videoHeight*parseInt(myContent.offsetWidth,10)/myVideo.videoWidth;
+     myVideo.width=parseInt(myContent.offsetWidth,10); 
+  }
+}
+// register listener function on metadata load
+function myAddListener(){
+  var myVideo = document.getElementById('video1');
+  myVideo.addEventListener('loadedmetadata', naturalSize, false);
+}
+
+window.onload = myAddListener();*/
+
+
+// Variable Assignment 
 
 var imgsPerSlide = 2;
-var numBlocks = 4;
-var numOccurs = 2;
+// var numBlocks = 4;
+// var numOccurs = 2;
+
+var numBlocks = 6; 
+var numOccurs = 2
 
 var numUsedImgs = ((imgsPerSlide*numOccurs)-1)*numBlocks; //((imgsPerSlide*numOccurs)-1)*numBlocks;
 var numUsedSounds = numBlocks;
@@ -253,12 +282,12 @@ allSounds = allSounds.slice(0,numUsedSounds);
 allImgs = allImgs.map(function(elem){return 'Novel'+elem;});
 $(allImgs.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 
-var allTypes = [[1, 1, 2, 2]]; //only same first
+var allTypes = [[1, 1, 2, 2, 1, 2]]; //only same first
 
 //SamePos for One Kind of Trial (Switch or Keep)
 var allSamePosOne = [[1, 0], [0, 1]];
 
-var allSpacings = [[1, 1, 2, 2, 3, 3, 4, 4],
+var allSpacings = [[1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6],
                    [1, 2, 1, 2, 3, 4, 3, 4],
                    [1, 2, 3, 4, 1, 2, 3, 4]];
 
@@ -277,15 +306,18 @@ var handler;
 
 var testFaceIdx;
 
-exampleImages2Double = ['lion','flower',
+/*exampleImages2Double = ['lion','flower',
           'tomato','flower',
           'scissors','truck',
-          'truck','tie'],
+          'truck','tie'],*/
+
+exampleImages2Double = ['lion','flower',
+                        'truck','tie'],
 
 //$(exampleImagesSingle.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 $(exampleImages2Double.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 
-exampleFaces = [['RDkids', 'RDkids', 'RDkids', 'LDkids']],
+exampleFaces = [['RDkids', 'LDkids']],
 testFaces = ['RDkids', 'LDkids'],
 
 // preload face movies into cache
@@ -313,6 +345,7 @@ var experiment = {
     showSlide("condition")
     $(".conditionButton").click(function() {
           testCondition = this.id;
+          return testCondition
     })
   },
 
@@ -323,9 +356,8 @@ var experiment = {
     })
   },
 
-
   cond: 'soc_xsit_2_0',
-  social_cond: testCondition,
+  social_cond: '',
   trialOrder: trialOrder,
   trials: allSpacings[0],
   trialTypes: allTypes[trialOrder],
@@ -334,8 +366,8 @@ var experiment = {
   samePos: [allSamePosOne[samePosOrderOne][0], allSamePosOne[samePosOrderOne][1],
             allSamePosOne[samePosOrderTwo][0], allSamePosOne[samePosOrderTwo][1]],
   data: [],
-  keepPic: ['','','',''],
-  keepIdx: [0, 0, 0, 0],
+  keepPic: ['','','','','',''],
+  keepIdx: [0, 0, 0, 0, 0, 0],
   item: 0,
   exampleItem: 0,
   exampleItem2: 80,
@@ -354,7 +386,7 @@ var experiment = {
   end: function() {
     experiment.comments = $('#comments')[0].value;
     showSlide("finished"); //Show the finish slide.
-    
+    experiment.social_cond=testCondition;
     experiment.browser=BrowserDetect.browser;
   
     videoE = document.getElementById("endvideo");
@@ -471,6 +503,11 @@ var experiment = {
         faceLookIdx = -1;
     }
     
+    console.log(experiment.exampleItem);
+    console.log(numExamples);
+    console.log("Face vid is " + experiment.face_vid);
+
+
     /* Same/Switch trial */
 
 
@@ -501,8 +538,8 @@ var experiment = {
         kept: experiment.keepPic[experiment.item],
         kept_idx: experiment.keepIdx[experiment.item],
         rt: endTime - startTime,
-        face: experiment.face_vid,
-        faceIdx: experiment.faceLookIdx,
+        face_vid: experiment.face_vid,
+        face_idx: experiment.faceLook,
     };  
     experiment.data.push(data);
     
@@ -516,6 +553,8 @@ var experiment = {
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
     console.log("Item is: " + experiment.item);
+    console.log("Test condition is: " + experiment.social_cond);
+
 
     var i, next_imgs = [],sound, face_vid, blank;
 
@@ -523,10 +562,13 @@ var experiment = {
     if(Math.floor(experiment.exampleItem) < numExamples) { 
         sound = experiment.exampleSounds2[Math.floor(experiment.exampleItem)]
         face_vid = experiment.exampleFaces[experiment.exampleFace];
+        
+        console.log(face_vid);
+
         for(i = 0; i < imgsPerSlide; i++) { //update the images shown
             next_imgs[i] = experiment.exampleImages2.shift();
         }
-        experiment.exampleItem = experiment.exampleItem + (1/numOccurs);
+        experiment.exampleItem = experiment.exampleItem + 1;
         experiment.exampleFace = experiment.exampleFace + 1;
     } else {
       //Get the current trial: shift() removes the first element of the array 
@@ -550,9 +592,6 @@ var experiment = {
       } else {
         face_vid = experiment.faceCenter;
           }
-        
-        console.log("Face vid is " + face_vid);
-
 
         var idx;
         
