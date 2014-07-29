@@ -317,8 +317,10 @@ exampleImages2Double = ['lion','flower',
 //$(exampleImagesSingle.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 $(exampleImages2Double.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 
+
 exampleFaces = [['RDkids', 'LDkids']],
 testFaces = ['RDkids', 'LDkids'],
+
 
 // preload face movies into cache
 
@@ -340,22 +342,6 @@ showSlide("instructions"); //Show instruction slide
 // This is where we define the experiment variable, which tracks all the information we want to know about the experiment.
 
 var experiment = {
-  
-  conditionClick: function() {
-    showSlide("condition")
-    $(".conditionButton").click(function() {
-          testCondition = this.id;
-          return testCondition
-    })
-  },
-
-  conditionTouch: function() {
-    showSlide("condition")
-    $(".conditionButton").one("touchstart", function(event) {
-          testCondition = $(this).attr('id')
-    })
-  },
-
   cond: 'soc_xsit_2_0',
   social_cond: '',
   trialOrder: trialOrder,
@@ -379,7 +365,7 @@ var experiment = {
   exampleImages2: exampleImages2Double,
   exampleFace: 0,
   exampleFaces: exampleFaces[0], // chooses which example faces to show
-  faceCenter: 'straightaheadkids', // eyes center for example/same/switch trials
+  faceCenter: 'straightaheadlonger', // eyes center for example/same/switch trials
   faceVids: testFaces, //directed looks for exposure trials
 
   /*The function that gets called when the sequence is finished. */
@@ -408,7 +394,7 @@ var experiment = {
 
     // finish audio 
     endaud = document.getElementById("finish_player");
-    endaud.volume=1.0;
+    endaud.volume=4.0;
     $("#finish_player")[0].play();
 
 
@@ -424,6 +410,20 @@ var experiment = {
       setTimeout(showSlide("instructions3"),500);
     }else{setTimeout(experiment.next, 500);}
         
+  },
+
+  conditionClick: function() {
+    showSlide("condition")
+    $(".conditionButton").click(function() {
+          testCondition = this.id;
+    })
+  },
+
+  conditionTouch: function() {
+    showSlide("condition")
+    $(".conditionButton").one("touchstart", function(event) {
+          testCondition = $(this).attr('id')
+    })
   },
 
 
@@ -446,13 +446,12 @@ var experiment = {
         document.getElementById(dotID).src = "images/dots/x.jpg";
         xcounter++
         if (xcounter === dotCount) {
-          $("#reward_player")[0].play();
-          setTimeout(function () {
              training.removeChild(dot_1)
              training.removeChild(dot_2)
              training.removeChild(dot_3)
              training.removeChild(dot_4)
              training.removeChild(dot_5)
+          setTimeout(function () {
             $("#training").hide();
           //  document.body.style.background = "black";
             setTimeout(function() {
@@ -642,10 +641,18 @@ var experiment = {
     sound=sound+'_find';
   }
   else{
-    if(Math.floor(experiment.exampleItem) <= numExamples)
+    if(Math.floor(experiment.exampleItem) <= numExamples){
+      setTimeout(function(){
+        $("#hmm_player")[0].play();
+      }, 900);
       sound=sound+'_this';
-    else
+    }
+    else{
+            setTimeout(function(){
+        $("#hmm_player")[0].play();
+      }, 900);
       sound=sound+'_one'; // chose "one" framing to make less pedagogical
+    }
 
     if(Math.floor(experiment.exampleItem) > numExamples & Math.floor(experiment.exampleItem2) >=numExamples){
       console.log("Pocky");
@@ -679,7 +686,13 @@ var experiment = {
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 2500) //used to be 5300
+    }, 4000) //used to be 5300
+
+  //    setTimeout(function(){
+  //        $("#hmm_player")[0].play();
+  //    }, 900)
+
+
 
     //Wait, Play a sound
       setTimeout(function(){
@@ -695,6 +708,6 @@ var experiment = {
         audioSprite.addEventListener('timeupdate', handler, false);
 
         //$("#sound_player")[0].play();      
-      }, 500); //used to be 2000
+      }, 1600); //used to be 2000
     }
   };
