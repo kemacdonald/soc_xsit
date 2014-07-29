@@ -308,22 +308,6 @@ showSlide("instructions"); //Show instruction slide
 // This is where we define the experiment variable, which tracks all the information we want to know about the experiment.
 
 var experiment = {
-  
-  conditionClick: function() {
-    showSlide("condition")
-    $(".conditionButton").click(function() {
-          testCondition = this.id;
-    })
-  },
-
-  conditionTouch: function() {
-    showSlide("condition")
-    $(".conditionButton").one("touchstart", function(event) {
-          testCondition = $(this).attr('id')
-    })
-  },
-
-
   cond: 'soc_xsit_2_0',
   social_cond: testCondition,
   trialOrder: trialOrder,
@@ -376,7 +360,7 @@ var experiment = {
 
     // finish audio 
     endaud = document.getElementById("finish_player");
-    endaud.volume=1.0;
+    endaud.volume=4.0;
     $("#finish_player")[0].play();
 
 
@@ -392,6 +376,20 @@ var experiment = {
       setTimeout(showSlide("instructions3"),500);
     }else{setTimeout(experiment.next, 500);}
         
+  },
+
+  conditionClick: function() {
+    showSlide("condition")
+    $(".conditionButton").click(function() {
+          testCondition = this.id;
+    })
+  },
+
+  conditionTouch: function() {
+    showSlide("condition")
+    $(".conditionButton").one("touchstart", function(event) {
+          testCondition = $(this).attr('id')
+    })
   },
 
 
@@ -414,13 +412,12 @@ var experiment = {
         document.getElementById(dotID).src = "images/dots/x.jpg";
         xcounter++
         if (xcounter === dotCount) {
-          $("#reward_player")[0].play();
-          setTimeout(function () {
              training.removeChild(dot_1)
              training.removeChild(dot_2)
              training.removeChild(dot_3)
              training.removeChild(dot_4)
              training.removeChild(dot_5)
+          setTimeout(function () {
             $("#training").hide();
           //  document.body.style.background = "black";
             setTimeout(function() {
@@ -501,8 +498,8 @@ var experiment = {
         kept: experiment.keepPic[experiment.item],
         kept_idx: experiment.keepIdx[experiment.item],
         rt: endTime - startTime,
-        face: experiment.face_vid,
-        faceIdx: experiment.faceLookIdx,
+        face: face_vid,
+        faceIdx: faceLookIdx,
     };  
     experiment.data.push(data);
     
@@ -640,7 +637,7 @@ var experiment = {
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 2500) //used to be 5300
+    }, 2000) //used to be 5300
 
     //Wait, Play a sound
       setTimeout(function(){
