@@ -165,6 +165,10 @@ td.listening {
     left: 100px;
 }
  
+.xsit_pic {
+    border:0;
+}
+
 .selectedPic{
    border : 10px solid #7CFC00;
 }

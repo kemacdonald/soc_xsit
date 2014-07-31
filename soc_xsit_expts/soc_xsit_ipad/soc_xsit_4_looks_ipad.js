@@ -285,7 +285,7 @@ $(allImgs.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 var allTypes = [[1, 1, 2, 2, 1, 2]]; //only same first
 
 //SamePos for One Kind of Trial (Switch or Keep)
-var allSamePosOne = [[1, 0], [0, 1]];
+var allSamePosOne = [[1, 0], [0, 1], [1, 0]];
 
 var allSpacings = [[1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6],
                    [1, 2, 1, 2, 3, 4, 3, 4],
@@ -319,7 +319,7 @@ $(exampleImages2Double.map(function(elem){return 'stimuli/images/'+elem+'.jpg';}
 
 
 exampleFaces = [['RDkidslonger', 'LDkidslonger']],
-testFaces = ['RDkidslonger', 'LDkidslonger'],
+testFaces = ['LDkidslonger', 'RDkidslonger'],
 
 
 // preload face movies into cache
@@ -426,6 +426,44 @@ var experiment = {
     })
   },
 
+  boxTraining: function() {
+    // Order of videos
+    var boxExampleFaces = ['LDkidslonger', 'RDkidslonger']
+    
+
+           showSlide("stage");
+
+           // Get box images 
+           for (j = 0; j < imgsPerSlide; j++) {
+             $(".xsit_pic")[j].children[0].src = "stimuli/images/box.jpg";
+           };
+
+           // Load the video
+           videoElement = document.getElementById("video1");
+           boxVid = boxExampleFaces[i];
+           console.log(i);
+           console.log(boxVid);
+
+            if (videoElement.canPlayType("video/mp4")) {
+                $("#video1")[0].src = "stimuli/videos/"+boxVid+".mov";          
+             }
+            else if (videoElement.canPlayType("video/ogg")) {
+                 $("#video1")[0].src = "stimuli/videos/"+boxVid+".ogv";          
+            }
+             else {
+                  window.alert("Can't play anything");
+            }
+
+            $("#video1")[0].load(); 
+
+            // Play Video
+            //Wait, Play eye gaze video 
+          setTimeout(function(){
+              $("#video1")[0].play();
+          }, 1300);
+
+  },
+
 
    training: function() {
     var xcounter = 0;
@@ -445,12 +483,17 @@ var experiment = {
         var dotID = $(event.currentTarget).attr('id');
         document.getElementById(dotID).src = "images/dots/x.jpg";
         xcounter++
+        
         if (xcounter === dotCount) {
-             training.removeChild(dot_1)
-             training.removeChild(dot_2)
-             training.removeChild(dot_3)
-             training.removeChild(dot_4)
-             training.removeChild(dot_5)
+              setTimeout(function () {
+                  training.removeChild(dot_1)
+                  training.removeChild(dot_2)
+                  training.removeChild(dot_3)
+                  training.removeChild(dot_4)
+                  training.removeChild(dot_5)
+                  $("#reward_player")[0].play();
+                }, 1000);
+
           setTimeout(function () {
             $("#training").hide();
           //  document.body.style.background = "black";
@@ -494,7 +537,7 @@ var experiment = {
       faceLookIdx = -1; // if center, then face index is -1 
     } 
     //put in if statement: experiment.keepPic[experiment.item].length == 0 
-    else if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
+    else if(experiment.keepPic[experiment.item].length >= 0 & testCondition == "Social") {
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
     } else {
@@ -502,9 +545,10 @@ var experiment = {
         faceLookIdx = -1;
     }
     
-    console.log(experiment.exampleItem);
+    console.log(experiment.keepPic[experiment.item].length);
     console.log(numExamples);
-    console.log("Face vid is " + experiment.face_vid);
+    console.log("Face vid is " + face_vid);
+    console.log("Face idx is " + faceLookIdx);
 
 
     /* Same/Switch trial */
@@ -537,8 +581,8 @@ var experiment = {
         kept: experiment.keepPic[experiment.item],
         kept_idx: experiment.keepIdx[experiment.item],
         rt: endTime - startTime,
-        face_vid: experiment.face_vid,
-        face_idx: experiment.faceLook,
+        face_vid: face_vid,
+        face_idx: faceLookIdx,
     };  
     experiment.data.push(data);
     
