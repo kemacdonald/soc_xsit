@@ -350,7 +350,8 @@ var experiment = {
   samePosOrderOne: samePosOrderOne,
   samePosOrderTwo: samePosOrderTwo,
   samePos: [allSamePosOne[samePosOrderOne][0], allSamePosOne[samePosOrderOne][1],
-            allSamePosOne[samePosOrderTwo][0], allSamePosOne[samePosOrderTwo][1]],
+            allSamePosOne[samePosOrderTwo][0], allSamePosOne[samePosOrderTwo][1],
+            allSamePosOne[samePosOrderOne][0], allSamePosOne[samePosOrderOne][1]],
   data: [],
   keepPic: ['','','','','',''],
   keepIdx: [0, 0, 0, 0, 0, 0],
@@ -537,7 +538,7 @@ var experiment = {
       faceLookIdx = -1; // if center, then face index is -1 
     } 
     //put in if statement: experiment.keepPic[experiment.item].length == 0 
-    //Social exposure
+    //Social
     else if(experiment.keepPic[experiment.item].length >= 0 & testCondition == "Social") {
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
@@ -546,10 +547,6 @@ var experiment = {
         faceLookIdx = -1;
     }
     
-    console.log(experiment.keepPic[experiment.item].length);
-    console.log(numExamples);
-    console.log("Face vid is " + face_vid);
-    console.log("Face idx is " + faceLookIdx);
 
 
     /* Same/Switch trial */
@@ -596,8 +593,6 @@ var experiment = {
 
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
-    console.log("Item is: " + experiment.item);
-    console.log("Test condition is: " + experiment.social_cond);
 
 
     var i, next_imgs = [],sound, face_vid, blank;
@@ -606,8 +601,6 @@ var experiment = {
     if(Math.floor(experiment.exampleItem) < numExamples) { 
         sound = experiment.exampleSounds2[Math.floor(experiment.exampleItem)]
         face_vid = experiment.exampleFaces[experiment.exampleFace];
-        
-        console.log(face_vid);
 
         for(i = 0; i < imgsPerSlide; i++) { //update the images shown
             next_imgs[i] = experiment.exampleImages2.shift();
@@ -619,15 +612,17 @@ var experiment = {
       //and returns it.
 
         trial = experiment.trials.shift();
+
+        console.log("Same pos: " + experiment.samePos[experiment.item]);
     
       //If the current trial is undefined, it means the trials array was 
         //empty, which means that we're done, so call the end function.
         if (typeof trial == "undefined") {return showSlide("qanda");}
       
         experiment.item = trial-1;
+        console.log("Trial is: " + trial);
+        console.log("Item is: " + experiment.item);
         sound = experiment.trialSounds[experiment.item];
-
-        console.log("Experiment keep pic is: " + experiment.keepPic[0]);
     
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
       if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
@@ -664,6 +659,10 @@ var experiment = {
       $(".xsit_pic")[i].children[0].src = "stimuli/images/"+next_imgs[i]+".jpg";
     }
 
+
+    //Standardize ooh volume
+    oohPlayer = document.getElementById("ooh_player");
+    oohPlayer.volume = 1.0;
     
   // get appropriate video 
   experiment.browser=BrowserDetect.browser;
