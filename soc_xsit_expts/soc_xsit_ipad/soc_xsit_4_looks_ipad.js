@@ -426,7 +426,7 @@ var experiment = {
     })
   },
 
-  boxTraining: function() {
+/*  boxTraining: function() {
     // Order of videos
     var boxExampleFaces = ['LDkidslonger', 'RDkidslonger']
     
@@ -462,7 +462,7 @@ var experiment = {
               $("#video1")[0].play();
           }, 1300);
 
-  },
+  },*/
 
 
    training: function() {
@@ -531,16 +531,17 @@ var experiment = {
     this is the first trial for this object (exposure). Otherwise, it's a same/switch trial. 
     */
     
-    /* Exposure trial */
+    /* Examples */
     if(Math.floor(experiment.exampleItem) <= numExamples) {
       face_vid = experiment.faceCenter; 
       faceLookIdx = -1; // if center, then face index is -1 
     } 
     //put in if statement: experiment.keepPic[experiment.item].length == 0 
+    //Social exposure
     else if(experiment.keepPic[experiment.item].length >= 0 & testCondition == "Social") {
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
-    } else {
+    } else { //Non-social exposure, or test
         face_vid = experiment.faceCenter; // non-social condition, the faceLook is always center
         faceLookIdx = -1;
     }
@@ -687,19 +688,18 @@ var experiment = {
   else{
     if(Math.floor(experiment.exampleItem) <= numExamples){
       setTimeout(function(){
-        $("#hmm_player")[0].play();
+        $("#ooh_player")[0].play();
       }, 900);
       sound=sound+'_this';
     }
     else{
             setTimeout(function(){
-        $("#hmm_player")[0].play();
+        $("#ooh_player")[0].play();
       }, 900);
-      sound=sound+'_one'; // chose "one" framing to make less pedagogical
+      sound=sound+'_this'; // chose "one" framing to make less pedagogical
     }
 
     if(Math.floor(experiment.exampleItem) > numExamples & Math.floor(experiment.exampleItem2) >=numExamples){
-      console.log("Pocky");
       var idx = random(0, experiment.trialTypes[experiment.item]-1);
       experiment.keepIdx[experiment.item] = idx;
       experiment.keepPic[experiment.item] = next_imgs[idx];
@@ -733,7 +733,7 @@ var experiment = {
     }, 4000) //used to be 5300
 
   //    setTimeout(function(){
-  //        $("#hmm_player")[0].play();
+  //        $("#ooh_player")[0].play();
   //    }, 900)
 
 
