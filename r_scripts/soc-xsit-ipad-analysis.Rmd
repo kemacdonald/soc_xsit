@@ -1,0 +1,122 @@
+---
+title: "soc-xsit-ipad-analysis"
+author: "Kyle MacDonald"
+date: "August 4, 2014"
+output: html_document
+---
+
+Script for analyzing soc-xsit-ipad data.
+
+Read in the data. 
+
+```{r, read-data}
+
+```
+
+keep.data$Setting <- "Bing"
+keep.data$Setting[keep.data$subj > 59] <- "CDM"
+
+#kids from before Janelle got instructions right
+keep.data <- keep.data[keep.data$subj < 59 | keep.data$subj > 90,]
+keep.data <- keep.data[is.na(keep.data$language) | keep.data$language >=75,]
+
+#compute mean correct by kid
+mss <- aggregate(correct ~ trialType + subj + age.grp +age, 
+                 data=keep.data,FUN=mean)
+
+#compute mean correct across kids
+ms <- aggregate(correct ~ trialType + age.grp ,data=mss,FUN=mean)
+ms$n <- aggregate(correct ~ trialType + age.grp,data=mss,FUN=length)$correct
+
+
+unik <- !duplicated(keep.data$subj)  ## logical vector of unique values 
+num.girls <- sum(keep.data[unik,]$gender == "F")
+
+
+prop.cdm <- aggregate(Setting ~ age.grp,data=keep.data[unik,],
+                     FUN=function(x)sum({x=="CDM"})/length(x))
+
+
+num.per.age <- table(keep.data[unik,]$age.grp)
+
+#compute measurement error across kids
+ms$cih <- aggregate(correct ~ trialType + age.grp , data=mss,FUN=ci.high)$correct
+ms$cil <- aggregate(correct ~ trialType + age.grp , data=mss,FUN=ci.low)$correct
+
+ts <- as.data.frame(aggregate(correct ~ trialType + age.grp , data=mss,
+                              FUN=function(x) {t.test(x,mu=.5, )})$correct)
+
+ws <- as.data.frame(aggregate(correct ~ trialType + age.grp , data=mss,
+                              FUN=function(x) {wilcox.test(x,mu=.5, exact=FALSE, 
+                                                           correct=FALSE)})$correct)
+
+ms$t <- ts$statistic
+ms$p <- ts$p.value
+
+ms$w <- ws$statistics
+ms$w.p <- ws$p.value
+#generate a dot graph to show accuracy by age and trial type
+
+lm <- glmer(correct ~  trialType*age.grp + 
+              (1|subj), 
+            family="binomial",data=keep.data)
+
+lm2 <- glmer(correct ~ trialType*age.grp + 
+               (1|subj) + (1|Setting), 
+             family="binomial",data=keep.data)
+
+#fit <- aov(correct ~ age*trialType,data=mss)
+
+fit <- glm(correct ~ trialType*age.grp,family = binomial, data= keep.data)
+
+newdat <- expand.grid(
+  correct = "FALSE",
+  trialType=c("Same","Switch"),
+  age.grp=seq(3,5.5,.5)
+)
+mm <- model.matrix(terms(lm),newdat)
+newdat$correct <- invlogit(mm %*% fixef(lm))
+#newdat$correct <- invlogit(mm %*% coef(fit))
+newdat$cil <- NA
+newdat$cih <- NA
+
+
+quartz(height=4.25,width=7)
+q <- ggplot(ms, aes(x=age.grp, y=correct, colour=trialType,
+                    )) +
+  geom_pointrange(aes(ymin = correct-cil,
+                      ymax = correct+cih),
+                  size = 1.2,
+                  position = position_dodge(.1)) +
+  #geom_line(aes(y=correct,colour=trialType),data=newdat, lty=1) +
+  geom_hline(yintercept=.5,lty=2)  +
+  scale_y_continuous(limits = c(0,1),breaks=c(0,.25,.5,.75,1),
+                     name = "Prop. Choosing Previous Referent") +
+  scale_x_continuous( limits=c(2.8,5.9), breaks=c(3,3.5,4,4.5,5,5.5),name = "Age Group") + 
+  theme_bw(base_size=18) + theme(plot.title = element_text(size = rel(1))) +
+  ggtitle("Word Learning by Trial Type and Age Group")
+
+q <- direct.label(q,list("last.qp",cex=1.5,hjust=-.2)) + scale_color_grey(start=.2,end=.5)#scale_color_manual(values=c("#F8766D","#00BA38"))
+q
+ggsave("bing_and_cdm_plot.pdf",dpi=600,title="Experiment 3 Data")
+
+#show distribution of kids' ages
+quartz()
+h <- ggplot(keep.data[unik,],aes(x=age.grp)) +
+  geom_histogram(binwidth=.5,fill="white",colour="black") +
+  scale_y_continuous(limits = c(0,40),breaks=c(0,10,20,30,40),
+                     name = "Number of Children") +
+  scale_x_continuous( limits=c(2.8,6.1), 
+                      breaks=c(3,3.5,4,4.5,5,5.5,6),name = "Age Group") + 
+  theme_bw(base_size=18) + theme(plot.title = element_text(size = rel(1)),
+                                 panel.grid.major = element_blank(),
+                                 panel.grid.minor = element_blank()) + 
+  ggtitle("Number of Children by Age")  
+#_text(data=NULL,x=5,y=30,label = "a")
+
+
+quartz(height=4.5,width=11)
+pdf("bing_and_cdm_plot.pdf",width=11,height=4.5)
+grid.arrange(h, q, widths=c(.4, .6), ncol=2, nrow=1)
+dev.off()
+ggsave("bing_and_cdm_plot.pdf",dpi=600,title="Experiment 3 Data",plot=g)
