@@ -43,8 +43,6 @@ Read in the data, which are stored in separate .txt files for each participant.
 ```{r munging, tidy=TRUE}
 # Create empty arrays for binding 
 all.data <- as.data.frame(matrix(ncol = 0, nrow = 0))
-test.data <- as.data.frame(matrix(ncol = 0, nrow = 0))
-example.data <- as.data.frame(matrix(ncol = 0, nrow = 0))
 
 #grab all file names from data dir. 
 #These are all of the kids for whom we have ipad data
