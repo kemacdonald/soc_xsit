@@ -22,6 +22,7 @@ library(directlabels)
 library(bootstrap)
 library(grid)
 library(gridExtra)
+library(stringr)
 ```
 
 Load helper functions for computing measurement error.
@@ -46,7 +47,8 @@ all.data <- as.data.frame(matrix(ncol = 0, nrow = 0))
 
 #grab all file names from data dir. 
 #These are all of the kids for whom we have ipad data
-all_results <- list.files(path = "/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/", pattern = 'results_*', all.files = FALSE);
+all_results <- list.files(path = "/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/",
+                          pattern = 'results_*', all.files = FALSE)
 
 #function to munge the data
 #takes in a list of filenames (.txt of each kid's data), 
@@ -56,8 +58,19 @@ bing_clean <- function(filename) {
         x <- readLines(paste("/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/", 
                                 filename,sep=""),warn=FALSE)
         x <- unlist(strsplit(x,'<li>'))
-        #select info relevant to trial
+        
+        #grab condition 
+        condition <- x[3]
+
+        if (grepl(pattern="Social", condition)) {
+                condition <- str_extract(pattern="Social", condition)
+        } else {
+                condition <- str_extract(pattern="No-social", condition)
+        }
+                
+        # grab trial information 
         x <- x[11:150]
+        
         #strip html characters
         x <- gsub('\\"',"", x)
         x <- gsub("\\\\\"","",x)
@@ -65,121 +78,72 @@ bing_clean <- function(filename) {
         x <- gsub("</ul>\\},\\{<ul>","",x)
         x[length(x)] <- gsub("</ul>\\}]","",x[length(x)])
         x <- gsub("^.*?: ","",x)
-        #grab date from file name and add to flattened list
-        date <- paste(substr(filename,18,33))
+        
+        #grab date 
+        date <- str_sub(filename,20,36)
+        date <- gsub('_','',date)
+        date <- gsub('\\.','',date)
+        #grab id
+        id <- str_sub(filename,0,2)
+        id <- gsub('-','',id)
         #bind to data frame
         x <- as.data.frame(matrix(x,14,10,byrow=TRUE), stringsAsFactors=F)
         x$V11 <- date
+        x$V12 <- id
+        x$V13 <- condition
         return(x) ## need this return to get the data frame!
 }
 
 #apply munging function to each kid's data file
-all.data <- 
-        ldply(
+all.data <- ldply(
                 .data = all_results,
                 .fun = bing_clean
-        )
+                )
 
 #add variable names to columns
 names(all.data) <- c("itemNum","trialType","samePos","chosen","chosen_idx",
-              "kept","kept_idx","rt","faceVid","faceIdx", "date")
+              "kept","kept_idx","rt","faceVid","faceIdx", "date", "id", "condition")
  
 ```
 
 Tag the different trial types: example, exposure, and test.
 
 ```{r tag-trial-types}
+#dplyr syntax
 all.data <- all.data %>% 
                 group_by(date) %>%
                 mutate(trial = c(1:14)) %>%
                 mutate(example_trial = ifelse(trial %in% c(1:2),1,0),
                        exposure_trial = ifelse(trial %in% c(3,5,7,9,11,13),1,0),
-                       test_trial = ifelse(trial %in% c(4,6,8,10,12,14),1,0))
+                       test_trial = ifelse(trial %in% c(4,6,8,10,12,14),1,0),
+                       include = ifelse(chosen[1] == "flower" & 
+                                        chosen[2] == "truck",1,0)) %>%
+                arrange(date, trial)
+
+#reorder columns to put id, date, and condition first
+temp <- all.data[c("id","date", "condition", "itemNum","trialType","samePos",
+                   "chosen","chosen_idx","kept","kept_idx","rt","faceVid","faceIdx",
+                   "trial","example_trial","exposure_trial","test_trial","include")]
 ```
 
 Clean up the data. Exclude subjects for getting examples wrong
 
 ```{r, data-cleaning}
+#find whether child's choice was correct 
+#for exposure trials, we check the index of eye gaze against child's choice
+#for test trials, we check the kept image against the child's choice 
+all.data <- all.data %>% 
+                group_by(id) %>%
+                mutate(correct = ifelse(exposure_trial == 1, chosen_idx == faceIdx, 
+                                 ifelse(example_trial == 1, chosen[1] == "flower" & chosen[2] == "truck",
+                                        chosen == kept))) 
 
-# exclude for getting examples wrong
-include.subs <- ddply(example.data,.(subj), 
-                      function(x) {
-                        check <- x$chosen[1] == "shoe" & 
-                                 x$chosen[2] == "shoe" & 
-                                 x$chosen[3] == "cup" &
-                                 x$chosen[4] == "cup" & 
-                                 x$chosen[5] == "flower" & 
-                                 x$chosen[6] == "flower" & 
-                                 x$chosen[7] == "truck" &
-                                 x$chosen[8] == "truck" 
-                        return(check)
-                        })
-
-
-#rename columns of include.subs to semantically interpretable labels
-names(include.subs) <- c("subj","include")
-
-#relabel trial-types to semantically interpretable variables
-test.data$trialType <- factor(test.data$trialType, labels = c('Same','Switch'))
-
-#find whether each choice was correct
-test.data$chosen <- as.character(test.data$chosen)
-test.data$kept <- as.character(test.data$kept)
-test.data$correct <- test.data$chosen == test.data$kept
-
-#overwrite responses where the kid switched sides
-test.data$overwrite <- 0
-
-for(f in 1:nrow(overwrite)) {
- 
-  inds <- test.data$subj==overwrite$subj[f] & 
-    test.data$itemNum==overwrite$itemNum[f]
-  
-  test.data$correct[inds] <- overwrite$correct[f]
-  test.data$overwrite[inds] <- overwrite$correct[f]
-}
-
-#append include value to test.data, keep only kids who should be included
-test.data <- merge(test.data,include.subs)
-keep.data <- subset(test.data,include)
-
-#sort and clean up keep.data
-keep.data <- keep.data[with(keep.data,order(subj,trialType,itemNum)),]
-keep.data <- keep.data[,! names(keep.data) %in% 
-                         c("chosen_idx","kept_idx","chosen","kept","include")]
-
-#add in early data, reorder trial type (for some reason)
-keep.data <- rbind(early.data,keep.data)
-keep.data$trialType <- factor(keep.data$trialType, levels=c("Same","Switch"))
-
-keep.data$rt <- as.integer(keep.data$rt)
+#relabel variables and variable types for analysis
+all.data$trialType <- factor(all.data$trialType, labels = c('Same','Switch'))
+all.data$rt <- as.integer(all.data$rt)
+all.data$condition <- as.factor(all.data$condition)
 
 ##RT Exclusions##
-keep.data$log.rt <- log(keep.data$rt)
-mean.rt <- mean(keep.data$log.rt,na.rm=TRUE)
-high.rt <- mean.rt+3*sd(keep.data$log.rt,na.rm=TRUE)
-low.rt <- mean.rt-3*sd(keep.data$log.rt,na.rm=TRUE)
-
-keep.data <- keep.data[with(keep.data,is.na(rt) |
-                              (log.rt < high.rt & log.rt >low.rt) | 
-                              overwrite == 1),]
-
-## DROP KIDS THAT EXPERIMENTERS SAID HAD PROBLEMS
-#BING
-#drop 7 and 12
-keep.data <- keep.data[keep.data$subj != 7,]
-keep.data <- keep.data[keep.data$subj != 12,]
-
-#CDM
-#drop 124, 128
-keep.data <- keep.data[keep.data$subj != 124,]
-keep.data <- keep.data[keep.data$subj != 128,]
-keep.data <- keep.data[keep.data$subj != 130,]
-keep.data <- keep.data[keep.data$subj != 164,]
-keep.data <- keep.data[keep.data$subj != 210,]
-
-# keep.data <- keep.data[keep.data$subj != 171,]
-# keep.data <- keep.data[keep.data$subj != 200,]
 ```
 
 Add demographic data for each child (age and gender).
