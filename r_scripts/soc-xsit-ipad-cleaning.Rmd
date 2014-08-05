@@ -1,5 +1,5 @@
 ---
-title: "ipad-data-cleaning"
+title: "iPad-data-cleaning"
 author: "Kyle MacDonald"
 date: "August 4, 2014"
 output: html_document
@@ -7,41 +7,18 @@ output: html_document
 
 Script to munge ipad data for soc-xsit project
 
-TODO:
-- Get condition to read in 
-- Get subid from filename
-- Compute correct variable 
-
 Load libraries for data manipulation
 
-```{r load_libraries, echo=F}
-library(ggplot2)
+```{r load_libraries,warning=FALSE,message=FALSE}
 library(plyr)
 library(dplyr)
 library(directlabels)
-library(bootstrap)
-library(grid)
-library(gridExtra)
 library(stringr)
-```
-
-Load helper functions for computing measurement error.
-
-```{r helpers, echo=FALSE}
-sem <- function(x) {sd(x,na.rm=TRUE)/sqrt(length(x)-sum(is.na(x)))}
-ci95 <- function(x) {1.96*sem(x)}
-
-## code for bootstrapping 95% confidence intervals
-theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
-ci.low <- function(x,na.rm=T) {
-  mean(x,na.rm=na.rm) - quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
-ci.high <- function(x,na.rm=T) {
-  quantile(bootstrap(1:length(x),1000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - mean(x,na.rm=na.rm)}
 ```
 
 Read in the data, which are stored in separate .txt files for each participant.
 
-```{r munging, tidy=TRUE}
+```{r munging}
 # Create empty arrays for binding 
 all.data <- as.data.frame(matrix(ncol = 0, nrow = 0))
 
@@ -106,7 +83,12 @@ names(all.data) <- c("itemNum","trialType","samePos","chosen","chosen_idx",
  
 ```
 
-Tag the different trial types: example, exposure, and test.
+Tag the different trial types:  
+        * example 
+        * exposure
+        * test   
+
+Exclude subjects for getting examples wrong.
 
 ```{r tag-trial-types}
 #dplyr syntax
@@ -120,13 +102,11 @@ all.data <- all.data %>%
                                         chosen[2] == "truck",1,0)) %>%
                 arrange(date, trial)
 
-#reorder columns to put id, date, and condition first
-temp <- all.data[c("id","date", "condition", "itemNum","trialType","samePos",
-                   "chosen","chosen_idx","kept","kept_idx","rt","faceVid","faceIdx",
-                   "trial","example_trial","exposure_trial","test_trial","include")]
 ```
 
-Clean up the data. Exclude subjects for getting examples wrong
+Clean up the data: 
+* figure out if child answered correctly on that trial
+* relabel variables and change variable types for analysis 
 
 ```{r, data-cleaning}
 #find whether child's choice was correct 
@@ -148,25 +128,22 @@ all.data$condition <- as.factor(all.data$condition)
 
 Add demographic data for each child (age and gender).
 
-```{r, demographics}
+```{r add-demographics, warning=FALSE}
+#read in demo csv
+demo <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/soc-xsit-ipad-demo.csv")
 
-#add ages and genders from demos
-keep.data$age <- demos$Age[keep.data$subj]
-keep.data$gender <- demos$Gender[keep.data$subj]
-keep.data$language <- demos$Language[keep.data$subj]
+all.data <- join(all.data,demo)
 
-#dropped kids ages
-#demos$Age[include.subs[include.subs$include==FALSE,]$subj]
+#reorder columns to put id and demo variables first
+all.data <- all.data[c("id","birthday","gender","age","age.group","date", "condition", 
+                   "trial","itemNum","trialType","samePos","chosen","chosen_idx","kept",
+                   "kept_idx","rt","faceVid","faceIdx","trial","example_trial",
+                   "exposure_trial","test_trial","include")]
 
-#compute age group by taking floor of age (round down to year)
-keep.data$age.grp <- floor(keep.data$age*2)/2
-
-#drop wrong age kids
-keep.data <- keep.data[keep.data$age.grp >= 3,]
-keep.data <- keep.data[keep.data$age.grp < 6,]
-
-#CDM subset
-#keep.data <- keep.data[is.na(keep.data$language) | keep.data$language >=90,]
 ```
 
-Now we have a tidy data file that we can analyze. 
+Save tidy data file. 
+
+```{r save}
+write.csv(all.data, file="/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/soc-xsit-ipad-alldata.csv")
+```
