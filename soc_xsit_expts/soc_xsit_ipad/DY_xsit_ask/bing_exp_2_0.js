@@ -378,6 +378,8 @@ var experiment = {
 		  	experiment.keepIdx[experiment.item] = new_i;
 	  }
 	  
+	  console.log("trialType is: " + experiment.trialTypes[experiment.item]);
+
 	  data = {
 			  itemNum: experiment.item,
 			  trialType: experiment.trialTypes[experiment.item],
@@ -439,6 +441,9 @@ var experiment = {
 	    	sound = experiment.trialSounds[experiment.item];
 	    	
 	    	var idx;
+
+	    	console.log("keep pic is: " + experiment.keepIdx[experiment.item]);
+
 	    	//this was a continuation
 	    	if(experiment.keepPic[experiment.item].length > 0){
 	    		idx = experiment.keepIdx[experiment.item];

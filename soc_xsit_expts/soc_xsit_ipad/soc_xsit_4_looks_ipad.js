@@ -230,31 +230,6 @@ trim = function(item) {
   return tmp.slice(tmp.lastIndexOf("/")+1,tmp.lastIndexOf(".")); 
 };
 
-/* code to resize video player on ipad based on the dimensions of the video 
- * 
- */
-
-/* function naturalSize() {
-  var myVideo = document.getElementById('video1');
-  var myContent = document.getElementById('video_player');
-  myVideo.height = myVideo.videoHeight;
-  myVideo.width = myVideo.videoWidth;
-  
-  //if the video is bigger than the container it'll fit
-  ratio = myVideo.videoWidth/myVideo.videoHeight;
-  if(parseInt(myContent.offsetWidth,10)<myVideo.videoWidth){
-   myVideo.height = myVideo.videoHeight*parseInt(myContent.offsetWidth,10)/myVideo.videoWidth;
-     myVideo.width=parseInt(myContent.offsetWidth,10); 
-  }
-}
-// register listener function on metadata load
-function myAddListener(){
-  var myVideo = document.getElementById('video1');
-  myVideo.addEventListener('loadedmetadata', naturalSize, false);
-}
-
-window.onload = myAddListener();*/
-
 
 // Variable Assignment 
 
@@ -319,6 +294,7 @@ $(exampleImages2Double.map(function(elem){return 'stimuli/images/'+elem+'.jpg';}
 
 
 exampleFaces = [['RDkidslonger', 'LDkidslonger']],
+exampleFacesIdx = [1,0]
 testFaces = ['LDkidslonger', 'RDkidslonger'],
 
 
@@ -343,6 +319,7 @@ showSlide("instructions"); //Show instruction slide
 
 var experiment = {
   cond: 'soc_xsit_2_0',
+  subId: '',
   social_cond: '',
   trialOrder: trialOrder,
   trials: allSpacings[0],
@@ -375,6 +352,7 @@ var experiment = {
     showSlide("finished"); //Show the finish slide.
     experiment.social_cond=testCondition;
     experiment.browser=BrowserDetect.browser;
+    experiment.subId=subjectID;
   
     videoE = document.getElementById("endvideo");
 
@@ -414,6 +392,7 @@ var experiment = {
   },
 
   conditionClick: function() {
+    subjectID = $("#subjectID").val()
     showSlide("condition")
     $(".conditionButton").click(function() {
           testCondition = this.id;
@@ -421,49 +400,12 @@ var experiment = {
   },
 
   conditionTouch: function() {
+    subjectID = $("#subjectID").val()
     showSlide("condition")
     $(".conditionButton").one("touchstart", function(event) {
           testCondition = $(this).attr('id')
     })
   },
-
-/*  boxTraining: function() {
-    // Order of videos
-    var boxExampleFaces = ['LDkidslonger', 'RDkidslonger']
-    
-
-           showSlide("stage");
-
-           // Get box images 
-           for (j = 0; j < imgsPerSlide; j++) {
-             $(".xsit_pic")[j].children[0].src = "stimuli/images/box.jpg";
-           };
-
-           // Load the video
-           videoElement = document.getElementById("video1");
-           boxVid = boxExampleFaces[i];
-           console.log(i);
-           console.log(boxVid);
-
-            if (videoElement.canPlayType("video/mp4")) {
-                $("#video1")[0].src = "stimuli/videos/"+boxVid+".mov";          
-             }
-            else if (videoElement.canPlayType("video/ogg")) {
-                 $("#video1")[0].src = "stimuli/videos/"+boxVid+".ogv";          
-            }
-             else {
-                  window.alert("Can't play anything");
-            }
-
-            $("#video1")[0].load(); 
-
-            // Play Video
-            //Wait, Play eye gaze video 
-          setTimeout(function(){
-              $("#video1")[0].play();
-          }, 1300);
-
-  },*/
 
 
    training: function() {
@@ -531,25 +473,31 @@ var experiment = {
     Then, you can check if experiment.keepPic[experiment.item].length == 0. If it is, 
     this is the first trial for this object (exposure). Otherwise, it's a same/switch trial. 
     */
+    console.log("Make choice experiment.item is: " + experiment.item);
+    console.log("Make choice experiment.keepPic[experiment.item].length is: " + experiment.keepPic[experiment.item].length);
+
     
     /* Examples */
     if(Math.floor(experiment.exampleItem) <= numExamples) {
-      face_vid = experiment.faceCenter; 
-      faceLookIdx = -1; // if center, then face index is -1 
+      face_vid = experiment.exampleFaces[experiment.exampleItem-1]; 
+      faceLookIdx = exampleFacesIdx[experiment.exampleItem-1]; 
     } 
-    //put in if statement: experiment.keepPic[experiment.item].length == 0 
-    //Social
-    else if(experiment.keepPic[experiment.item].length >= 0 & testCondition == "Social") {
+    /*else if(experiment.keepPic[experiment.item].length > 0 & testCondition == "Social") { // same/switch trial 
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
-    } else { //Non-social exposure, or test
+    } 
+    else { //Non-social exposure, or test trials
         face_vid = experiment.faceCenter; // non-social condition, the faceLook is always center
         faceLookIdx = -1;
     }
+
+    */
     
 
 
     /* Same/Switch trial */
+
+    console.log("Make choice experiment.trialTypes[experiment.item] is: " + experiment.trialTypes[experiment.item]);
 
 
     if(Math.floor(experiment.exampleItem) > numExamples &
@@ -558,8 +506,9 @@ var experiment = {
       all_pos.splice(i,1); // splice() adds/removes items to/from an array and returns that item
       all_pos = shuffle(all_pos);
       new_i = all_pos[0];  
-      new_img = trim($(".xsit_pic")[new_i].children[0].src);
+      new_img = trim($(".xsit_pic")[new_i].children[0].src);      
     } 
+
     
     //first trial for an object, exposure trial
     
@@ -567,7 +516,17 @@ var experiment = {
         experiment.keepPic[experiment.item].length == 0){
         experiment.keepPic[experiment.item] = new_img;
         experiment.keepIdx[experiment.item] = new_i;
+        // add face_vid info here
+        face_vid = experiment.faceVids[faceLook];
+        faceLookIdx = faceLook;
+    } else {
+      face_vid = experiment.faceCenter; // non-social condition, the faceLook is always center
+      faceLookIdx = -1;
     }
+
+    console.log("Make choice face vid is: " + face_vid);
+    console.log("Make choice chosen idx is: " + i);
+    console.log("Make choice keepidx is: " + new_i);
    
     //store everything we want about the trial
     data = {
@@ -612,16 +571,12 @@ var experiment = {
       //and returns it.
 
         trial = experiment.trials.shift();
-
-        console.log("Same pos: " + experiment.samePos[experiment.item]);
     
       //If the current trial is undefined, it means the trials array was 
         //empty, which means that we're done, so call the end function.
         if (typeof trial == "undefined") {return showSlide("qanda");}
       
         experiment.item = trial-1;
-        console.log("Trial is: " + trial);
-        console.log("Item is: " + experiment.item);
         sound = experiment.trialSounds[experiment.item];
     
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
@@ -698,21 +653,14 @@ var experiment = {
       sound=sound+'_this'; // chose "one" framing to make less pedagogical
     }
 
-    if(Math.floor(experiment.exampleItem) > numExamples & Math.floor(experiment.exampleItem2) >=numExamples){
-      var idx = random(0, experiment.trialTypes[experiment.item]-1);
-      experiment.keepIdx[experiment.item] = idx;
-      experiment.keepPic[experiment.item] = next_imgs[idx];
-    }
+    console.log("#########################");
+    console.log("Next experiment.item is: " + experiment.item)
+    console.log("Next trial type is: " + experiment.trialTypes[experiment.item]);
+
+    
   }
 
-  //get the appropriate sound
-  //  if(BrowserDetect.browser == "Chrome" ||
-  //      BrowserDetect.browser == "Firefox"){
-  //    $("#sound_player")[0].src = "stimuli/sounds/"+sound+".ogg";
-  //  } else {
-  //    $("#sound_player")[0].src = "stimuli/sounds/"+sound+".mp3";
-  //  }
-             
+    
    //blank out all borders so no item is pre-selected
       $(".xsit_pic").each(function(){this.children[0].style.border = '5px solid white';});
 
