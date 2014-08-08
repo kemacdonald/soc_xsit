@@ -236,8 +236,8 @@ try {
     xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
     xmlHttp.send( null );
-    //var cond = xmlHttp.responseText; // For actual experimental runs
-    var cond = random(1,2); // note for testing experiment
+    var cond = xmlHttp.responseText; // For actual experimental runs
+    //var cond = random(1,2); // note for testing experiment
 } catch (e) {
     var cond = 1;
 }
