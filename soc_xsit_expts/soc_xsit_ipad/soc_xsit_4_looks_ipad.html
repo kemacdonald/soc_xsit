@@ -30,9 +30,9 @@
         be able to hear the words.</b></p><br><br>
 
 
-   	<p class="block-text">
+   	    <p class="block-text">
         Subject ID: <br>
-        <input type="text" id="subjectID" name="subjectID" size="30"> 
+        <input type="number" pattern="\d*"/ id="subjectID" name="subjectID" size="30"> 
       	</p>
                 
         <button type="button" onClick="this.blur(); experiment.conditionClick()"><font size="24">Start</font></button>
