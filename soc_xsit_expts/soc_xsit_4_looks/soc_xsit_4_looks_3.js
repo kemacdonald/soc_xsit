@@ -230,7 +230,7 @@ var startTime = 0; // Starts the clock for recording RT
  */
 
 try {
-    var filename = "KM_soc_xsit_4_looks_2";
+    var filename = "KM_soc_xsit_4_looks_withinSubs_good";
     var condCounts = "1,50;2,50";  
     var xmlHttp = null;
     xmlHttp = new XMLHttpRequest();
@@ -242,8 +242,10 @@ try {
     var cond = 1;
 }
 
-if(cond == 1){var cond = "1"};
-if(cond == 2){var cond = "2"};
+//if(cond == 1){var cond = "1"};
+//if(cond == 2){var cond = "2"};
+
+
 
 /* code for condition randomization. There are two conditions: social block first, or no-social block first */
 switch (cond) {
@@ -396,6 +398,10 @@ var experiment = {
 
   /* lets the participant select a picture and records which one was chosen */
   makeChoice: function(event) {
+
+    console.log("cond is: " + cond);
+    console.log("social_cond is: " + social_cond);
+
     $(".xsit_pic").unbind("click");
     var endTime = (new Date()).getTime();
     

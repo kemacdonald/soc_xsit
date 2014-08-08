@@ -28,10 +28,10 @@ title:: Play a fun word learning game (5 mins, do only once)!
 
 description:: word-learning experiment (5 mins, do only once)!
 
-nameofexperimentfiles::soc_xsit_4_looks_pilot_2
+nameofexperimentfiles::soc_xsit_4_looks_pilot_3_withinsubs
 &&&   the files that the script generates for you will have names based on this. 
 
-experimentURL::https://www.stanford.edu/~kylem4/soc_xsit_4_looks/soc_xsit_4_looks_2.html
+experimentURL::https://langcog.stanford.edu/expts/KM_soc_xsit/soc_xsit_4_looks/soc_xsit_4_looks_3.html
 &&&   the URL where you've posted your external HIT
 
 hitfolderpath::/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_4_looks
