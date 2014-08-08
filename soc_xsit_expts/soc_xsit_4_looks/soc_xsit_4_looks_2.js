@@ -474,6 +474,7 @@ var experiment = {
   next: function() {
     
     var i, next_imgs = [],sound, face_vid, blank;
+    console.log("Item: " + experiment.item);
 
     //show example trials
     if(Math.floor(experiment.exampleItem) < numExamples) { 
@@ -574,11 +575,11 @@ var experiment = {
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 5300)
+    }, 300)
 
     //Wait, Play a sound
       setTimeout(function(){
         $("#sound_player")[0].play();      
-      }, 2000);
+      }, 200);
     }
   };

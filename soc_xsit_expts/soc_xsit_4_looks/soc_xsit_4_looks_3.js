@@ -249,7 +249,7 @@ if(cond == 2){var cond = "2"};
 switch (cond) {
         case "1": 
             cond_name = "Short";
-            social_cond = "Social";
+            social_cond = "SocialFirst";
             int_cond = "Zero";
             exampleFaceIdx = 0;
             testFaceIdx = 0;
@@ -259,7 +259,7 @@ switch (cond) {
             break;
         case "2": 
             cond_name = "Short";
-            social_cond = "No-social";
+            social_cond = "No-socialFirst";
             int_cond = "Zero";
             exampleFaceIdx = 0;
             testFaceIdx = 1;
@@ -423,12 +423,12 @@ var experiment = {
       faceLookIdx = -1; // if center, then face index is -1 
     } 
     else if(experiment.keepPic[experiment.item].length == 0 & 
-    	social_cond == "Social" & experiment.item <= 8) { //note add & number is 1-8;; then add condition is no-social & number is 9-16
+    	social_cond == "SocialFirst" & experiment.item < 8) { //note add & number is 1-8;; then add condition is no-social & number is 9-16
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
             console.log("cond should be social: " + social_cond);
     } else if(experiment.keepPic[experiment.item].length == 0 &
-      social_cond == "No-social" & experiment.item > 8) {
+      social_cond == "No-socialFirst" & experiment.item >= 8) {
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
             console.log("cond should be no social: " + social_cond);
@@ -506,10 +506,10 @@ var experiment = {
         sound = experiment.trialSounds[experiment.item];
     
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
-      if(experiment.keepPic[experiment.item].length == 0 & social_cond == "Social" & experiment.item <= 8) { //note added experiment.item <= 8
+      if(experiment.keepPic[experiment.item].length == 0 & social_cond == "SocialFirst" & experiment.item < 8) { //note added experiment.item <= 8
         faceLook = random(4);
         face_vid = experiment.faceVids[faceLook];
-      } else if(experiment.keepPic[experiment.item].length == 0 & social_cond == "No-social" & experiment.item > 8){ //note added this if statement
+      } else if(experiment.keepPic[experiment.item].length == 0 & social_cond == "No-socialFirst" & experiment.item >= 8){ //note added this if statement
         faceLook = random(4);
         face_vid = experiment.faceVids[faceLook];
         }else {
@@ -586,11 +586,11 @@ var experiment = {
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 200) //note 5300
+    }, 3000) 
 
     //Wait, Play a sound
       setTimeout(function(){
         $("#sound_player")[0].play();      
-      }, 200); //note 2000
+      }, 2000); 
     }
   };
