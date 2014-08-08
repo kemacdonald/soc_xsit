@@ -197,7 +197,7 @@ trim = function(item) {
 // Variable assignment for use later in experiment
 var numImgsConds = [2, 4, 6];
 var imgsPerSlide = numImgsConds[1]; // 4 images per slide 
-var numBlocks = 8;
+var numBlocks = 16; //note from 8
 var numOccurs = 2;
 
 var numUsedImgs = ((imgsPerSlide*numOccurs)-1)*numBlocks;
@@ -216,10 +216,10 @@ var allSounds = range(1,numSounds);
     allSounds = allSounds.slice(0,numUsedSounds);
 
 // an array to generate the order that should be used
-var allOrders = [[1, 2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 1, 2, 1, 2, 1]];
+var allOrders = [[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1]]; //note doubled each array
 //SamePos for One Kind of Trial (Switch or Keep)
 var allSamePosOne = [[1, 1, 0, 0], [1, 0, 1, 0], [1, 0, 0, 1],
-                     [0, 1, 1, 0], [0, 1, 0, 1], [0, 0, 1, 1]]; 
+                     [0, 1, 1, 0], [0, 1, 0, 1], [0, 0, 1, 1]]; //note unsure about what to do here
 var numExamples = 2; // Number of examples 
 var startTime = 0; // Starts the clock for recording RT 
 
@@ -237,34 +237,35 @@ try {
     xmlHttp.open( "GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
     xmlHttp.send( null );
     var cond = xmlHttp.responseText; // For actual experimental runs
-    //var cond = random(1,3); // for testing experiment
+    //var cond = random(1,2); // note for testing experiment
 } catch (e) {
     var cond = 1;
 }
 
-var cond = "1";
+if(cond == 1){var cond = "1"};
+if(cond == 2){var cond = "2"};
 
-/* code for condition randomization. This includes a replication of social-short and a new condition: no-social-short */
+/* code for condition randomization. There are two conditions: social block first, or no-social block first */
 switch (cond) {
         case "1": 
             cond_name = "Short";
-            social_cond = "Social";
+            social_cond = "SocialFirst";
             int_cond = "Zero";
             exampleFaceIdx = 0;
             testFaceIdx = 0;
-            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8] 
-            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
-            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
+            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16] //note from 8
+            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 ,1, 0, 1, 0, 1, 0 ,1 ]; //note from 8
+            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]; //note from 8
             break;
         case "2": 
             cond_name = "Short";
-            social_cond = "No-social";
+            social_cond = "No-socialFirst";
             int_cond = "Zero";
             exampleFaceIdx = 0;
             testFaceIdx = 1;
-            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8] 
-            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
-            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
+            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16]  //note from 8
+            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]; //note from 8
+            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]; //note from 8
             break;
         default:
 };
@@ -346,12 +347,12 @@ var experiment = {
   samePos: [allSamePosOne[samePosOrderOne][0], allSamePosOne[samePosOrderTwo][0],
             allSamePosOne[samePosOrderOne][1], allSamePosOne[samePosOrderTwo][1],
             allSamePosOne[samePosOrderOne][2], allSamePosOne[samePosOrderTwo][2],
-            allSamePosOne[samePosOrderOne][3], allSamePosOne[samePosOrderTwo][3]],
+            allSamePosOne[samePosOrderOne][3], allSamePosOne[samePosOrderTwo][3]], //note not sure about this
   data: [],
   about: "",
   broken: "",
-  keepPic: ['','','','','','','',''],
-  keepIdx: [0, 0, 0, 0, 0, 0, 0, 0],
+  keepPic: ['','','','','','','','', '','','','','','','',''], //note from 8
+  keepIdx: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //note from 8
   item: 0,
   exampleItem: 0,
   trialSounds: allSounds.map(function(elem){return 'Sound'+elem;}),
@@ -422,12 +423,19 @@ var experiment = {
       faceLookIdx = -1; // if center, then face index is -1 
     } 
     else if(experiment.keepPic[experiment.item].length == 0 & 
-    	social_cond == "Social") {
+    	social_cond == "SocialFirst" & experiment.item < 8) { //note add & number is 1-8;; then add condition is no-social & number is 9-16
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
-    } else {
+            console.log("cond should be social: " + social_cond);
+    } else if(experiment.keepPic[experiment.item].length == 0 &
+      social_cond == "No-socialFirst" & experiment.item >= 8) {
+            face_vid = experiment.faceVids[faceLook];
+            faceLookIdx = faceLook;
+            console.log("cond should be no social: " + social_cond);
+    } else { //note this will happen in 9-16 on social condition and 1-8 on no-social
         face_vid = experiment.faceCenter; // non-social condition, the faceLook is always center
         faceLookIdx = -1;
+        console.log("cond is:" + social_cond);
     }
     
     /* Same/Switch trial */
@@ -498,10 +506,13 @@ var experiment = {
         sound = experiment.trialSounds[experiment.item];
     
       // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
-      if(experiment.keepPic[experiment.item].length == 0 & social_cond == "Social") {
+      if(experiment.keepPic[experiment.item].length == 0 & social_cond == "SocialFirst" & experiment.item < 8) { //note added experiment.item <= 8
         faceLook = random(4);
         face_vid = experiment.faceVids[faceLook];
-      } else {
+      } else if(experiment.keepPic[experiment.item].length == 0 & social_cond == "No-socialFirst" & experiment.item >= 8){ //note added this if statement
+        faceLook = random(4);
+        face_vid = experiment.faceVids[faceLook];
+        }else {
         face_vid = experiment.faceCenter;
           }
       
@@ -575,11 +586,11 @@ var experiment = {
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 300)
+    }, 3000) 
 
     //Wait, Play a sound
       setTimeout(function(){
         $("#sound_player")[0].play();      
-      }, 200);
+      }, 2000); 
     }
   };
