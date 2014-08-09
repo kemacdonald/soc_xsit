@@ -68,7 +68,7 @@ bing_clean <- function(filename) {
         x$V11 <- date
         x$V12 <- id
         x$V13 <- condition
-        return(x) ## need this return to get the data frame!
+        return(x) ## need this to get the data frame!
 }
 
 #apply munging function to each kid's data file

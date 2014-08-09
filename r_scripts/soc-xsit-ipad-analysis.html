@@ -91,7 +91,7 @@ data.test_df &lt;- read.csv(&quot;/Users/kmacdonald/Documents/Projects/SOC_XSIT/
 ## 2    Social         12</code></pre>
 <p>Get age by condition breakdown</p>
 <pre class="r"><code>data.test_df %&gt;%
-        group_by( age.group, condition) %&gt;%
+        group_by(age.group, condition) %&gt;%
         summarise(n_subject = n_distinct(id)) %&gt;%
         print()</code></pre>
 <pre><code>## Source: local data frame [5 x 3]
@@ -103,47 +103,21 @@ data.test_df &lt;- read.csv(&quot;/Users/kmacdonald/Documents/Projects/SOC_XSIT/
 ## 3         4    Social         6
 ## 4         5 No-social         2
 ## 5         5    Social         4</code></pre>
-<p>Get trial breakdown</p>
-<pre class="r"><code>data.test_df %&gt;%
-        group_by(id, trial_type_redo) %&gt;%
-        summarise(n_trial = n()) %&gt;%
-        print()</code></pre>
-<pre><code>## Source: local data frame [32 x 3]
-## Groups: id
-## 
-##    id trial_type_redo n_trial
-## 1   1            Same       3
-## 2   1          Switch       3
-## 3   2            Same       2
-## 4   2          Switch       4
-## 5   3            Same       3
-## 6   3          Switch       3
-## 7   4            Same       5
-## 8   4          Switch       1
-## 9   5            Same       1
-## 10  5          Switch       5
-## 11  6            Same       4
-## 12  6          Switch       2
-## 13  7            Same       3
-## 14  7          Switch       3
-## 15  8            Same       4
-## 16  8          Switch       2
-## 17  9            Same       2
-## 18  9          Switch       4
-## 19 10            Same       3
-## 20 10          Switch       3
-## 21 11            Same       3
-## 22 11          Switch       3
-## 23 12          Switch       6
-## 24 13            Same       6
-## 25 14            Same       3
-## 26 14          Switch       3
-## 27 15            Same       2
-## 28 15          Switch       4
-## 29 16            Same       1
-## 30 16          Switch       5
-## 31 17            Same       2
-## 32 17          Switch       4</code></pre>
+<p>Get trial by kid breakdown. We will use this to decide which kids to keep in the analysis.</p>
+<pre class="r"><code>include_df &lt;- data.test_df %&gt;%
+                group_by(id, trial_type_redo) %&gt;%
+                summarise(n_trial = n()) %&gt;%
+                mutate(include_trial = ifelse(n_trial &gt;= 2, 1,0)) %&gt;%
+                summarise(sum(include_trial))
+
+include_df &lt;- include_df %&gt;% 
+                        mutate(include_kid = ifelse(include_df[,2] == 2, 1,0)) %&gt;%
+                        select(id, include_kid)
+
+#Keep only kids who got at least 2 same/switch trials
+data.test_df &lt;- join(data.test_df, include_df, by=&quot;id&quot;)</code></pre>
+<p>Keep only the first two test trials for each trial type.</p>
+<pre class="r"><code>## this is tricky!</code></pre>
 <p>Compute means. By kid and across kids</p>
 <p>Compute measurement error across kids.</p>
 <pre class="r"><code>#ms$cih &lt;- aggregate(correct ~ trialType + age.grp , data=mss,FUN=ci.high)$correct

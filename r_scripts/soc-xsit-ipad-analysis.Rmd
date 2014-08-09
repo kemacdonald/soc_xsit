@@ -39,21 +39,40 @@ data.test_df %>%
         summarise(n_subjects = n_distinct(id)) %>%
         print()
 ```
-
 Get age by condition breakdown
 ```{r condition_by_age}
 data.test_df %>%
-        group_by( age.group, condition) %>%
+        group_by(age.group, condition) %>%
         summarise(n_subject = n_distinct(id)) %>%
         print()
 ```
-Get trial breakdown
+Get trial by kid breakdown. We will use this to decide which kids to keep
+in the analysis. 
 ```{r trial_breakdown}
+include_df <- data.test_df %>%
+                group_by(id, trial_type_redo) %>%
+                summarise(n_trial = n()) %>%
+                mutate(include_trial = ifelse(n_trial >= 2, 1,0)) %>%
+                summarise(sum(include_trial))
 
-data.test_df %>%
-        group_by(id, trial_type_redo) %>%
-        summarise(n_trial = n()) %>%
-        print()
+include_df <- include_df %>% 
+                        mutate(include_kid = ifelse(include_df[,2] == 2, 1,0)) %>%
+                        select(id, include_kid)
+
+#Keep only kids who got at least 2 same/switch trials
+data.test_df <- join(data.test_df, include_df, by="id")
+```
+Keep only the first two test trials for each trial type.
+```{r keep_trials}
+## this is tricky!
+# function that takes in a data frame
+flag_trials <- function(df) {
+        # iterate over trial_type_redo column
+        # build array for same and switch
+        # if array length is greater than 2, then we filter out that trial
+}
+
+
 ```
 
 Compute means. By kid and across kids
