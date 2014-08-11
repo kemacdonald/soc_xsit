@@ -5,7 +5,11 @@ date: "August 4, 2014"
 output: html_document
 ---
 
+<<<<<<< HEAD
 ##Script for visualizing and analyzing soc-xsit-ipad data.
+=======
+###Script for visualizing and analyzing soc-xsit-ipad data.
+>>>>>>> 5ff243791f1f4e5d788cb78c223f4766f09afdbd
 
 Load libraries and helper functions.
 ```{r load libraries, message=FALSE, warning=FALSE}
@@ -24,7 +28,11 @@ data.all_df <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed
 data.test_df <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/soc-xsit-ipad-testdata.csv")
 ```
 
+<<<<<<< HEAD
 # Summarize data set. 
+=======
+### Summarize data set. 
+>>>>>>> 5ff243791f1f4e5d788cb78c223f4766f09afdbd
 
 Get the number of subjects 
 ```{r num_subs}
@@ -53,7 +61,11 @@ Get trial breakdown
 data.test_df %>%
         group_by(id, trial_type_redo) %>%
         summarise(n_trial = n()) %>%
+<<<<<<< HEAD
         head()
+=======
+        print()
+>>>>>>> 5ff243791f1f4e5d788cb78c223f4766f09afdbd
 ```
 
 Compute means. By kid and across kids
