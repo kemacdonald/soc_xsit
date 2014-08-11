@@ -127,16 +127,14 @@ all.data &lt;- ldply(
 names(all.data) &lt;- c(&quot;itemNum&quot;,&quot;trialType&quot;,&quot;samePos&quot;,&quot;chosen&quot;,&quot;chosen_idx&quot;,
               &quot;kept&quot;,&quot;kept_idx&quot;,&quot;rt&quot;,&quot;faceVid&quot;,&quot;faceIdx&quot;, &quot;date&quot;, &quot;id&quot;, &quot;condition&quot;)</code></pre>
 <p>Tag the different trial types:<br /> * example * exposure * test</p>
-<p>Exclude subjects for getting examples wrong.</p>
+<p>Arrange the data file with sensible column order.</p>
 <pre class="r"><code>#dplyr syntax
 all.data &lt;- all.data %&gt;% 
                 group_by(date) %&gt;%
                 mutate(trial = c(1:14)) %&gt;%
                 mutate(example_trial = ifelse(trial %in% c(1:2),1,0),
                        exposure_trial = ifelse(trial %in% c(3,5,7,9,11,13),1,0),
-                       test_trial = ifelse(trial %in% c(4,6,8,10,12,14),1,0),
-                       include = ifelse(chosen[1] == &quot;flower&quot; &amp; 
-                                        chosen[2] == &quot;truck&quot;,1,0)) %&gt;%
+                       test_trial = ifelse(trial %in% c(4,6,8,10,12,14),1,0)) %&gt;%
                 arrange(date, trial)</code></pre>
 <p>Clean up the data: * figure out if child answered correctly on that trial * relabel variables and change variable types for analysis</p>
 <pre class="r"><code>#find whether child's choice was correct 
@@ -149,11 +147,8 @@ all.data &lt;- all.data %&gt;%
                                         chosen == kept))) 
 
 #relabel variables and variable types for analysis
-all.data$trialType &lt;- factor(all.data$trialType, labels = c('Same','Switch'))
 all.data$rt &lt;- as.integer(all.data$rt)
-all.data$condition &lt;- as.factor(all.data$condition)
-
-##RT Exclusions##</code></pre>
+all.data$condition &lt;- as.factor(all.data$condition)</code></pre>
 <p>Add demographic data for each child (age and gender).</p>
 <pre class="r"><code>#read in demo csv
 demo &lt;- read.csv(&quot;/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/soc-xsit-ipad-demo.csv&quot;)
@@ -163,10 +158,25 @@ all.data &lt;- join(all.data,demo)</code></pre>
 <pre class="r"><code>#reorder columns to put id and demo variables first
 all.data &lt;- all.data[c(&quot;id&quot;,&quot;birthday&quot;,&quot;gender&quot;,&quot;age&quot;,&quot;age.group&quot;,&quot;date&quot;, &quot;condition&quot;, 
                    &quot;trial&quot;,&quot;itemNum&quot;,&quot;trialType&quot;,&quot;samePos&quot;,&quot;chosen&quot;,&quot;chosen_idx&quot;,&quot;kept&quot;,
-                   &quot;kept_idx&quot;,&quot;rt&quot;,&quot;faceVid&quot;,&quot;faceIdx&quot;,&quot;trial&quot;,&quot;example_trial&quot;,
-                   &quot;exposure_trial&quot;,&quot;test_trial&quot;,&quot;include&quot;)]</code></pre>
-<p>Save tidy data file.</p>
-<pre class="r"><code>write.csv(all.data, file=&quot;/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/soc-xsit-ipad-alldata.csv&quot;)</code></pre>
+                   &quot;kept_idx&quot;,&quot;rt&quot;,&quot;faceVid&quot;,&quot;faceIdx&quot;,&quot;example_trial&quot;,
+                   &quot;exposure_trial&quot;,&quot;test_trial&quot;, &quot;correct&quot;)]</code></pre>
+<p>Fix trial type labels -&gt; not tracked correctly during experiment.</p>
+<pre class="r"><code>exposure.trials &lt;- all.data %&gt;%
+                filter(exposure_trial == 1) %&gt;%
+                mutate(trial_type_redo = ifelse(chosen == kept,1,2)) %&gt;%
+                select(id, itemNum, trial_type_redo, chosen_exposure = chosen, 
+                       kept_exposure = kept, correct_exposure = correct)
+
+test.trials &lt;- all.data %&gt;%
+                filter(test_trial == 1) 
+
+test.trials &lt;- join(test.trials,exposure.trials, by=c(&quot;id&quot;,&quot;itemNum&quot;))
+
+test.trials$trial_type_redo &lt;- factor(test.trials$trial_type_redo, 
+                                      labels = c('Same','Switch'))</code></pre>
+<p>Save tidy data files.</p>
+<pre class="r"><code>write.csv(all.data, file=&quot;/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/soc-xsit-ipad-alldata.csv&quot;)
+write.csv(test.trials, file=&quot;/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/soc-xsit-ipad-testdata.csv&quot;)</code></pre>
 
 
 </div>

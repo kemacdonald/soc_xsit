@@ -165,41 +165,6 @@ function shuffle(array) {
     return array;
 }
 
-function createDot(dotx, doty, i) {
-  var dots = [1, 2, 3, 4, 5];
-
-  var dot = document.createElement("img");
-  dot.setAttribute("class", "dot");
-  dot.id = "dot_" + dots[i];
-  dot.src = "images/dots/dot_" + dots[i] + ".jpg";
-
-    var x = Math.floor(Math.random()*950);
-    var y = Math.floor(Math.random()*550);
-
-    var invalid = "true";
-    //make sure dots do not overlap
-    while (true) {
-      invalid = "true";
-      for (j = 0; j < dotx.length ; j++) {
-        if (Math.abs(dotx[j] - x) + Math.abs(doty[j] - y) < 200) {
-          var invalid = "false";
-          break; 
-        }
-    }
-    if (invalid === "true") {
-      dotx.push(x);
-          doty.push(y);
-          break;  
-      }
-      x = Math.floor(Math.random()*400);
-      y = Math.floor(Math.random()*400);
-  }
-
-    dot.setAttribute("style","position:absolute;left:"+x+"px;top:"+y+"px;");
-
-    training.appendChild(dot);
-}
-
 /*Randomly return an element from an array. Useful for condition randomization.*/
 Array.prototype.random = function() {
   return this[random(this.length)];
@@ -217,12 +182,11 @@ $.fn.preload = function() {
 /* loads all of the videos into the cache so they don't need to be individually
  * loaded at time of presentation. Ensures that experiment time happens as intended
  */
-
-/*$.fn.preloadVids = function() {
+$.fn.preloadVids = function() {
   this.each(function(){
         $('<video/>')[0].src = this;
     });
-};*/
+};
 
 /* strips off the directory and suffix of image/sound/etc file names */
 trim = function(item) {
@@ -230,222 +194,207 @@ trim = function(item) {
   return tmp.slice(tmp.lastIndexOf("/")+1,tmp.lastIndexOf(".")); 
 };
 
+// Variable assignment for use later in experiment
+var numImgsConds = [2, 4, 6];
+var imgsPerSlide = numImgsConds[1]; // 4 images per slide 
+var numBlocks = 16; //note from 8
+var numOccurs = 2;
 
-// Variable Assignment 
-
-var imgsPerSlide = 2;
-// var numBlocks = 4;
-// var numOccurs = 2;
-
-var numBlocks = 6; 
-var numOccurs = 2
-
-var numUsedImgs = ((imgsPerSlide*numOccurs)-1)*numBlocks; //((imgsPerSlide*numOccurs)-1)*numBlocks;
+var numUsedImgs = ((imgsPerSlide*numOccurs)-1)*numBlocks;
 var numUsedSounds = numBlocks;
 
-var numImgs = 28;
-var numSounds = 6;
+var numImgs = 140;
+var numSounds = 16;
 
-allImgs = range(1,numImgs);
-allImgs = shuffle(allImgs);
-allImgs = allImgs.slice(0,numUsedImgs);
+var allImgs = range(1,numImgs);
+    allImgs = shuffle(allImgs);
+    allImgs = allImgs.slice(0,numUsedImgs); // slice() returns selected elements as a new array object.
 
-allSounds = range(1,numSounds);
-allSounds = shuffle(allSounds);
-allSounds = allSounds.slice(0,numUsedSounds);
+var blank = blank;
+var allSounds = range(1,numSounds);
+    allSounds = shuffle(allSounds);
+    allSounds = allSounds.slice(0,numUsedSounds);
 
+// an array to generate the order that should be used
+var allOrders = [[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1]]; //note doubled each array
+//SamePos for One Kind of Trial (Switch or Keep)
+var allSamePosOne = [[1, 1, 0, 0], [1, 0, 1, 0], [1, 0, 0, 1],
+                     [0, 1, 1, 0], [0, 1, 0, 1], [0, 0, 1, 1]]; //note unsure about what to do here
+var numExamples = 2; // Number of examples 
+var startTime = 0; // Starts the clock for recording RT 
+
+/* Call Maker getter to get cond variables
+ * Takes number and counts for each condition
+ * Returns a condition number (for this experiment 1-3 
+ * for the 3 different gaze length conditions)
+ */
+
+try {
+    var filename = "KM_soc_xsit_4_looks_2";
+    var condCounts = "1,50;2,50";  
+    var xmlHttp = null;
+    xmlHttp = new XMLHttpRequest();
+    xmlHttp.open( "GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
+    xmlHttp.send( null );
+    var cond = xmlHttp.responseText; // For actual experimental runs
+    //var cond = random(1,2); // note for testing experiment
+} catch (e) {
+    var cond = 1;
+}
+
+if(cond == 1){var cond = "1"};
+if(cond == 2){var cond = "2"};
+
+/* code for condition randomization. There are two conditions: social block first, or no-social block first */
+switch (cond) {
+        case "1": 
+            cond_name = "Short";
+            social_cond = "ThisFirst";
+            int_cond = "Zero";
+            exampleFaceIdx = 0;
+            testFaceIdx = 0;
+            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16] //note from 8
+            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 ,1, 0, 1, 0, 1, 0 ,1 ]; //note from 8
+            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]; //note from 8
+            break;
+        case "2": 
+            cond_name = "Short";
+            social_cond = "OneFirst";
+            int_cond = "Zero";
+            exampleFaceIdx = 0;
+            testFaceIdx = 1;
+            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16]  //note from 8
+            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]; //note from 8
+            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]; //note from 8
+            break;
+        default:
+};
+        
+/* Randomize trial order */
+var trialOrder = random();       // same/switch order 
+var samePosOrderOne = random(6); // keep/move order
+var samePosOrderTwo = random(6); // keep/move order
+
+//var audioSprite = $("#sound_player")[0];
+//var handler;
+
+//initialize progress bar
+$("#progressbar").progressbar();
+$("#progressbar").progressbar( "option", "max", numBlocks*numOccurs + 
+    numOccurs*numExamples);
+
+exampleImages = [['squirrel','chair',
+                  'squirrel','toaster',
+                  'tomato','whistle',
+                  'sweater','tomato'],
+                 ['squirrel','chair','tie','trumpet',
+                  'squirrel','toaster','truck','crown',
+                  'whistle','tomato','tree','spoon',
+                  'sweater','oven','tomato','well'],
+                 ['chair','tie','trumpet','squirrel',' basket', 'door',
+                  'toaster','truck', 'crown','squirrel','ruler', 'grapes', 
+                  'helicopter', 'lion','whistle','tomato','tree','spoon',
+                  'plug', 'shoe', 'guitar', 'kettle', 'sweater','oven']],
+
+exampleFaces = [['silentLUshort', 'silentLUshort', 'silentRUshort', 'silentLDshort'],
+                ['silentLUmedium', 'silentLUmedium', 'silentRUmedium', 'silentLDmedium'],
+                ['silentLUlong', 'silentLUlong', 'silentRUlong', 'silentLDlong']],
+
+testFaces = [['silentLDshort', 'silentLUshort', 'silentRDshort', 'silentRUshort'],
+             ['silentLDmedium', 'silentLUmedium', 'silentRDmedium', 'silentRUmedium'],
+             ['silentLDlong', 'silentLUlong', 'silentRDlong', 'silentRUlong']],
+
+//make sure all images are loaded at runtime
 allImgs = allImgs.map(function(elem){return 'Novel'+elem;});
+allImgs = allImgs.concat(exampleImages[1]);
 $(allImgs.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 
-var allTypes = [[1, 1, 2, 2, 1, 2]]; //only same first
-
-//SamePos for One Kind of Trial (Switch or Keep)
-var allSamePosOne = [[1, 0], [0, 1], [1, 0]];
-
-var allSpacings = [[1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6],
-                   [1, 2, 1, 2, 3, 4, 3, 4],
-                   [1, 2, 3, 4, 1, 2, 3, 4]];
-
-
-var numExamples = 2;
-var startTime = 0;
-
-var trialOrder = 0;//random();
-var samePosOrderOne = random(2);
-var samePosOrderTwo = random(2);
-var cont = 0;
-var testCondition;
-
-var audioSprite = $("#sound_player")[0];
-var handler;
-
-var testFaceIdx;
-
-/*exampleImages2Double = ['lion','flower',
-          'tomato','flower',
-          'scissors','truck',
-          'truck','tie'],*/
-
-exampleImages2Double = ['lion','flower',
-                        'truck','tie'],
-
-//$(exampleImagesSingle.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
-$(exampleImages2Double.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
-
-
-exampleFaces = [['RDkidslonger', 'LDkidslonger']],
-exampleFacesIdx = [1,0]
-testFaces = ['LDkidslonger', 'RDkidslonger'],
-
-
-// preload face movies into cache
-
-/*videoElement = document.getElementById("video1");
+// flatten the faces array
+var allFaces = testFaces.reduce(function(a, b) {
+  return a.concat(b);
+});
+// preload movies into cache
+videoElement = document.getElementById("video1");
 
 if (videoElement.canPlayType("video/mp4")) {
-    $(testFaces.map(function(elem){return 'stimuli/videos/'+elem+'.mov';l})).preloadVids();
+    $(allFaces.map(function(elem){return 'stimuli/videos/'+elem+'.mov';l})).preloadVids();
        }
        else if (videoElement.canPlayType("video/ogg")) {
-          $(testFaces.map(function(elem){return 'stimuli/videos/'+elem+'.ogv';l})).preloadVids();
+          $(allFaces.map(function(elem){return 'stimuli/videos/'+elem+'.ogv';l})).preloadVids();
        }
        else {
            window.alert("Can't play anything");
        }
-*/
+
+if (BrowserDetect.browser != 'Chrome' && BrowserDetect.browser != 'Safari' && BrowserDetect.browser != 'Firefox') {
+    alert ("Warning: We have not tested this HIT with your browser. We recommend Chrome, Firefox or Safari");
+    $("#startButton").attr("disabled", "disabled");
+}
 
 showSlide("instructions"); //Show instruction slide
 
 // This is where we define the experiment variable, which tracks all the information we want to know about the experiment.
 
 var experiment = {
-  cond: 'soc_xsit_2_0',
-  subId: '',
-  social_cond: '',
-  trialOrder: trialOrder,
-  trials: allSpacings[0],
-  trialTypes: allTypes[trialOrder],
-  samePosOrderOne: samePosOrderOne,
+  condition: cond_name,
+  trialOrder: trialOrder,   
+  delay_condition: int_cond,
+  numReferents: imgsPerSlide,
+  trials: delay, // controls the number of intervening trials 
+  social_cond: social_cond,
+  test_trials: test_trials,
+  exposure_trials: exposure_trials,
+  trialTypes: allOrders[trialOrder], // allOrders: two arrays, alternating 1 and 2
+  samePosOrderOne: samePosOrderOne, 
   samePosOrderTwo: samePosOrderTwo,
-  samePos: [allSamePosOne[samePosOrderOne][0], allSamePosOne[samePosOrderOne][1],
-            allSamePosOne[samePosOrderTwo][0], allSamePosOne[samePosOrderTwo][1],
-            allSamePosOne[samePosOrderOne][0], allSamePosOne[samePosOrderOne][1]],
+  samePos: [allSamePosOne[samePosOrderOne][0], allSamePosOne[samePosOrderTwo][0],
+            allSamePosOne[samePosOrderOne][1], allSamePosOne[samePosOrderTwo][1],
+            allSamePosOne[samePosOrderOne][2], allSamePosOne[samePosOrderTwo][2],
+            allSamePosOne[samePosOrderOne][3], allSamePosOne[samePosOrderTwo][3]], //note not sure about this
   data: [],
-  keepPic: ['','','','','',''],
-  keepIdx: [0, 0, 0, 0, 0, 0],
+  about: "",
+  broken: "",
+  keepPic: ['','','','','','','','', '','','','','','','',''], //note from 8
+  keepIdx: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //note from 8
   item: 0,
   exampleItem: 0,
-  exampleItem2: 80,
   trialSounds: allSounds.map(function(elem){return 'Sound'+elem;}),
-  exampleSounds: ['shoe','cup'],
-  exampleSounds2: ['flower','truck'],
-  trialImages: allImgs,
-  //exampleImages: exampleImagesSingle,
-  exampleImages2: exampleImages2Double,
+  exampleSounds: ['flower','truck'],
   exampleFace: 0,
-  exampleFaces: exampleFaces[0], // chooses which example faces to show
-  faceCenter: 'straightaheadlonger', // eyes center for example/same/switch trials
-  faceVids: testFaces, //directed looks for exposure trials
+  exampleFaces: exampleFaces[exampleFaceIdx], // chooses which example faces to show
+  trialImages: allImgs,
+  exampleImages: exampleImages[1], // chooses the set of example images to display on the example slide
+  faceVids: testFaces[testFaceIdx], //directed looks for exposure trials
+  faceCenter: 'straightahead', // eyes center for example/same/switch trials
+  browser:"",
 
   /*The function that gets called when the sequence is finished. */
   end: function() {
-    experiment.comments = $('#comments')[0].value;
+    experiment.about = $('#about')[0].value;
+    experiment.broken = $('#broken')[0].value;
     showSlide("finished"); //Show the finish slide.
-    experiment.social_cond=testCondition;
-    experiment.browser=BrowserDetect.browser;
-    experiment.subId=subjectID;
-  
-    videoE = document.getElementById("endvideo");
-
-   if (videoE.canPlayType("video/mp4")) {
-          $("#endvideo")[0].src = "stimuli/videos/smilenew.mov";          
-       }
-       else if (videoE.canPlayType("video/ogg")) {
-            $("#endvideo")[0].src = "stimuli/videos/smilenew.ogv";          
-       }
-       else {
-           window.alert("Can't play anything");
-       }
-    $("#endvideo")[0].load();
-
-    setTimeout(function(){
-      $("#endvideo")[0].play();
-    }, 1300)
-
-    // finish audio 
-    endaud = document.getElementById("finish_player");
-    endaud.volume=1.0;
-    $("#finish_player")[0].play();
-
-
-    // submit to turk
-    setTimeout(function() { turk.submit(experiment);}, 1500);
+    
+    setTimeout(function() { 
+        
+        //Decrement maker - getter	
+            var xmlHttp = null;
+			xmlHttp = new XMLHttpRequest()
+			xmlHttp.open("GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/decrementer.php?filename=" + filename + "&to_decrement=" + cond, false);
+			xmlHttp.send(null)
+        
+            turk.submit(experiment)
+        }, 1500);
     },
 
   /*shows a blank screen for 500 ms*/
   blank: function() {
     showSlide("blankSlide");
     if(experiment.exampleItem == numExamples){
+      console.log("Blank");
       experiment.exampleItem = numExamples+1;
       setTimeout(showSlide("instructions3"),500);
     }else{setTimeout(experiment.next, 500);}
         
-  },
-
-  conditionClick: function() {
-    subjectID = $("#subjectID").val()
-    showSlide("condition")
-    $(".conditionButton").click(function() {
-          testCondition = this.id;
-    })
-  },
-
-  conditionTouch: function() {
-    subjectID = $("#subjectID").val()
-    showSlide("condition")
-    $(".conditionButton").one("touchstart", function(event) {
-          testCondition = $(this).attr('id')
-    })
-  },
-
-
-   training: function() {
-    var xcounter = 0;
-    var dotCount = 5;
-
-    var dotx = [];
-    var doty = [];
-
-    audioSprite.play();
-    audioSprite.pause();
-
-    for (i = 0; i < dotCount; i++) {
-      createDot(dotx, doty, i);
-    }
-    showSlide("training");
-    $('.dot').bind('click', function(event) {
-        var dotID = $(event.currentTarget).attr('id');
-        document.getElementById(dotID).src = "images/dots/x.jpg";
-        xcounter++
-        
-        if (xcounter === dotCount) {
-              setTimeout(function () {
-                  training.removeChild(dot_1)
-                  training.removeChild(dot_2)
-                  training.removeChild(dot_3)
-                  training.removeChild(dot_4)
-                  training.removeChild(dot_5)
-                  $("#reward_player")[0].play();
-                }, 1000);
-
-          setTimeout(function () {
-            $("#training").hide();
-          //  document.body.style.background = "black";
-            setTimeout(function() {
-            showSlide("instructions2");
-          }, 1500);
-        }, 1500);
-      }
-      });    
   },
 
   /* lets the participant select a picture and records which one was chosen */
@@ -454,11 +403,8 @@ var experiment = {
     var endTime = (new Date()).getTime();
     
     //visually indicates the participant's choice
-    event.target.style.border = '5px solid green';
+    event.target.style.border = '5px dotted red';
     img = trim(event.target.src);
-
-    // chimes 
-    $("#reward_player")[0].play();
     
     //find the screen position of the clicked object
     var i,tmpImg;
@@ -473,42 +419,29 @@ var experiment = {
     Then, you can check if experiment.keepPic[experiment.item].length == 0. If it is, 
     this is the first trial for this object (exposure). Otherwise, it's a same/switch trial. 
     */
-    console.log("Make choice experiment.item is: " + experiment.item);
-    console.log("Make choice experiment.keepPic[experiment.item].length is: " + experiment.keepPic[experiment.item].length);
-
     
-    /* Examples */
+    /* Exposure trial */
     if(Math.floor(experiment.exampleItem) <= numExamples) {
-      face_vid = experiment.exampleFaces[experiment.exampleItem-1]; 
-      faceLookIdx = exampleFacesIdx[experiment.exampleItem-1]; 
+      face_vid = experiment.faceCenter; 
+      faceLookIdx = -1; // if center, then face index is -1 
     } 
-    /*else if(experiment.keepPic[experiment.item].length > 0 & testCondition == "Social") { // same/switch trial 
+    else if(experiment.keepPic[experiment.item].length == 0) { //note now plays for all exp trials
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
-    } 
-    else { //Non-social exposure, or test trials
+    } else {
         face_vid = experiment.faceCenter; // non-social condition, the faceLook is always center
         faceLookIdx = -1;
     }
-
-    */
     
-
-
     /* Same/Switch trial */
-
-    console.log("Make choice experiment.trialTypes[experiment.item] is: " + experiment.trialTypes[experiment.item]);
-
-
     if(Math.floor(experiment.exampleItem) > numExamples &
         experiment.trialTypes[experiment.item] != 1){ 
       var all_pos = range(0,imgsPerSlide-1);
       all_pos.splice(i,1); // splice() adds/removes items to/from an array and returns that item
       all_pos = shuffle(all_pos);
       new_i = all_pos[0];  
-      new_img = trim($(".xsit_pic")[new_i].children[0].src);      
+      new_img = trim($(".xsit_pic")[new_i].children[0].src);
     } 
-
     
     //first trial for an object, exposure trial
     
@@ -516,19 +449,9 @@ var experiment = {
         experiment.keepPic[experiment.item].length == 0){
         experiment.keepPic[experiment.item] = new_img;
         experiment.keepIdx[experiment.item] = new_i;
-        // add face_vid info here
-        face_vid = experiment.faceVids[faceLook];
-        faceLookIdx = faceLook;
-    } else {
-      face_vid = experiment.faceCenter; // non-social condition, the faceLook is always center
-      faceLookIdx = -1;
     }
-
-    console.log("Make choice face vid is: " + face_vid);
-    console.log("Make choice chosen idx is: " + i);
-    console.log("Make choice keepidx is: " + new_i);
    
-    //store everything we want about the trial
+    //store eveyrthing we want about the trial
     data = {
         itemNum: experiment.item,
         trialType: experiment.trialTypes[experiment.item],
@@ -538,8 +461,8 @@ var experiment = {
         kept: experiment.keepPic[experiment.item],
         kept_idx: experiment.keepIdx[experiment.item],
         rt: endTime - startTime,
-        face_vid: face_vid,
-        face_idx: faceLookIdx,
+        face: face_vid,
+        faceIdx: faceLookIdx,
     };  
     experiment.data.push(data);
     
@@ -552,24 +475,22 @@ var experiment = {
 
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
-
-
+    
     var i, next_imgs = [],sound, face_vid, blank;
+    console.log("Item: " + experiment.item);
 
     //show example trials
     if(Math.floor(experiment.exampleItem) < numExamples) { 
-        sound = experiment.exampleSounds2[Math.floor(experiment.exampleItem)]
+        sound = experiment.exampleSounds[Math.floor(experiment.exampleItem)]
         face_vid = experiment.exampleFaces[experiment.exampleFace];
-
         for(i = 0; i < imgsPerSlide; i++) { //update the images shown
-            next_imgs[i] = experiment.exampleImages2.shift();
+            next_imgs[i] = experiment.exampleImages.shift();
         }
-        experiment.exampleItem = experiment.exampleItem + 1;
+        experiment.exampleItem = experiment.exampleItem + (1/numOccurs);
         experiment.exampleFace = experiment.exampleFace + 1;
     } else {
       //Get the current trial: shift() removes the first element of the array 
       //and returns it.
-
         trial = experiment.trials.shift();
     
       //If the current trial is undefined, it means the trials array was 
@@ -579,14 +500,14 @@ var experiment = {
         experiment.item = trial-1;
         sound = experiment.trialSounds[experiment.item];
     
-      // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
-      if(experiment.keepPic[experiment.item].length == 0 & testCondition == "Social") {
-        faceLook = random(2);
+      // note if exposure trial, then show a directed look. if not exposure, then show a center look
+      if(experiment.keepPic[experiment.item].length == 0) {
+        faceLook = random(4);
         face_vid = experiment.faceVids[faceLook];
       } else {
         face_vid = experiment.faceCenter;
           }
-
+      
         var idx;
         
         //this was a continuation
@@ -614,10 +535,6 @@ var experiment = {
       $(".xsit_pic")[i].children[0].src = "stimuli/images/"+next_imgs[i]+".jpg";
     }
 
-
-    //Standardize ooh volume
-    oohPlayer = document.getElementById("ooh_player");
-    oohPlayer.volume = 1.0;
     
   // get appropriate video 
   experiment.browser=BrowserDetect.browser;
@@ -625,7 +542,7 @@ var experiment = {
   videoElement = document.getElementById("video1");
 
    if (videoElement.canPlayType("video/mp4")) {
-          $("#video1")[0].src = "stimuli/videos/"+face_vid+".mov";          
+          $("#video1")[0].src = "stimuli/videos/"+face_vid+".mov";           
        }
        else if (videoElement.canPlayType("video/ogg")) {
             $("#video1")[0].src = "stimuli/videos/"+face_vid+".ogv";          
@@ -636,40 +553,44 @@ var experiment = {
 
     $("#video1")[0].load();
 
-  if(experiment.keepPic[experiment.item].length != 0){
-    sound=sound+'_find';
-  }
-  else{
-    if(Math.floor(experiment.exampleItem) <= numExamples){
-      setTimeout(function(){
-        $("#ooh_player")[0].play();
-      }, 900);
+    if(Math.floor(experiment.exampleItem) <= numExamples) {
+      console.log("Example trial!");
       sound=sound+'_this';
+    } 
+    else if(experiment.keepPic[experiment.item].length == 0 & 
+      social_cond == "ThisFirst" & experiment.item < 8) { //note add & number is 1-8;; then add condition is no-social & number is 9-16
+        console.log("This first");
+        sound=sound+'_this';
+    } else if(experiment.keepPic[experiment.item].length == 0 &
+      social_cond == "OneFirst" & experiment.item >= 8) {
+        console.log("This first, on one");
+        sound=sound+'_this';
+    } else if(experiment.keepPic[experiment.item].length == 0){ //note this will happen in 9-16 on social condition and 1-8 on no-social
+        console.log("Now one");
+        sound=sound+'_one';
+    } else {
+      console.log("Find");
+      sound=sound+'_find';
     }
-    else{
-            setTimeout(function(){
-        $("#ooh_player")[0].play();
-      }, 900);
-      sound=sound+'_this'; // chose "one" framing to make less pedagogical
+  
+
+  //get the appropriate sound
+    if(BrowserDetect.browser == "Chrome" ||
+        BrowserDetect.browser == "Firefox"){
+      $("#sound_player")[0].src = "stimuli/sounds/unused/"+sound+".ogg";
+    } else {
+      $("#sound_player")[0].src = "stimuli/sounds/unused/"+sound+".mp3";
     }
-
-    console.log("#########################");
-    console.log("Next experiment.item is: " + experiment.item)
-    console.log("Next trial type is: " + experiment.trialTypes[experiment.item]);
-
-    
-  }
-
-    
+             
    //blank out all borders so no item is pre-selected
       $(".xsit_pic").each(function(){this.children[0].style.border = '5px solid white';});
 
     //Re-Display the experiment slide
       showSlide("stage");
 
-
     //Wait, Play eye gaze video 
     setTimeout(function(){
+      //myVideo.play();
       $("#video1")[0].play();
     }, 1300)
 
@@ -677,28 +598,11 @@ var experiment = {
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 4000) //used to be 5300
-
-  //    setTimeout(function(){
-  //        $("#ooh_player")[0].play();
-  //    }, 900)
-
-
+    }, 3000) 
 
     //Wait, Play a sound
       setTimeout(function(){
-        audioSprite.removeEventListener('timeupdate', handler);
-        audioSprite.currentTime = spriteData[sound].start;
-        audioSprite.play();
-
-        handler = function(){
-          if(this.currentTime >= spriteData[sound].start + spriteData[sound].length){
-              this.pause();
-          }
-        };
-        audioSprite.addEventListener('timeupdate', handler, false);
-
-        //$("#sound_player")[0].play();      
-      }, 1600); //used to be 2000
+        $("#sound_player")[0].play();      
+      }, 2000); 
     }
   };
