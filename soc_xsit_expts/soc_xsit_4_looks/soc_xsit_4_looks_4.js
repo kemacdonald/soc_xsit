@@ -236,8 +236,8 @@ try {
     xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
     xmlHttp.send( null );
-    ///var cond = xmlHttp.responseText; // For actual experimental runs
-    var cond = random(1,2); // for testing experiment
+    var cond = xmlHttp.responseText; // For actual experimental runs
+    //var cond = random(1,2); // for testing experiment
 } catch (e) {
     var cond = 1;
 }
@@ -262,7 +262,7 @@ switch (cond) {
             social_cond = "One";
             int_cond = "Zero";
             exampleFaceIdx = 0;
-            testFaceIdx = 1;
+            testFaceIdx = 0;
             delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6] 
             test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
             exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
@@ -293,11 +293,11 @@ exampleImages = [['flower','chair',
                   'helicopter', 'lion','whistle','truck','tree','spoon',
                   'plug', 'shoe', 'guitar', 'kettle', 'sweater','oven']],
 
-exampleFaces = [['silentLUshort', 'silentLUshort', 'silentRUshort', 'silentLDshort'],
+exampleFaces = [['LUkidslonger', 'LUkidslonger', 'RUkidslonger', 'LDkidslonger'],
                 ['silentLUmedium', 'silentLUmedium', 'silentRUmedium', 'silentLDmedium'],
                 ['silentLUlong', 'silentLUlong', 'silentRUlong', 'silentLDlong']],
 
-testFaces = [['silentLDshort', 'silentLUshort', 'silentRDshort', 'silentRUshort'],
+testFaces = [['LDkidslonger', 'LUkidslonger', 'RDkidslonger', 'RUkidslonger'],
              ['silentLDmedium', 'silentLUmedium', 'silentRDmedium', 'silentRUmedium'],
              ['silentLDlong', 'silentLUlong', 'silentRDlong', 'silentRUlong']],
 
@@ -362,7 +362,7 @@ var experiment = {
   trialImages: allImgs,
   exampleImages: exampleImages[1], // chooses the set of example images to display on the example slide
   faceVids: testFaces[testFaceIdx], //directed looks for exposure trials
-  faceCenter: 'straightahead', // eyes center for example/same/switch trials
+  faceCenter: 'straightaheadlonger', // eyes center for example/same/switch trials
   browser:"",
 
   /*The function that gets called when the sequence is finished. */
@@ -588,11 +588,11 @@ if(experiment.keepPic[experiment.item].length != 0){
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 3000)
+    }, 4000)
 
     //Wait, Play a sound
       setTimeout(function(){
         $("#sound_player")[0].play();      
-      }, 200);
+      }, 1600);
     }
   };
