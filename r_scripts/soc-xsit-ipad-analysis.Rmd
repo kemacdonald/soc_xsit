@@ -5,7 +5,7 @@ date: "August 4, 2014"
 output: html_document
 ---
 
-###Script for visualizing and analyzing soc-xsit-ipad data.
+##Script for visualizing and analyzing soc-xsit-ipad data.
 
 Load libraries and helper functions.
 ```{r load libraries, message=FALSE, warning=FALSE}
@@ -25,7 +25,6 @@ data.test_df <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processe
 ```
 
 ### Summarize data set. 
-
 Get the number of subjects 
 ```{r num_subs}
 data.test_df %>%
@@ -72,7 +71,10 @@ flag_trials <- function(df) {
         # if array length is greater than 2, then we filter out that trial
 }
 
-
+data.test_df %>%
+        group_by(id, trial_type_redo) %>%
+        summarise(n_trial = n()) %>%
+        head()
 ```
 
 Compute means. By kid and across kids
