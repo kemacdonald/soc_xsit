@@ -472,6 +472,8 @@ var experiment = {
 
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
+
+    console.log("Trial sounds is: " + experiment.trialSounds);
     
     var i, next_imgs = [],sound, face_vid, blank;
     console.log("Item: " + experiment.item);
