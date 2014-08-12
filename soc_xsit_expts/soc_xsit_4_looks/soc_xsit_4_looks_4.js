@@ -197,14 +197,14 @@ trim = function(item) {
 // Variable assignment for use later in experiment
 var numImgsConds = [2, 4, 6];
 var imgsPerSlide = numImgsConds[1]; // 4 images per slide 
-var numBlocks = 16; //note from 8
+var numBlocks = 8;
 var numOccurs = 2;
 
 var numUsedImgs = ((imgsPerSlide*numOccurs)-1)*numBlocks;
 var numUsedSounds = numBlocks;
 
 var numImgs = 140;
-var numSounds = 16;
+var numSounds = 6;
 
 var allImgs = range(1,numImgs);
     allImgs = shuffle(allImgs);
@@ -216,10 +216,10 @@ var allSounds = range(1,numSounds);
     allSounds = allSounds.slice(0,numUsedSounds);
 
 // an array to generate the order that should be used
-var allOrders = [[1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2], [2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1]]; //note doubled each array
+var allOrders = [[1, 2, 1, 2, 1, 2], [2, 1, 2, 1, 2, 1]]; //note 6 from 8
 //SamePos for One Kind of Trial (Switch or Keep)
 var allSamePosOne = [[1, 1, 0, 0], [1, 0, 1, 0], [1, 0, 0, 1],
-                     [0, 1, 1, 0], [0, 1, 0, 1], [0, 0, 1, 1]]; //note unsure about what to do here
+                     [0, 1, 1, 0], [0, 1, 0, 1], [0, 0, 1, 1]]; 
 var numExamples = 2; // Number of examples 
 var startTime = 0; // Starts the clock for recording RT 
 
@@ -230,14 +230,14 @@ var startTime = 0; // Starts the clock for recording RT
  */
 
 try {
-    var filename = "KM_soc_xsit_4_looks_2";
+    var filename = "KM_soc_xsit_4_looks_4";
     var condCounts = "1,50;2,50";  
     var xmlHttp = null;
     xmlHttp = new XMLHttpRequest();
     xmlHttp.open( "GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/maker_getter.php?conds=" + condCounts + "&filename=" + filename, false );
     xmlHttp.send( null );
-    var cond = xmlHttp.responseText; // For actual experimental runs
-    //var cond = random(1,2); // note for testing experiment
+    ///var cond = xmlHttp.responseText; // For actual experimental runs
+    var cond = random(1,2); // for testing experiment
 } catch (e) {
     var cond = 1;
 }
@@ -245,27 +245,27 @@ try {
 if(cond == 1){var cond = "1"};
 if(cond == 2){var cond = "2"};
 
-/* code for condition randomization. There are two conditions: social block first, or no-social block first */
+/* code for condition randomization. This includes a replication of social-short and a new condition: no-social-short */
 switch (cond) {
         case "1": 
             cond_name = "Short";
-            social_cond = "ThisFirst";
+            social_cond = "This";
             int_cond = "Zero";
             exampleFaceIdx = 0;
             testFaceIdx = 0;
-            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16] //note from 8
-            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0 ,1, 0, 1, 0, 1, 0 ,1 ]; //note from 8
-            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]; //note from 8
+            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6] //note was 8
+            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]; //note was 8 
+            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]; //note was 8
             break;
         case "2": 
             cond_name = "Short";
-            social_cond = "OneFirst";
+            social_cond = "One";
             int_cond = "Zero";
             exampleFaceIdx = 0;
             testFaceIdx = 1;
-            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16]  //note from 8
-            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1]; //note from 8
-            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]; //note from 8
+            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6] 
+            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
+            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
             break;
         default:
 };
@@ -275,25 +275,22 @@ var trialOrder = random();       // same/switch order
 var samePosOrderOne = random(6); // keep/move order
 var samePosOrderTwo = random(6); // keep/move order
 
-//var audioSprite = $("#sound_player")[0];
-//var handler;
-
 //initialize progress bar
 $("#progressbar").progressbar();
 $("#progressbar").progressbar( "option", "max", numBlocks*numOccurs + 
     numOccurs*numExamples);
 
-exampleImages = [['squirrel','chair',
-                  'squirrel','toaster',
-                  'tomato','whistle',
-                  'sweater','tomato'],
-                 ['squirrel','chair','tie','trumpet',
-                  'squirrel','toaster','truck','crown',
-                  'whistle','tomato','tree','spoon',
-                  'sweater','oven','tomato','well'],
-                 ['chair','tie','trumpet','squirrel',' basket', 'door',
-                  'toaster','truck', 'crown','squirrel','ruler', 'grapes', 
-                  'helicopter', 'lion','whistle','tomato','tree','spoon',
+exampleImages = [['flower','chair',
+                  'flower','toaster',
+                  'truck','whistle',
+                  'sweater','truck'],
+                 ['flower','chair','tie','trumpet',
+                  'flower','toaster','tomato','crown',
+                  'whistle','truck','tree','spoon',
+                  'sweater','oven','truck','well'],
+                 ['chair','tie','trumpet','flower',' basket', 'door',
+                  'toaster','tomato', 'crown','flower','ruler', 'grapes', 
+                  'helicopter', 'lion','whistle','truck','tree','spoon',
                   'plug', 'shoe', 'guitar', 'kettle', 'sweater','oven']],
 
 exampleFaces = [['silentLUshort', 'silentLUshort', 'silentRUshort', 'silentLDshort'],
@@ -354,8 +351,8 @@ var experiment = {
   data: [],
   about: "",
   broken: "",
-  keepPic: ['','','','','','','','', '','','','','','','',''], //note from 8
-  keepIdx: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], //note from 8
+  keepPic: ['','','','','',''],
+  keepIdx: [0, 0, 0, 0],
   item: 0,
   exampleItem: 0,
   trialSounds: allSounds.map(function(elem){return 'Sound'+elem;}),
@@ -376,11 +373,11 @@ var experiment = {
     
     setTimeout(function() { 
         
-        //Decrement maker - getter	
+        //Decrement maker - getter  
             var xmlHttp = null;
-			xmlHttp = new XMLHttpRequest()
-			xmlHttp.open("GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/decrementer.php?filename=" + filename + "&to_decrement=" + cond, false);
-			xmlHttp.send(null)
+      xmlHttp = new XMLHttpRequest()
+      xmlHttp.open("GET", "http://langcog.stanford.edu/cgi-bin/subject_equalizer/decrementer.php?filename=" + filename + "&to_decrement=" + cond, false);
+      xmlHttp.send(null)
         
             turk.submit(experiment)
         }, 1500);
@@ -425,11 +422,11 @@ var experiment = {
       face_vid = experiment.faceCenter; 
       faceLookIdx = -1; // if center, then face index is -1 
     } 
-    else if(experiment.keepPic[experiment.item].length == 0) { //note now plays for all exp trials
+    else if(experiment.keepPic[experiment.item].length == 0) { //all exposure are social now
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
     } else {
-        face_vid = experiment.faceCenter; // non-social condition, the faceLook is always center
+        face_vid = experiment.faceCenter; // test trials are straight ahead
         faceLookIdx = -1;
     }
     
@@ -500,7 +497,7 @@ var experiment = {
         experiment.item = trial-1;
         sound = experiment.trialSounds[experiment.item];
     
-      // note if exposure trial, then show a directed look. if not exposure, then show a center look
+      // if exposure trial and in the social condition, then show a directed look. if not exposure, then show a center look
       if(experiment.keepPic[experiment.item].length == 0) {
         faceLook = random(4);
         face_vid = experiment.faceVids[faceLook];
@@ -552,29 +549,22 @@ var experiment = {
        }
 
     $("#video1")[0].load();
-
-    if(Math.floor(experiment.exampleItem) <= numExamples) {
-      console.log("Example trial!");
-      sound=sound+'_this';
-    } 
-    else if(experiment.keepPic[experiment.item].length == 0 & 
-      social_cond == "ThisFirst" & experiment.item < 8) { //note add & number is 1-8;; then add condition is no-social & number is 9-16
-        console.log("This first");
-        sound=sound+'_this';
-    } else if(experiment.keepPic[experiment.item].length == 0 &
-      social_cond == "OneFirst" & experiment.item >= 8) {
-        console.log("This first, on one");
-        sound=sound+'_this';
-    } else if(experiment.keepPic[experiment.item].length == 0){ //note this will happen in 9-16 on social condition and 1-8 on no-social
-        console.log("Now one");
-        sound=sound+'_one';
-    } else {
-      console.log("Find");
-      sound=sound+'_find';
-    }
   
 
   //get the appropriate sound
+
+if(experiment.keepPic[experiment.item].length != 0){
+    sound=sound+'_find';
+  }
+  else if(Math.floor(experiment.exampleItem) <= numExamples){
+      sound=sound+'_this';
+    }
+    else if(social_cond == "This"){
+      sound=sound+'_this'; // this condition
+    } else{
+      sound=sound+'_one'; //one condition
+    }
+
     if(BrowserDetect.browser == "Chrome" ||
         BrowserDetect.browser == "Firefox"){
       $("#sound_player")[0].src = "stimuli/sounds/unused/"+sound+".ogg";
@@ -598,11 +588,11 @@ var experiment = {
     setTimeout(function(){
       startTime = (new Date()).getTime();
       $(".xsit_pic").bind("click", experiment.makeChoice);
-    }, 3000) 
+    }, 3000)
 
     //Wait, Play a sound
       setTimeout(function(){
         $("#sound_player")[0].play();      
-      }, 2000); 
+      }, 200);
     }
   };
