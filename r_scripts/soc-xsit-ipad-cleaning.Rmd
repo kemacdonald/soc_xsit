@@ -9,7 +9,7 @@ Script to munge ipad data for soc-xsit project
 
 Load libraries for data manipulation
 
-```{r load_libraries,warning=FALSE,message=FALSE}
+```{r load_libraries, warning=FALSE, message=FALSE}
 library(plyr)
 library(dplyr)
 library(directlabels)
@@ -129,14 +129,15 @@ demo <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/s
 all.data <- join(all.data,demo)
 
 #reorder columns to put id and demo variables first
-all.data <- all.data[c("id","birthday","gender","age","age.group","date", "condition", 
+all.data <- all.data[c("id","birthday","gender","age","age_group","date", "condition", 
                    "trial","itemNum","trialType","samePos","chosen","chosen_idx","kept",
                    "kept_idx","rt","faceVid","faceIdx","example_trial",
-                   "exposure_trial","test_trial", "correct")]
+                   "exposure_trial","test_trial", "correct", "include")]
 
 ```
 
-Fix trial type labels -> not tracked correctly during experiment.
+Fix trial type labels -> not tracked correctly during experiment because we randomly generated 
+the index that selected from the trial type array.
 
 ```{r relabel trial types}
 exposure.trials <- all.data %>%
