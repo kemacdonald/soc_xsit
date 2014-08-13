@@ -1,17 +1,24 @@
-rm(list=ls())
+##### GET RELEVANT FIELDS FROM JSON OUTPUT #####
+
+## Load libraries 
 library(plotrix)
 library(lattice)
 library(rjson)
 library(plyr)
+library(dplyr)
 library(chron)
 library(car)
 library(stringr)
 
-##### GET RELEVANT FIELDS FROM JSON OUTPUT #####
+## set file paths for reading and writing data
+read_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC_XSIT", "soc_xsit_expts", "soc_xsit_4_looks/")
+write_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC_XSIT", "processed_data", "adult-looks/")
 
 ## gets all .results files at one time
-all_results <- list.files(path = "/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_4_looks/", 
-                          pattern = '*.results', all.files = FALSE)
+all_results <- list.files(path = read_path, pattern = '*.results', all.files = FALSE)
+
+all_results <- all_results[2] ## within subs expt
+all_results <- all_results[3] ## this/one btw subs expt
 
 ## creates empty data frame
 all.data <- data.frame()
@@ -21,10 +28,9 @@ all.data <- data.frame()
 ## also flags test and exposure trials
 
 for(f in 1:length(all_results)) {
-  data <- read.table(paste("/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_4_looks/", 
-                            all_results[f],sep=""),sep="\t",header=TRUE, 
-                            stringsAsFactors=FALSE)
-  long.data <- as.data.frame(matrix(ncol = 0, nrow = 20*nrow(data)))
+  data <- read.table(paste(read_path, all_results[f],sep=""), sep="\t", 
+                     header=TRUE, stringsAsFactors=FALSE)
+  long.data <- as.data.frame(matrix(ncol = 0, nrow = 16*nrow(data)))
   c <- 1
   # loops over each participant
   for (i in 1:nrow(data)) {    
@@ -48,7 +54,7 @@ for(f in 1:length(all_results)) {
       long.data$browser[c] <- fromJSON(as.character(data$Answer.browser[i]))
       long.data$itemNum[c] <- d[[j]]$itemNum
       long.data$trialType[c] <- d[[j]]$trialType
-      long.data$samePos[c] <- d[[j]]$samePos
+      ## long.data$samePos[c] <- d[[j]]$samePos
       long.data$chosen[c] <- d[[j]]$chosen
       long.data$chosenIdx[c] <- d[[j]]$chosen_idx
       long.data$kept[c] <- d[[j]]$kept
@@ -62,103 +68,13 @@ for(f in 1:length(all_results)) {
   }
 }  
 
-
 ## Flag exposure, test, and example trials
-long.data$exposureTrial <- 0
-long.data$testTrial <- 0
-long.data$exampleTrial <- 0
-
-for (row in 1:nrow(long.data)) {
-  if (long.data$interval[row] == "Zero") {
-    if (long.data$trial.num[row]==5 | 
-          long.data$trial.num[row]==7 |
-          long.data$trial.num[row]==9 |
-          long.data$trial.num[row]==11 |
-          long.data$trial.num[row]==13 |
-          long.data$trial.num[row]==15 |
-          long.data$trial.num[row]==17 |
-          long.data$trial.num[row]==19) {
-      long.data$exposureTrial[row] <- 1
-    } else if (long.data$trial.num[row]==6 |
-                 long.data$trial.num[row]==8 |
-                 long.data$trial.num[row]==10 |
-                 long.data$trial.num[row]==12 |
-                 long.data$trial.num[row]==14 |
-                 long.data$trial.num[row]==16 |
-                 long.data$trial.num[row]==18 |
-                 long.data$trial.num[row]==20) {
-      long.data$testTrial[row] <- 1
-    } else {
-      long.data$exampleTrial[row] <- 1
-    }
-  } else if (long.data$interval[row] == "One") {
-    if (long.data$trial.num[row]==5 |
-          long.data$trial.num[row]==6 |
-          long.data$trial.num[row]==9 |
-          long.data$trial.num[row]==10 |
-          long.data$trial.num[row]==13 |
-          long.data$trial.num[row]==14 |
-          long.data$trial.num[row]==17 |
-          long.data$trial.num[row]==18) {
-      long.data$exposureTrial[row] <- 1
-    } else if (long.data$trial.num[row]==7 |
-                 long.data$trial.num[row]==8 |
-                 long.data$trial.num[row]==11 |
-                 long.data$trial.num[row]==12 |
-                 long.data$trial.num[row]==15 |
-                 long.data$trial.num[row]==16 |
-                 long.data$trial.num[row]==19 |
-                 long.data$trial.num[row]==20) {
-    long.data$testTrial[row] <- 1
-    } else {
-      long.data$exampleTrial[row] <- 1 
-    }
-  } else if (long.data$interval[row] == "Three") {
-    if (long.data$trial.num[row]==5 |
-          long.data$trial.num[row]==6 |
-          long.data$trial.num[row]==7 |
-          long.data$trial.num[row]==8 |
-          long.data$trial.num[row]==13 |
-          long.data$trial.num[row]==14 |
-          long.data$trial.num[row]==15 |
-          long.data$trial.num[row]==16) {
-      long.data$exposureTrial[row] <- 1
-    } else if (long.data$trial.num[row]==9 |
-                 long.data$trial.num[row]==10 |
-                 long.data$trial.num[row]==11 |
-                 long.data$trial.num[row]==12 |
-                 long.data$trial.num[row]==17 |
-                 long.data$trial.num[row]==18 |
-                 long.data$trial.num[row]==19 |
-                 long.data$trial.num[row]==20) {
-      long.data$testTrial[row] <- 1
-    } else {
-      long.data$exampleTrial[row] <- 1
-    }
-  } else if (long.data$interval[row] == "Seven") {
-    if (long.data$trial.num[row]==5 |
-          long.data$trial.num[row]==6 |
-          long.data$trial.num[row]==7 |
-          long.data$trial.num[row]==8 |
-          long.data$trial.num[row]==9 |
-          long.data$trial.num[row]==10 |
-          long.data$trial.num[row]==11 |
-          long.data$trial.num[row]==12) {
-      long.data$exposureTrial[row] <- 1
-    } else if (long.data$trial.num[row]==13 |
-                 long.data$trial.num[row]==14 |
-                 long.data$trial.num[row]==15 |
-                 long.data$trial.num[row]==16 |
-                 long.data$trial.num[row]==17 |
-                 long.data$trial.num[row]==18 |
-                 long.data$trial.num[row]==19 |
-                 long.data$trial.num[row]==20) {
-      long.data$testTrial[row] <- 1
-    } else {
-      long.data$exampleTrial[row] <- 1
-    }
-  } 
-}
+long.data <- long.data %>% 
+        group_by(subid) %>%
+        mutate(example_trial = ifelse(trial.num %in% seq(1,4),1,0),
+               exposure_trial = ifelse(trial.num %in% seq(from=5, to=15, by=2),1,0),
+               test_trial = ifelse(trial.num %in% seq(from=6, to=16, by=2),1,0)) %>%
+        arrange(subid, trial.num)
 
 all.data <- long.data
 
@@ -172,7 +88,7 @@ all.data$day.and.time <- chron(dates = all.data$submit.date,
 all.data <- all.data[with(all.data,order(subid,day.and.time)),]
 
 drop.subs <- ddply(all.data,.(subid),
-                      function(x) {nrow(x) > 20})
+                      function(x) {nrow(x) > 16})
 
 drop.subs <- drop.subs[drop.subs$V1,1] # grabs subs who participated more than once
 
@@ -181,7 +97,7 @@ all.drops <- matrix(0,nrow(all.data))
 
 for(sub in drop.subs) {
   rows <- as.integer(all.data$subid == sub)
-  all.drops[rows & (cumsum(rows) > 20)] <- 1
+  all.drops[rows & (cumsum(rows) > 16)] <- 1
 }
 
 all.data <- subset(all.data,!all.drops) ## subsets data without subs who participated twice
@@ -210,10 +126,10 @@ trial.nums <- function(x) {
 # grabs example data
 example.data <- all.data[all.data$trial.num == 1:4, ]
 include.subs <- ddply(example.data,.(subid),
-            function(x) {x$chosen[1] == "squirrel" & 
-                           x$chosen[2] == "squirrel" & 
-                           x$chosen[3] == "tomato" &
-                           x$chosen[4] == "tomato"})
+            function(x) {x$chosen[1] == "flower" & 
+                           x$chosen[2] == "flower" & 
+                           x$chosen[3] == "truck" &
+                           x$chosen[4] == "truck"})
 
 names(include.subs) <- c("subid","include")
 
@@ -236,6 +152,11 @@ keep.data$numPicN <- as.numeric(keep.data$numPic)
 # flags correct/incorrect on same/switch trials
 keep.data$correct <- keep.data$chosen == keep.data$kept
 
+# anonymize subject ids
+
+keep.data <- anonymize.sids(keep.data, "subid")
+
 ##### SAVE OUTPUT  #####
 
-write.csv(keep.data, "/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/soc_xsit_4_looks_pilot_2.csv")
+write.csv(keep.data, paste(write_path, "soc_xsit_looks_pilot_4_thisone_btw.csv", sep=""),
+          row.names=FALSE)
