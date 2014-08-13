@@ -100,19 +100,31 @@ means.filtered <- data.test_df %>%
                                   ci_high = ci.high(correct), 
                                   ci_low = ci.low(correct), n_trial = n()
                                   )
+
+acc.exp <- data.test_df %>%
+                filter(condition == "Social") %>%
+                group_by(include) %>%
+                summarise(mean_correct = mean(correct_exposure),
+                          ci_high = ci.high(correct_exposure),
+                          ci_low = ci.low(correct_exposure)
+                          )
 ```
 
 Plot the data.
 
 ```{r plots}
-acc.plot <- ggplot(data = means.filtered, aes(x = condition, y = mean_correct, colour = condition)) +
+acc.expo <- ggplot(data = means.filtered, aes(x = condition, y = mean_correct, colour = condition)) +
                 geom_point() + 
                 geom_errorbar(aes(ymin = mean_correct - ci_low, ymax = mean_correct + ci_high), width = 0.1) +
-                geom_hline(yintercept = 0.5, linetype = "dashed") +
-                scale_x_discrete()
-        
-        
-        
+                geom_hline(yintercept = 0.5, linetype = "dashed")
+
+acc.test <- ggplot(data = means.filtered, aes(x = condition, y = mean_correct, colour = condition)) +
+                geom_point() + 
+                geom_errorbar(aes(ymin = mean_correct - ci_low, ymax = mean_correct + ci_high), width = 0.1) +
+                geom_hline(yintercept = 0.5, linetype = "dashed")
+
+
+      
 ```
 
 Run stats.

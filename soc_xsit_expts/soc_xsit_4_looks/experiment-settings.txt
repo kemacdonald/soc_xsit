@@ -28,10 +28,10 @@ title:: Play a fun word learning game (5 mins, do only once)!
 
 description:: word-learning experiment (5 mins, do only once)!
 
-nameofexperimentfiles::soc_xsit_4_looks_pilot_3_withinsubs
+nameofexperimentfiles::soc_xsit_4_looks_pilot_4_thisone_btw
 &&&   the files that the script generates for you will have names based on this. 
 
-experimentURL::https://langcog.stanford.edu/expts/KM_soc_xsit/soc_xsit_4_looks/soc_xsit_4_looks_3.html
+experimentURL::http://langcog.stanford.edu/expts/KM_soc_xsit/soc_xsit_4_looks/soc_xsit_4_looks_4.html
 &&&   the URL where you've posted your external HIT
 
 hitfolderpath::/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_4_looks
@@ -66,6 +66,6 @@ autoapprovaldelay::1296000
 
 annotation::assignmentId
 
-conditions::soc_xsit_4_looks
+conditions::soc_xsit_4_looks_thisone_btw
 &&&  If you want to post multiple HITs in a batch, you may be able to do it by having multiple conditions listed here, separated by a comma. I haven't tried this so it might not work.
 
