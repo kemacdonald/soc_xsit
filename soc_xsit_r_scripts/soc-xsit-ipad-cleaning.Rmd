@@ -1,0 +1,163 @@
+---
+title: "iPad-data-cleaning"
+author: "Kyle MacDonald"
+date: "August 4, 2014"
+output: html_document
+---
+
+Script to munge ipad data for soc-xsit project
+
+Load libraries for data manipulation
+
+```{r load_libraries, warning=FALSE, message=FALSE}
+library(plyr)
+library(dplyr)
+library(directlabels)
+library(stringr)
+```
+
+Read in the data, which are stored in separate .txt files for each participant.
+
+```{r munging}
+# Create empty arrays for binding 
+all.data <- as.data.frame(matrix(ncol = 0, nrow = 0))
+
+#grab all file names from data dir. 
+#These are all of the kids for whom we have ipad data
+all_results <- list.files(path = "/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/",
+                          pattern = 'results_*', all.files = FALSE)
+
+#function to munge the data
+#takes in a list of filenames (.txt of each kid's data), 
+#strips html escape characters, and grabs the relevant info for each trial
+#returns data frame with all the data
+bing_clean <- function(filename) {
+        x <- readLines(paste("/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/", 
+                                filename,sep=""),warn=FALSE)
+        x <- unlist(strsplit(x,'<li>'))
+        
+        #grab condition 
+        condition <- x[3]
+
+        if (grepl(pattern="Social", condition)) {
+                condition <- str_extract(pattern="Social", condition)
+        } else {
+                condition <- str_extract(pattern="No-social", condition)
+        }
+                
+        # grab trial information 
+        x <- x[11:150]
+        
+        #strip html characters
+        x <- gsub('\\"',"", x)
+        x <- gsub("\\\\\"","",x)
+        x <- gsub("</li>","",x)
+        x <- gsub("</ul>\\},\\{<ul>","",x)
+        x[length(x)] <- gsub("</ul>\\}]","",x[length(x)])
+        x <- gsub("^.*?: ","",x)
+        
+        #grab date 
+        date <- str_sub(filename,20,36)
+        date <- gsub('_','',date)
+        date <- gsub('\\.','',date)
+        #grab id
+        id <- str_sub(filename,0,2)
+        id <- gsub('-','',id)
+        #bind to data frame
+        x <- as.data.frame(matrix(x,14,10,byrow=TRUE), stringsAsFactors=F)
+        x$V11 <- date
+        x$V12 <- id
+        x$V13 <- condition
+        return(x) ## need this to get the data frame!
+}
+
+#apply munging function to each kid's data file
+all.data <- ldply(
+                .data = all_results,
+                .fun = bing_clean
+                )
+
+#add variable names to columns
+names(all.data) <- c("itemNum","trialType","samePos","chosen","chosen_idx",
+              "kept","kept_idx","rt","faceVid","faceIdx", "date", "id", "condition")
+ 
+```
+
+Tag the different trial types:  
+        * example 
+        * exposure
+        * test   
+        
+Arrange the data file with sensible column order.
+
+```{r tag-trial-types}
+#dplyr syntax
+all.data <- all.data %>% 
+                group_by(date) %>%
+                mutate(trial = c(1:14)) %>%
+                mutate(example_trial = ifelse(trial %in% c(1:2),1,0),
+                       exposure_trial = ifelse(trial %in% c(3,5,7,9,11,13),1,0),
+                       test_trial = ifelse(trial %in% c(4,6,8,10,12,14),1,0)) %>%
+                arrange(date, trial)
+```
+
+Clean up the data: 
+* figure out if child answered correctly on that trial
+* relabel variables and change variable types for analysis 
+
+```{r data-cleaning}
+#find whether child's choice was correct 
+#for exposure trials, we check the index of eye gaze against child's choice
+#for test trials, we check the kept image against the child's choice 
+all.data <- all.data %>% 
+                group_by(id) %>%
+                mutate(correct = ifelse(exposure_trial == 1, chosen_idx == faceIdx, 
+                                 ifelse(example_trial == 1, chosen[1] == "flower" & chosen[2] == "truck",
+                                        chosen == kept))) 
+
+#relabel variables and variable types for analysis
+all.data$rt <- as.integer(all.data$rt)
+all.data$condition <- as.factor(all.data$condition)
+```
+
+Add demographic data for each child (age and gender).
+
+```{r add-demographics, warning=FALSE}
+#read in demo csv
+demo <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/soc-xsit-ipad-demo.csv")
+
+all.data <- join(all.data,demo)
+
+#reorder columns to put id and demo variables first
+all.data <- all.data[c("id","birthday","gender","age","age_group","date", "condition", 
+                   "trial","itemNum","trialType","samePos","chosen","chosen_idx","kept",
+                   "kept_idx","rt","faceVid","faceIdx","example_trial",
+                   "exposure_trial","test_trial", "correct", "include")]
+
+```
+
+Fix trial type labels -> not tracked correctly during experiment because we randomly generated 
+the index that selected from the trial type array.
+
+```{r relabel trial types}
+exposure.trials <- all.data %>%
+                filter(exposure_trial == 1) %>%
+                mutate(trial_type_redo = ifelse(chosen == kept,1,2)) %>%
+                select(id, itemNum, trial_type_redo, chosen_exposure = chosen, 
+                       kept_exposure = kept, correct_exposure = correct)
+
+test.trials <- all.data %>%
+                filter(test_trial == 1) 
+
+test.trials <- join(test.trials,exposure.trials, by=c("id","itemNum"))
+
+test.trials$trial_type_redo <- factor(test.trials$trial_type_redo, 
+                                      labels = c('Same','Switch'))
+```
+
+Save tidy data files. 
+
+```{r save}
+write.csv(all.data, file="/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/soc-xsit-ipad-alldata.csv")
+write.csv(test.trials, file="/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/soc-xsit-ipad-testdata.csv")
+```
