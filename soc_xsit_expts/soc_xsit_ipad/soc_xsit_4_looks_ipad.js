@@ -257,8 +257,7 @@ allSounds = allSounds.slice(0,numUsedSounds);
 allImgs = allImgs.map(function(elem){return 'Novel'+elem;});
 $(allImgs.map(function(elem){return 'stimuli/images/'+elem+'.jpg';})).preload();
 
-var allTypes = [1, 1, 2, 2, 1, 2]; //only same first
-allTypes = shuffle(allTypes); // randomize the order of trial types
+var allTypes = [[1, 1, 2, 2, 1, 2]]; //only same first
 
 //SamePos for One Kind of Trial (Switch or Keep)
 var allSamePosOne = [[1, 0], [0, 1], [1, 0]];
@@ -271,6 +270,7 @@ var allSpacings = [[1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6],
 var numExamples = 2;
 var startTime = 0;
 
+var trialOrder = 0;//random();
 var samePosOrderOne = random(2);
 var samePosOrderTwo = random(2);
 var cont = 0;
@@ -321,8 +321,9 @@ var experiment = {
   cond: 'soc_xsit_2_0',
   subId: '',
   social_cond: '',
+  trialOrder: trialOrder,
   trials: allSpacings[0],
-  trialTypes: allTypes,
+  trialTypes: allTypes[trialOrder],
   samePosOrderOne: samePosOrderOne,
   samePosOrderTwo: samePosOrderTwo,
   samePos: [allSamePosOne[samePosOrderOne][0], allSamePosOne[samePosOrderOne][1],
@@ -391,11 +392,6 @@ var experiment = {
   },
 
   conditionClick: function() {
-
-//    subjectID = $("#subjectID").val()
-//    showSlide("condition")
-//    $(".conditionButton").click(function() {
-
     // check if subject id is numeric 
     if($.isNumeric($("#subjectID").val())){
         subjectID = $("#subjectID").val()
@@ -407,24 +403,15 @@ var experiment = {
       alert("Enter numeric for Subject ID");
       showSlide("instructions");
     }
+    
   },
 
   conditionTouch: function() {
-//    subjectID = $("#subjectID").val()
-//    showSlide("condition")
-//    $(".conditionButton").one("touchstart", function(event) {
-
-    // check if subject id is numeric 
-    if($.isNumeric($("#subjectID").val())){
-        subjectID = $("#subjectID").val()
-        showSlide("condition")
-        $(".conditionButton").one("touchstart", function(event) {
+    subjectID = $("#subjectID").val()
+    showSlide("condition")
+    $(".conditionButton").one("touchstart", function(event) {
           testCondition = $(this).attr('id')
-        })
-    } else {
-      alert("Enter numeric for Subject ID");
-      showSlide("instructions");
-    }
+    })
   },
 
 
@@ -495,13 +482,14 @@ var experiment = {
     */
     console.log("Make choice experiment.item is: " + experiment.item);
     console.log("Make choice experiment.keepPic[experiment.item].length is: " + experiment.keepPic[experiment.item].length);
-
+    console.log("Test condition is: " + testCondition);
+    
     /* Examples */
     if(Math.floor(experiment.exampleItem) <= numExamples) {
       face_vid = experiment.exampleFaces[experiment.exampleItem-1]; 
       faceLookIdx = exampleFacesIdx[experiment.exampleItem-1]; 
     } 
-    /*else if(experiment.keepPic[experiment.item].length > 0 & testCondition == "Social") { // same/switch trial 
+    else if(experiment.keepPic[experiment.item].length > 0 & testCondition == "Social") { // same/switch trial 
             face_vid = experiment.faceVids[faceLook];
             faceLookIdx = faceLook;
     } 
@@ -509,8 +497,6 @@ var experiment = {
         face_vid = experiment.faceCenter; // non-social condition, the faceLook is always center
         faceLookIdx = -1;
     }
-
-    */
     
 
 
@@ -533,14 +519,8 @@ var experiment = {
     
     if(Math.floor(experiment.exampleItem) > numExamples & 
         experiment.keepPic[experiment.item].length == 0){
-        experiment.keepPic[experiment.item] = new_img;
-        experiment.keepIdx[experiment.item] = new_i;
-        // add face_vid info here
-        face_vid = experiment.faceVids[faceLook];
-        faceLookIdx = faceLook;
-    } else {
-      face_vid = experiment.faceCenter; // non-social condition, the faceLook is always center
-      faceLookIdx = -1;
+              experiment.keepPic[experiment.item] = new_img;
+              experiment.keepIdx[experiment.item] = new_i;   
     }
 
     console.log("Make choice face vid is: " + face_vid);

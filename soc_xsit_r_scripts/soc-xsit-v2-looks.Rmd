@@ -1,0 +1,514 @@
+---
+title: "Social Cross-Situational Word Learning"
+author: "Kyle MacDonald & Allison Dods"
+date: "July 14, 2014"
+output: html_document
+---
+
+#### Analysis code for SOC-XSIT project. 
+
+Load libraries.
+
+```{r load libraries, message=FALSE, warning=FALSE}
+library(reshape)
+library(bootstrap)
+library(lme4)
+library(ggplot2)
+library(plyr)
+library(dplyr)
+source("/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysis/useful.R")
+```
+
+Read in the master data file
+
+```{r read in data}
+setwd("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/adult-looks/")
+d.all_df <- read.csv("soc_xsit_data_all.csv")
+```
+
+#### Get the number of subjects in each experiment and condition.
+
+```{r get number of subs, echo=FALSE}
+d.all_df <- filter(d.all_df, duplicate != 1)  # remove subs who participated more than once
+
+d.all_df %>%
+      group_by(experiment, condition, gazeLength) %>%
+      summarise(n_subs = n_distinct(subids))
+```
+
+#### Flag whether participants chose target of eye gaze on exposure. 
+
+```{r flag chose eye gaze trials}
+#change values of faceIdx to correspond to values of chosenIdx 
+#(LU = 0, RU = 1, LD = 2, RD = 3, striaight = -1)
+d.all_df$faceIdx <- revalue(d.all_df$face, 
+                         c("silentLUlong"= 0, "silentLUmedium" = 0,
+                           "silentLUshort"= 0, "LUkidslonger" = 0,
+                           "silentRUlong" = 1, "silentRUmedium"= 1,
+                           "silentRUshort" = 1, "RUkidslonger" = 1,
+                           "silentLDlong" = 2, "silentLDmedium" = 2,
+                           "silentLDshort" = 2, "LDkidslonger" = 2,
+                           "silentRDlong" = 3, "silentRDmedium" = 3,
+                           "silentRDshort" = 3, "RDkidslonger" = 3, 
+                           "straightahead" = -1, "straightaheadlonger" = -1))
+
+#flag trial, if subs chose target of gaze
+d.expo_df <- d.all_df %>%
+                filter(exposure_trial == 1) %>%
+                mutate(correct_exposure = faceIdx == chosenIdx) %>%
+                select(subids, itemNum, correct_exposure)
+```
+
+#### Get test trials and merge exposure trial information. 
+
+```{r test trials w/exposure}
+d.test_df <- d.all_df %>%
+                filter(test_trial == 1)
+
+d.test_df <- merge(d.expo_df, d.test_df, by = c("subids", "itemNum"))
+```
+
+Flag subs who got <25% of exposure trials correct. This can be used for exclusionary criteria in later analyses. 
+
+```{r all data flag subs <25% correct on exposure}
+d.test_df <- d.test_df %>%
+                group_by(subids) %>%
+                summarise(mean_acc_exp = mean(correct_exposure)) %>%
+                mutate(include_expo = ifelse(mean_acc_exp > 0.25,1,0)) %>%
+                join(d.test_df, by = "subids")
+```
+
+Flag trials with extremely slow or fast RTs (+/- 2SD).
+
+```{r all data clean RTs}
+d.test_df <- d.test_df %>%
+                mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                                log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                                0,1))
+```
+
+### Summarize data set: means for acc on exposure and test
+
+#### Experiment 1: Look-length manipulation. 
+
+Accuracy on exposure trials.
+
+```{r look-length exposure}
+ms_exp_looks <- d.test_df %>%
+                        filter(experiment == "look_length", include_good_rt == 1, 
+                               include_expo == 1) %>%
+                        group_by(gazeLength) %>%
+                        summarise(accuracy_exposure = mean(correct_exposure),
+                                  ci_low = ci.low(correct_exposure),
+                                  ci_high = ci.high(correct_exposure))
+
+ms_exp_looks$gazeLength <- factor(ms_exp_looks$gazeLength, 
+                                  levels = c("Short", "Medium", "Long"))
+
+ggplot(data=ms_exp_looks, 
+       aes(x=gazeLength, y=accuracy_exposure,
+           fill=gazeLength)) + 
+        geom_bar(stat="identity") +
+        geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                      ymax=accuracy_exposure+ci_high), width = .1) +
+        geom_hline(yintercept=0.25, linetype = "dashed") +
+        scale_y_continuous(limits=c(0,1))
+```
+
+Accuracy on test trials: same/switch
+
+```{r look-length acc test}
+ms_test_looks <- d.test_df %>%
+                        filter(experiment == "look_length", include_good_rt == 1, 
+                               include_expo == 1, correct_exposure == TRUE) %>%
+                        group_by(gazeLength, trialType) %>%
+                        summarise(accuracy = mean(correct),
+                                  ci_low = ci.low(correct),
+                                  ci_high = ci.high(correct))
+
+ms_test_looks$gazeLength <- factor(ms_test_looks$gazeLength, 
+                                  levels = c("Short", "Medium", "Long"))
+
+ggplot(ms_test_looks, 
+       aes(x=gazeLength, y=accuracy, 
+           group=trialType, colour=trialType)) +
+        geom_point(size=2) +
+        geom_line() +
+        geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+        geom_hline(yintercept=0.25, linetype = "dashed") +
+        scale_y_continuous(limits=c(0,1)) +
+        ggtitle("Gaze Length")
+```
+
+
+#### Experiment 2: Social vs. No-Social between subjects. 
+
+Only used the short gaze length condition.
+
+### Accuracy on exposure trials.
+```{r between subs exposure}
+ms_exp_btw <- d.test_df %>%
+                        filter(experiment == "soc_vs_no_soc_btw", condition == "Social",
+                               include_good_rt == 1, include_expo == 1) %>%
+                        summarise(accuracy_exposure = mean(correct_exposure),
+                                  ci_low = ci.low(correct_exposure),
+                                  ci_high = ci.high(correct_exposure))
+ms_exp_btw
+```
+
+### Accuracy on test trials
+
+```{r between subs test}
+ms_test_btw <- d.test_df %>%
+                        filter(experiment == "soc_vs_no_soc_btw", 
+                               include_good_rt == 1, 
+                               include_expo == 1 | condition == "No-social") %>%
+                        group_by(condition, trialType) %>%
+                        summarise(accuracy_test = mean(correct),
+                                  ci_low = ci.low(correct),
+                                  ci_high = ci.high(correct))
+
+ms_test_btw$condition <- factor(ms_test_btw$condition, 
+                                         levels = c("Social", "No-social"))
+
+#now plot
+acc_test_between <- ggplot(ms_test_btw, 
+                               aes(x=condition, y=accuracy_test, 
+                                   group=trialType, colour=trialType)) +
+                                geom_point(size=2.5) +
+                                geom_line() +
+                                geom_pointrange(aes(ymin=accuracy_test - ci_low,
+                                                  ymax=accuracy_test + ci_high), width = .1) +
+                                geom_hline(yintercept=0.25, linetype = "dashed") +
+                                scale_y_continuous(limits=c(0,1)) +
+                                xlab("Condition") +
+                                ylab("Proportion Correct") +
+                                labs(colour = "Trial Type") +
+                                ggtitle("Between-Subs (Smiley)")
+```
+
+Model the data.
+
+```{r soc-no-soc model random slope}
+inc.data <- filter(d.test_df, experiment == "soc_vs_no_soc_btw", 
+                               include_good_rt == 1,
+                               include_expo == 1 | condition == "No-social")
+m1 <- glmer(correct ~ trialType * condition + (trialType | subids),
+            data = inc.data,
+            family=binomial)
+summary(m1)
+```
+
+```{r explore model}
+ms <- aggregate(correct ~ trialType + condition, FUN=mean,
+          data = inc.data)
+
+f <- fixef(m1)
+ms$coef <- NA
+ms$coef[1] <- inv.logit(f[1])
+ms$coef[2] <- inv.logit(f[1] + f[2])
+ms$coef[3] <- inv.logit(f[1] + f[3])
+ms$coef[4] <- inv.logit(f[1] + f[2] + f[3] + f[4])
+```
+
+```{r look at individual participant data}
+hist(ranef(m1)$subids[,1])
+hist(ranef(m1)$subids[,2])
+
+mss <- aggregate(correct ~ subids + trialType + condition, FUN=mean,
+          data = inc.data)
+
+cmss <- cast(mss, condition+ subids ~  trialType)
+
+qplot(Same,Switch, data=cmss, position="jitter") + 
+      facet_wrap(~condition)
+```
+
+```{r glm btw-exp}
+lm1 <- glm(correct ~ trialType * condition,
+            data = inc.data,
+            family=binomial)
+summary(lm1) 
+f <- coef(lm1)
+ms$lcoef <- NA
+ms$lcoef[1] <- inv.logit(f[1])
+ms$lcoef[2] <- inv.logit(f[1] + f[2])
+ms$lcoef[3] <- inv.logit(f[1] + f[3])
+ms$lcoef[4] <- inv.logit(f[1] + f[2] + f[3] + f[4])
+
+```
+
+
+```{r soc-no-soc model random intercept}
+m2 <- glmer(correct ~ trialType * condition + (1 | subids),
+            data = inc.data,
+            family=binomial)
+f <- fixef(m2)
+ms$m2coef <- NA
+ms$m2coef[1] <- inv.logit(f[1])
+ms$m2coef[2] <- inv.logit(f[1] + f[2])
+ms$m2coef[3] <- inv.logit(f[1] + f[3])
+ms$m2coef[4] <- inv.logit(f[1] + f[2] + f[3] + f[4])
+summary(m2)
+anova(m1,m2)
+```
+
+model with simple linear model -- do not use, just for kicks
+
+```{r lm btw}
+summary(lm(correct ~ condition * trialType, data=mss))
+```
+
+#### Experiment 3: Within Subjects Social vs. No-social 
+
+Replicate the social effect on switch trials with a within-subjects manipulation. This allows us to make stronger inferences about the difference between conditions because there is less between subjects variability.
+
+Filter just trials from within-subjects experiment.
+
+```{r filter within subs experiment}
+d_within_df <- filter(d.all_df, experiment == "soc_vs_no_soc_within")
+
+d_within_df %>%
+      group_by(condition) %>%
+      summarise(n_subs = n_distinct(subids))
+```
+
+### Flag social vs. no-social trials
+
+When we switched to within subjects, we tracked which block came first, but didn't 
+track social vs. no-social. So we create a column to track this information
+
+```{r flag social_trial_type within subs}
+d_within_df <- d_within_df %>%
+                  mutate(condition_trial = ifelse(condition == "No-socialFirst" 
+                                                  & trial.num <= 20, "no-social", 
+                                            ifelse(condition == "SocialFirst" 
+                                                   & trial.num <= 20, "social", 
+                                                   ifelse(condition == "No-socialFirst" 
+                                                          & trial.num >= 21, "social",
+                                                          ifelse(condition == "SocialFirst" 
+                                                                 & trial.num >= 21, 
+                                                                 "no-social", NA)))))
+#flag trial, if subs chose target of gaze
+d_within_expo_df <- d_within_df %>%
+                        filter(exposure_trial == 1) %>%
+                        mutate(correct_exposure = faceIdx == chosenIdx) %>%
+                        select(subids, itemNum, correct_exposure)
+
+#grab test trials
+d_within_test_df <- d_within_df %>%
+                        filter(test_trial == 1)
+
+#merge with test trials
+d_within_test_df <- join(d_within_test_df, d_within_expo_df, c("subids", "itemNum"))
+```
+
+Flag subs who got <25% of exposure trials correct. This can be used for exclusionary criteria in later analyses. 
+
+```{r within subs flag subs <25% correct on exposure}
+d_within_test_df <- d_within_test_df %>%
+                            filter(condition_trial == "social") %>%
+                            group_by(subids) %>%
+                            summarise(mean_acc_exp = mean(correct_exposure)) %>%
+                            mutate(include_expo = ifelse(mean_acc_exp > 0.25,1,0)) %>%
+                            join(d_within_test_df, by = "subids")
+```
+
+Flag trials with extremely slow or fast RTs (+/- 2SD).
+
+```{r within subs clean RTs}
+d_within_test_df <- d_within_test_df %>%
+                        mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                                              log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                                        0,1))
+```
+
+
+### Accuracy on exposure trials
+
+```{r within subs acc exposure}
+ms_expo_within <- d_within_test_df %>%
+                        filter(include_good_rt == 1, include_expo == 1, 
+                               condition_trial == "social") %>%
+                        group_by(condition, condition_trial) %>%
+                        summarise(accuracy_exposure = mean(correct_exposure),
+                                  ci_low = ci.low(correct_exposure),
+                                  ci_high = ci.high(correct_exposure))
+
+ms_expo_within$condition <- factor(ms_expo_within$condition)
+
+ggplot(data=ms_expo_within, 
+       aes(x=condition, y=accuracy_exposure,
+           fill=condition)) + 
+        geom_bar(stat="identity") +
+        geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                      ymax=accuracy_exposure+ci_high), width = .1) +
+        geom_hline(yintercept=0.25, linetype = "dashed") +
+        scale_y_continuous(limits=c(0,1))        
+```
+
+```{r explore within individual data}
+#Apply different filters
+sub_level_filter <- filter(d_within_test_df,
+                           include_good_rt == 1, include_expo == 1,
+                               condition_trial == "social")
+
+trial_level_filter <- filter(d_within_test_df,
+                           include_good_rt == 1, condition_trial == "social")
+
+
+mss_expo_within_sub_lev <- sub_level_filter %>%
+                              group_by(condition, condition_trial, subids) %>%
+                              summarise(accuracy_exposure = mean(correct_exposure))
+
+mss_expo_within_trial_lev <- trial_level_filter %>%
+                                    group_by(condition, condition_trial, subids) %>%
+                                    summarise(accuracy_exposure = mean(correct_exposure))
+
+
+sub_hist <- qplot(accuracy_exposure, geom="bar",
+                  facets=.~condition, data=mss_expo_within_sub_lev)
+
+trial_hist <- qplot(accuracy_exposure, geom="bar",
+                  facets=.~condition, data=mss_expo_within_trial_lev)
+
+multiplot(sub_hist, trial_hist)
+```
+
+```{r}
+dss <- d_within_test_df %>% filter(include_good_rt == 1, 
+                                   include_expo == 1, 
+                                   condition_trial == "social") %>%
+      group_by(condition, condition_trial, trial.num) %>%
+      summarise(accuracy_exposure = mean(correct_exposure))
+
+qplot(trial.num, accuracy_exposure, col=condition, facets=.~condition, 
+      geom=c("point","line"),
+      data=dss) +
+      scale_y_continuous(limits=c(0,1))
+```
+
+#### Accuracy on test trials within subjects experiment 
+
+```{r accuracy on test within subs}
+inc.data.within_sub_level <- filter(d_within_test_df, include_good_rt == 1, include_expo == 1 & 
+                                    correct_exposure == TRUE | condition_trial == "no-social")
+
+inc.data.within_trial_level <- filter(d_within_test_df, include_good_rt == 1 & 
+                                    correct_exposure == TRUE | condition_trial == "no-social")
+
+
+ms_test_within_sub_level <- inc.data.within_sub_level %>%
+                                          group_by(condition, condition_trial, trialType) %>%
+                                          summarise(accuracy = mean(correct),
+                                                ci_low = ci.low(correct),
+                                                ci_high = ci.high(correct))
+
+ms_test_within_sub_level$condition <- factor(ms_test_within_sub_level$condition)
+ms_test_within_sub_level$condition_trial <- factor(ms_test_within_sub_level$condition_trial, 
+                                         levels = c("social", "no-social"))
+
+acc_test_within_blocks_sub_level <- ggplot(ms_test_within_sub_level, 
+                                     aes(x=condition_trial, y=accuracy, 
+                                         group=trialType, colour=trialType)) +
+                                      geom_point(size=2) +
+                                      geom_line() +
+                                      geom_pointrange(aes(ymin=accuracy - ci_low,
+                                                        ymax=accuracy + ci_high), width = .1) +
+                                      geom_hline(yintercept=0.25, linetype = "dashed") +
+                                      scale_y_continuous(limits=c(0,1)) +
+                                      facet_wrap(~condition) + 
+                                      ggtitle("Within-subs-Subject-Level")
+
+ms_test_within_trial_level <- inc.data.within_trial_level %>%
+                                          group_by(condition, condition_trial, trialType) %>%
+                                          summarise(accuracy = mean(correct),
+                                                ci_low = ci.low(correct),
+                                                ci_high = ci.high(correct))
+
+ms_test_within_trial_level$condition <- factor(ms_test_within_trial_levell$condition)
+ms_test_within_trial_level$condition_trial <- factor(ms_test_within_trial_level$condition_trial, 
+                                         levels = c("social", "no-social"))
+
+acc_test_within_blocks_trial_level <- ggplot(ms_test_within_trial_level, 
+                                           aes(x=condition_trial, y=accuracy, 
+                                               group=trialType, colour=trialType)) +
+                                            geom_point(size=2) +
+                                            geom_line() +
+                                            geom_pointrange(aes(ymin=accuracy - ci_low,
+                                                              ymax=accuracy + ci_high), width = .1) +
+                                            geom_hline(yintercept=0.25, linetype = "dashed") +
+                                            scale_y_continuous(limits=c(0,1)) +
+                                            facet_wrap(~condition) + 
+                                            ggtitle("Within-subs-Trial-Level")
+
+multiplot(acc_test_within_blocks_sub_level, acc_test_within_blocks_trial_level)
+```
+
+Now do the same accuracy computation but collapse across blocks
+
+```{r acc test collapse blocks}
+ms_test_within_collapse <- inc.data.within %>%
+                        group_by(condition_trial, trialType) %>%
+                        summarise(accuracy = mean(correct),
+                                  ci_low = ci.low(correct),
+                                  ci_high = ci.high(correct))
+
+ms_test_within_collapse$condition_trial <- factor(ms_test_within_collapse$condition_trial,
+                                                  levels = c("social", "no-social"))
+
+acc_test_within <- ggplot(ms_test_within_collapse, 
+                               aes(x=condition_trial, y=accuracy, 
+                                   group=trialType, colour=trialType)) +
+                                geom_point(size=2) +
+                                geom_line() +
+                                geom_pointrange(aes(ymin=accuracy - ci_low,
+                                                  ymax=accuracy + ci_high), width = .1) +
+                                geom_hline(yintercept=0.25, linetype = "dashed") +
+                                scale_y_continuous(limits=c(0,1)) +
+                                ggtitle("Within-subs collapsed")
+```
+
+##### Model the within subs data
+
+```{r model within subs}
+m1_within <- glmer(correct ~ trialType * condition_trial + (trialType | subids),
+            data = inc.data.within,
+            family=binomial)
+summary(m1_within)
+```
+
+
+### Replot fyp data
+
+```{r replot fyp}
+read_path_fyp <- file.path("/Users", "kmacdonald", "Documents", 
+                       "Projects", "SOC_XSIT", "processed_data", 
+                       "adult-fyp/")
+
+d_fyp_df <- tbl_df(read.csv(paste(read_path_fyp,
+                            "aggregate_soc_xsit.csv", sep="")))
+
+d_fyp_df$condition <- factor(d_fyp_df$condition, 
+                                  levels = c("Social", "No-Social"))
+
+acc_test_fyp <- ggplot(data=filter(d_fyp_df, intervalNum==0, numPicN==4),
+                         aes(x=condition, y=correct, colour=trialType, group=trialType)) +
+                          geom_point(size = 2.5) +
+                          geom_line() +
+                          geom_pointrange(aes(ymin=correct - corr.cil,
+                                            ymax=correct + corr.cih), width = .1) +
+                          geom_hline(yintercept=0.25, linetype = "dashed") +
+                          scale_y_continuous(limits=c(0,1)) +
+                          xlab("Condition") +
+                          ylab("Proportion Correct") +
+                          labs(colour = "Trial Type") +
+                          ggtitle("FYP (between)")
+```
+
+#### Plot all accuracy data together (FYP data, Between-subs design, Within-subs design)
+
+```{r multiplot accuracy data, fig.width=8, fig.height=6}
+multiplot(acc_test_fyp, acc_test_between, acc_test_within_blocks, acc_test_within, cols=2)
+```

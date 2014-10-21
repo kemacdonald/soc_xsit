@@ -265,7 +265,7 @@ var startTime = 0; // Starts the clock for recording RT
  */
 
 try {
-    var filename = "KM_soc_xsit_4_looks_good";
+    var filename = "KM_soc_xsit_4_looks_noisy";
     var condCounts = "1,50;2,50;3,50";  
     var xmlHttp = null;
     xmlHttp = new XMLHttpRequest();
@@ -277,7 +277,7 @@ try {
     var cond = 1;
 }
 
-/* code for condition randomization. This only includes Social Condition for Second Batch */
+/* code for condition randomization.  */
 switch (cond) {
         case "1": 
             cond_name = "Short";
@@ -305,6 +305,16 @@ switch (cond) {
             int_cond = "Zero";
             exampleFaceIdx = 2;
             testFaceIdx = 2;
+            delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8] 
+            test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
+            exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];
+            break;
+        case "4": 
+            cond_name = "Noisy";
+            social_cond = "Social";
+            int_cond = "Zero";
+            exampleFaceIdx = 3;
+            testFaceIdx = 3;
             delay = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8] 
             test_trials = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
             exposure_trials = [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0];

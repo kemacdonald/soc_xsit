@@ -28,10 +28,17 @@ title:: Play a fun word learning game (5 mins, do only once)!
 
 description:: word-learning experiment (5 mins, do only once)!
 
+<<<<<<< HEAD
 nameofexperimentfiles::soc_xsit_4_looks_pilot_4_thisone_btw
 &&&   the files that the script generates for you will have names based on this. 
 
 experimentURL::http://langcog.stanford.edu/expts/KM_soc_xsit/soc_xsit_4_looks/soc_xsit_4_looks_4.html
+=======
+nameofexperimentfiles::soc_xsit_4_looks_withinsubs_replication
+&&&   the files that the script generates for you will have names based on this. 
+
+experimentURL::https://langcog.stanford.edu/expts/KM_soc_xsit/soc_xsit_4_looks/soc_xsit_4_looks_v5_within_subs.html
+>>>>>>> cbe5174feb6e77c237459671bb7ae25dd72bf674
 &&&   the URL where you've posted your external HIT
 
 hitfolderpath::/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_expts/soc_xsit_4_looks
@@ -53,7 +60,7 @@ frameheight::800
 
 reward::0.25  &&& how much you're paying per HIT %% 20, or 25
 
-numberofassignments::100
+numberofassignments::200
 &&&  how many subjects you want
 
 assignmentduration::600     
@@ -66,6 +73,10 @@ autoapprovaldelay::1296000
 
 annotation::assignmentId
 
+<<<<<<< HEAD
 conditions::soc_xsit_4_looks_thisone_btw
+=======
+conditions::soc_xsit_4_looks_within_subs_replication
+>>>>>>> cbe5174feb6e77c237459671bb7ae25dd72bf674
 &&&  If you want to post multiple HITs in a batch, you may be able to do it by having multiple conditions listed here, separated by a comma. I haven't tried this so it might not work.
 
