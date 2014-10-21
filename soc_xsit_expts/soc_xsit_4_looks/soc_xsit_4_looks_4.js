@@ -462,6 +462,9 @@ var experiment = {
         faceIdx: faceLookIdx,
     };  
     experiment.data.push(data);
+
+    console.log("Face vid: " + experiment.face);
+    console.log("Chosen index: " + experiment.chosen_idx);
     
     //update progress bar
     $("#progressbar").progressbar("option", "value", 
@@ -472,7 +475,7 @@ var experiment = {
 
   /*The work horse of the sequence: what to do on every trial.*/
   next: function() {
-    
+
     var i, next_imgs = [],sound, face_vid, blank;
     console.log("Item: " + experiment.item);
 
