@@ -21,7 +21,8 @@ source("/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysi
 - d1: ran the short gaze in social and no-social condition
 - d2: replicate expt 2 using a within-subjects design
 - d3: manipulated the language cue during exposure ("this" vs. "one"), eye gaze in both
-- d4: aggregated data from FYP experiment
+- d4: within-subs replication 
+- d5: noisy-channel experiment
 
 ```{r read data}
 #set path for reading data
@@ -41,8 +42,10 @@ d2 <- tbl_df(read.csv(paste(read_path,
                             "soc_xsit_looks_pilot_3_withinsubs.csv", sep="")))
 d3 <- tbl_df(read.csv(paste(read_path, 
                             "soc_xsit_looks_pilot_4_thisone_btw.csv", sep="")))
-d4 <- tbl_df(read.csv(paste(read_path_fyp,
-                            "aggregate_soc_xsit.csv", sep="")))
+d4 <- tbl_df(read.csv(paste(read_path, 
+                            "soc_xsit_looks_withinsubs_replication.csv", sep="")))
+d5 <- tbl_df(read.csv(paste(read_path, 
+                            "soc_xsit_looks_noisy_channel.csv", sep="")))
 ```
 
 #### Merge data sets, tracking experiment version. 
@@ -69,18 +72,20 @@ d <- mutate(d, experiment = "look_length")
 d1 <- mutate(d1, experiment = "soc_vs_no_soc_btw")
 d2 <- mutate(d2, experiment = "soc_vs_no_soc_within")
 d3 <- mutate(d3, experiment = "this_one")
+d4 <- mutate(d4, experiment = "within_replication")
+d5 <- mutate(d5, experiment = "noisy_channel")
 
 
 # wrap in list 
-d.list <- list(d, d1, d2, d3)
+d.list <- list(d, d1, d2, d3, d4, d5)
 
-#join all 4 data frames
+#join all data frames
 d.all_df <- ldply(.data = d.list, .fun = rbind())
 
 #make experiment variable factor
 d.all_df$experiment <- as.factor(d.all_df$experiment)
 
-#check the number of trials for each sub
+#get the number of trials that each sub completed, this identifies people who participated more than once
 dups <- d.all_df %>%
                 group_by(subid) %>%
                 summarise(n_trials = n())
@@ -91,16 +96,20 @@ d.all_df <- join(d.all_df, dups)
 Flag subs who have more trials than they should (participated more than once), 1=duplicate, 0=not-duplicate
 
 ```{r flag duplicates}
-
-d.all_df <- mutate(d.all_df.temp, 
+d.all_df <- mutate(d.all_df, 
                         duplicate = ifelse(experiment == "this_one" & n_trials > 16, 1, 
                                           ifelse(experiment == "look_length" & n_trials > 20, 1, 
-                                                ifelse(experiment=="soc_vs_no_soc_btw" & n_trials > 20, 1,
-                                                      ifelse(experiment=="soc_vs_no_soc_within" & n_trials > 36, 1, 0
-                                                             )))))
+                                                ifelse(experiment == "soc_vs_no_soc_btw" & n_trials > 20, 1,
+                                                      ifelse(experiment == "soc_vs_no_soc_within" & n_trials > 36, 1,
+                                                             ifelse(experiment == "within_replication" & n_trials > 36, 1,
+                                                                    ifelse(experiment == "noisy_channel" & n_trials > 20, 1, 0
+                                                             )))))))
 
 #anonymize subids
 d.all_df <- anonymize.sids(d.all_df, "subid")
+
+#remove duplicates
+d.all_df <- filter(d.all_df, duplicate == 0)
 
 #save final data file
 write.csv(d.all_df, "/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/adult-looks/soc_xsit_data_all.csv", row.names=F)

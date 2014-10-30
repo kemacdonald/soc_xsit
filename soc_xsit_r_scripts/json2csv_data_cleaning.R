@@ -11,14 +11,14 @@ library(car)
 library(stringr)
 
 ## set file paths for reading and writing data
-read_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC_XSIT", "soc_xsit_expts", "soc_xsit_4_looks/")
+read_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC_XSIT", "soc_xsit_expts", "soc_xsit_4_noisy_channel/")
 write_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC_XSIT", "processed_data", "adult-looks/")
 
 ## gets all .results files at one time
 all_results <- list.files(path = read_path, pattern = '*.results', all.files = FALSE)
 
-all_results <- all_results[2] ## within subs expt
-all_results <- all_results[3] ## this/one btw subs expt
+# all_results <- all_results[2] ## within subs expt
+# all_results <- all_results[3] ## this/one btw subs expt
 
 ## creates empty data frame
 all.data <- data.frame()
@@ -30,7 +30,7 @@ all.data <- data.frame()
 for(f in 1:length(all_results)) {
   data <- read.table(paste(read_path, all_results[f],sep=""), sep="\t", 
                      header=TRUE, stringsAsFactors=FALSE)
-  long.data <- as.data.frame(matrix(ncol = 0, nrow = 36*nrow(data)))
+  long.data <- as.data.frame(matrix(ncol = 0, nrow = 20*nrow(data)))
   c <- 1
   # loops over each participant
   for (i in 1:nrow(data)) {    
@@ -68,12 +68,12 @@ for(f in 1:length(all_results)) {
   }
 }  
 
-## Flag exposure, test, and example trials
+## Flag exposure, test, and example trials (within subs experiment)
 long.data <- long.data %>% 
         group_by(subid) %>%
         mutate(example_trial = ifelse(trial.num %in% seq(1,4),1,0),
-               exposure_trial = ifelse(trial.num %in% seq(from=5, to=35, by=2),1,0),
-               test_trial = ifelse(trial.num %in% seq(from=6, to=36, by=2),1,0)) %>%
+               exposure_trial = ifelse(trial.num %in% seq(from=5, to=19, by=2),1,0),
+               test_trial = ifelse(trial.num %in% seq(from=6, to=20, by=2),1,0)) %>%
         arrange(subid, trial.num)
 
 all.data <- long.data
@@ -88,7 +88,7 @@ all.data$day.and.time <- chron(dates = all.data$submit.date,
 all.data <- all.data[with(all.data,order(subid,day.and.time)),]
 
 drop.subs <- ddply(all.data,.(subid),
-                      function(x) {nrow(x) > 16})
+                      function(x) {nrow(x) > 20}) # this number changes depending on the experiment
 
 drop.subs <- drop.subs[drop.subs$V1,1] # grabs subs who participated more than once
 
@@ -97,7 +97,7 @@ all.drops <- matrix(0,nrow(all.data))
 
 for(sub in drop.subs) {
   rows <- as.integer(all.data$subid == sub)
-  all.drops[rows & (cumsum(rows) > 36)] <- 1
+  all.drops[rows & (cumsum(rows) > 20)] <- 1
 }
 
 all.data <- subset(all.data,!all.drops) ## subsets data without subs who participated twice
@@ -154,5 +154,5 @@ keep.data$correct <- keep.data$chosen == keep.data$kept
 
 ##### SAVE OUTPUT  #####
 
-write.csv(keep.data, paste(write_path, "soc_xsit_looks_pilot_3_withinsubs.csv", sep=""),
+write.csv(keep.data, paste(write_path, "soc_xsit_looks_noisy_channel.csv", sep=""),
           row.names=FALSE)
