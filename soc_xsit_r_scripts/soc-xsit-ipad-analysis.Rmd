@@ -101,22 +101,43 @@ means.filtered <- data.test_df %>%
                                   ci_low = ci.low(correct), n_trial = n()
                                   )
 
+<<<<<<< HEAD:r_scripts/soc-xsit-ipad-analysis.Rmd
+acc.exp <- data.test_df %>%
+=======
 acc.expo <- data.test_df %>%
+>>>>>>> cbe5174feb6e77c237459671bb7ae25dd72bf674:soc_xsit_r_scripts/soc-xsit-ipad-analysis.Rmd
                 filter(condition == "Social") %>%
                 group_by(include) %>%
                 summarise(mean_correct = mean(correct_exposure),
                           ci_high = ci.high(correct_exposure),
                           ci_low = ci.low(correct_exposure)
                           )
+<<<<<<< HEAD:r_scripts/soc-xsit-ipad-analysis.Rmd
+=======
 acc.expo$include <- factor(acc.expo$include, 
                                       labels = c('One','This'))
 
 acc.expo
+>>>>>>> cbe5174feb6e77c237459671bb7ae25dd72bf674:soc_xsit_r_scripts/soc-xsit-ipad-analysis.Rmd
 ```
 
 Plot the data.
 
 ```{r plots}
+<<<<<<< HEAD:r_scripts/soc-xsit-ipad-analysis.Rmd
+acc.expo <- ggplot(data = means.filtered, aes(x = condition, y = mean_correct, colour = condition)) +
+                geom_point() + 
+                geom_errorbar(aes(ymin = mean_correct - ci_low, ymax = mean_correct + ci_high), width = 0.1) +
+                geom_hline(yintercept = 0.5, linetype = "dashed")
+
+acc.test <- ggplot(data = means.filtered, aes(x = condition, y = mean_correct, colour = condition)) +
+                geom_point() + 
+                geom_errorbar(aes(ymin = mean_correct - ci_low, ymax = mean_correct + ci_high), width = 0.1) +
+                geom_hline(yintercept = 0.5, linetype = "dashed")
+
+
+      
+=======
 acc.expo <- ggplot(data = acc.expo, aes(x = include, y = mean_correct, fill=include)) +
                 geom_bar(stat="identity") + 
                 geom_errorbar(aes(ymin = mean_correct - ci_low, 
@@ -136,6 +157,7 @@ acc.test <- ggplot(data = means.filtered,
                         scale_y_continuous(limits=c(0,1))
 
 acc.test      
+>>>>>>> cbe5174feb6e77c237459671bb7ae25dd72bf674:soc_xsit_r_scripts/soc-xsit-ipad-analysis.Rmd
 ```
 
 Run stats.
