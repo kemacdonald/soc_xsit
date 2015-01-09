@@ -9,158 +9,295 @@ output: html_document
 
 Load libraries and helper functions.
 ```{r load libraries, message=FALSE, warning=FALSE}
+source("/Users/kmacdonald/Documents/programming/rscripts/useful.R")
 library(plyr)
 library(dplyr)
 library(bootstrap)
 library(lme4)
 library(ggplot2)
-source("/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysis/useful.R")
+```
+
+Set file paths for reading in data
+
+```{r read path}
+path <- "/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/"
 ```
 
 Read in the data. 
 
 ```{r read-data}
-data.all_df <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/soc-xsit-ipad-alldata.csv")
-data.test_df <- read.csv("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/soc-xsit-ipad-testdata.csv")
+data.all_df <- tbl_df(read.csv(paste(path, "soc-xsit-ipad-alldata.csv", sep="")))
+data.test_df <- tbl_df(read.csv(paste(path, "soc-xsit-ipad-testdata.csv", sep="")))
 ```
 
-### Summarize data set. 
+### Descriptives
+
 Get the number of subjects 
 ```{r num_subs}
-data.test_df %>%
-        summarise(n_subjects = n_distinct(id)) %>%
-        print()
+data.test_df %>% summarise(n_subjects = n_distinct(subid))
 ```
+
 Get condition breakdown
 ```{r condition_breakdown}
 data.test_df %>%
         group_by(condition) %>%
-        summarise(n_subjects = n_distinct(id)) %>%
-        print()
+        summarise(n_subjects = n_distinct(subid))
 ```
+
 Get age by condition breakdown
 ```{r condition_by_age}
 data.test_df %>%
         group_by(age_group, condition) %>%
-        summarise(n_subject = n_distinct(id)) %>%
-        print()
+        summarise(n_subject = n_distinct(subid))
 ```
+
 Get trial by kid breakdown. We will use this to decide which kids to keep
 in the analysis. 
 ```{r trial_breakdown}
-include_df <- data.test_df %>%
-                group_by(id, trial_type_redo) %>%
-                summarise(n_trial = n()) %>%
-                mutate(include_trial = ifelse(n_trial >= 2, 1,0)) %>%
-                summarise(sum(include_trial))
-
-include_df <- include_df %>% 
-                        mutate(include_kid = ifelse(include_df[,2] == 2, 1,0)) %>%
-                        select(id, include_kid)
-
-#Keep only kids who got at least 2 same/switch trials
-data.test_df <- join(data.test_df, include_df, by="id")
+# get trial breakdown for each subject
+trial_breakdown <- data.test_df %>%
+                group_by(subid, trial_type_redo) %>%
+                summarise(n_trial = n()) 
 ```
-Keep only the first two test trials for each trial type.
-```{r keep_trials}
-## this is tricky!
-# function that takes in a data frame
-flag_trials <- function(df) {
-        # iterate over trial_type_redo column
-        # build array for same and switch
-        # if array length is greater than 2, then we filter out that trial
-}
 
-data.test_df %>%
-        group_by(id, trial_type_redo) %>%
-        summarise(n_trial = n()) %>%
-        head()
+Now we flag kids who got 3 same and 3 switch trials, so we can filter             
+
+```{r flag kids with 3 same/switch trials}
+include_df <- trial_breakdown %>% 
+                        group_by(subid) %>% 
+                        mutate(include_test_trials = ifelse(n_trial == 3,1,0)) 
+                  
+# flag kids who got equal number of same and switch
+include_df <- include_df %>% select(subid, include_test_trials)
+
+# keep only 1 row for each subject
+include_df <- include_df[!duplicated(include_df),] 
+
+# merge this information with the rest of the test trials
+data.test_df <- join(data.test_df, include_df, by="subid")
+```
+
+Set up filters
+
+```{r filters}
+# filter out by experimenter notes and those subs who didn't get 3 same/switch trials
+d.test.filt.subs <- filter(data.test_df, include == 1, include_test_trials == 1)
+
+# now we filter out test trials that participant didn't get exposure trial correct
+d.test.filt <- filter(data.test_df, include == 1, include_test_trials == 1,
+                      condition == "No-social" | correct_exposure == TRUE)
+
+# only older kids
+d.test.filt.old <- filter(data.test_df, include == 1, include_test_trials == 1,
+                      condition == "No-social" | correct_exposure == TRUE,
+                      age_group >= 4)
+
+# only kids who got version 2 of the experiment
+d.test.filt.v2 <- filter(data.test_df, include == 1, include_test_trials == 1,
+                      condition == "No-social" | correct_exposure == TRUE,
+                      version_expt == "v2", 
+                      age_group >= 4)
+```
+
+Check the number of kids removed by filter.
+
+```{r number of subjects post filtering}
+n.pre.filt <- data.test_df %>% summarise(n_pre_filt = n_distinct(subid))
+n.post.filt <- d.test.filt %>% summarise(n_post_filt = n_distinct(subid))
+cbind(n.pre.filt, n.post.filt)
+```
+
+Check distribution of kids over conditions and ages.
+
+```{r post filter condition by age breakdown}
+# by condition
+d.test.filt %>%
+        group_by(condition) %>%
+        summarise(n_subject = n_distinct(subid))
+```
+
+Analyze exposure trial performance 
+
+```{r accuracy exposure}
+acc.expo <- d.test.filt.subs %>%
+                  group_by(condition) %>%
+                  filter(condition == "Social") %>%
+                  summarise(mean_correct = mean(correct_exposure), 
+                                  ci_high = ci.high(correct_exposure), 
+                                  ci_low = ci.low(correct_exposure), n_trial = n())
+
+acc.expo.filt <- d.test.filt %>%
+                  group_by(condition) %>%
+                  filter(condition == "Social") %>%
+                  summarise(mean_correct = mean(correct_exposure), 
+                                  ci_high = ci.high(correct_exposure), 
+                                  ci_low = ci.low(correct_exposure), n_trial = n())
+rbind(acc.expo, acc.expo.filt)
 ```
 
 Compute means: not collapsing by kid
 
 ```{r means}
-means <- data.test_df %>%
-                filter(include == 1) %>%
+ms <- d.test.filt %>%
                 group_by(condition, trial_type_redo) %>%
-                summarise(mean(correct))
+                summarise(mean_correct = mean(correct),
+                          ci_high = ci.high(correct), 
+                          ci_low = ci.low(correct), 
+                          n_trial = n())
 ```
 
-Compute means: filtering out younger kids and kids who got exposure trial wrong
+Compute means: filtering out younger kids 
+
+```{r descriptives 4s and 5s}
+d.test.filt.old %>%
+        group_by(condition) %>%
+        summarise(n_subjects = n_distinct(subid))
+```
 
 ```{r means-filtered}
-means.filtered <- data.test_df %>%
-                        filter(
-                                include == 1, 
-                                age_group == 4 | age_group == 5, 
-                                condition == "No-social" | correct_exposure == TRUE 
-                                ) %>%
+ms_old <- d.test.filt.old %>%
                         group_by(condition, trial_type_redo) %>%
                         summarise(mean_correct = mean(correct), 
                                   ci_high = ci.high(correct), 
-                                  ci_low = ci.low(correct), n_trial = n()
-                                  )
-
-<<<<<<< HEAD:r_scripts/soc-xsit-ipad-analysis.Rmd
-acc.exp <- data.test_df %>%
-=======
-acc.expo <- data.test_df %>%
->>>>>>> cbe5174feb6e77c237459671bb7ae25dd72bf674:soc_xsit_r_scripts/soc-xsit-ipad-analysis.Rmd
-                filter(condition == "Social") %>%
-                group_by(include) %>%
-                summarise(mean_correct = mean(correct_exposure),
-                          ci_high = ci.high(correct_exposure),
-                          ci_low = ci.low(correct_exposure)
-                          )
-<<<<<<< HEAD:r_scripts/soc-xsit-ipad-analysis.Rmd
-=======
-acc.expo$include <- factor(acc.expo$include, 
-                                      labels = c('One','This'))
-
-acc.expo
->>>>>>> cbe5174feb6e77c237459671bb7ae25dd72bf674:soc_xsit_r_scripts/soc-xsit-ipad-analysis.Rmd
+                                  ci_low = ci.low(correct), 
+                                  n_trial = n())
 ```
 
-Plot the data.
+Plot the group level data.
 
 ```{r plots}
-<<<<<<< HEAD:r_scripts/soc-xsit-ipad-analysis.Rmd
-acc.expo <- ggplot(data = means.filtered, aes(x = condition, y = mean_correct, colour = condition)) +
-                geom_point() + 
-                geom_errorbar(aes(ymin = mean_correct - ci_low, ymax = mean_correct + ci_high), width = 0.1) +
-                geom_hline(yintercept = 0.5, linetype = "dashed")
-
-acc.test <- ggplot(data = means.filtered, aes(x = condition, y = mean_correct, colour = condition)) +
-                geom_point() + 
-                geom_errorbar(aes(ymin = mean_correct - ci_low, ymax = mean_correct + ci_high), width = 0.1) +
-                geom_hline(yintercept = 0.5, linetype = "dashed")
-
-
-      
-=======
-acc.expo <- ggplot(data = acc.expo, aes(x = include, y = mean_correct, fill=include)) +
-                geom_bar(stat="identity") + 
-                geom_errorbar(aes(ymin = mean_correct - ci_low, 
-                                  ymax = mean_correct + ci_high), width = 0.1) +
-                geom_hline(yintercept = 0.5, linetype = "dashed")
-
-acc.expo
-
-acc.test <- ggplot(data = means.filtered, 
-                   aes(x = condition, y = mean_correct, group = trial_type_redo, 
-                       colour = trial_type_redo)) +
-                        geom_errorbar(aes(ymin = mean_correct - ci_low, 
-                                          ymax = mean_correct + ci_high), width = 0.05) +
-                        geom_point() + 
-                        geom_line() +
-                        geom_hline(yintercept = 0.5, linetype = "dashed") +
-                        scale_y_continuous(limits=c(0,1))
-
-acc.test      
->>>>>>> cbe5174feb6e77c237459671bb7ae25dd72bf674:soc_xsit_r_scripts/soc-xsit-ipad-analysis.Rmd
+ggplot(data = ms, 
+       aes(x = condition, y = mean_correct, 
+           group = trial_type_redo, colour = trial_type_redo)) +
+      geom_errorbar(aes(ymin = mean_correct - ci_low, 
+                        ymax = mean_correct + ci_high), width = 0.05) +
+      geom_point() + 
+      geom_line() +
+      geom_hline(yintercept = 0.5, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1))
 ```
 
-Run stats.
+Now compute means for each individual kid.
+
+```{r means by subs}
+ms_subs <- d.test.filt %>%
+                group_by(subid, condition, trial_type_redo) %>%
+                summarise(mean_correct = mean(correct),
+                          ci_high = ci.high(correct), 
+                          ci_low = ci.low(correct), 
+                          n_trial = n())
+```
+
+Dot plot of the individual subject data (means).
+
+```{r dot plot}
+ggplot(ms_subs, aes(x = condition, y = mean_correct, fill=trial_type_redo)) +
+      geom_dotplot(binaxis = "y", stackdir = "centerwhole", position = "dodge", dotsize=0.6) +
+      geom_hline(yintercept = 0.5, linetype = "dashed")
+```
+
+Get means for each trial number 
+
+```{r means by trial}
+ms_trial <- d.test.filt %>%
+                  group_by(itemNum, condition, trial_type_redo) %>%
+                  summarise(mean_correct = mean(correct),
+                          ci_high = ci.high(correct), 
+                          ci_low = ci.low(correct), 
+                          n_trial = n())
+```
+
+Plot trial level data
+
+```{r trial order plot}
+limits <- aes(ymax = mean_correct + ci_high, ymin= mean_correct - ci_low)
+
+qplot(data = ms_trial, x = itemNum, y = mean_correct, 
+                              geom=c("point", "line"), color=trial_type_redo,
+                              ylim=c(0,1), xlab=c("Trial Number"), 
+                              ylab=c("Proportion Correct")) +
+                              geom_hline(yintercept = 0.5, linetype="dashed") +
+                              geom_errorbar(limits, width=0.1) +
+                              facet_grid(.~condition) 
+```
+
+Next we will analyze only those kids who got version 2 of the experiment (set trial order).
+
+Descriptives
+
+```{r v2 descriptives}
+d.test.filt.v2 %>%
+        group_by(condition) %>%
+        summarise(n_subjects = n_distinct(subid))
+```
+
+Means and plots.
+
+```{r version 2 only}
+ms_v2 <- d.test.filt.v2 %>%
+                  group_by(condition, trial_type_redo) %>%
+                  summarise(mean_correct = mean(correct),
+                          ci_high = ci.high(correct), 
+                          ci_low = ci.low(correct), 
+                          n_trial = n())
+
+# now plot
+ggplot(data = ms_v2, 
+       aes(x = condition, y = mean_correct, 
+           group = trial_type_redo, colour = trial_type_redo)) +
+      geom_errorbar(aes(ymin = mean_correct - ci_low, 
+                        ymax = mean_correct + ci_high), width = 0.05) +
+      geom_point() + 
+      geom_line() +
+      geom_hline(yintercept = 0.5, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1))
+```
+
+Get means for each subject V2.
+
+```{r means by subs v2}
+ms_subs_v2 <- d.test.filt.v2 %>%
+                group_by(subid, condition, trial_type_redo) %>%
+                summarise(mean_correct = mean(correct),
+                          ci_high = ci.high(correct), 
+                          ci_low = ci.low(correct), 
+                          n_trial = n())
+```
+
+Dotplot Version 2.
+
+```{r dotplot v2}
+ggplot(ms_subs_v2, aes(x = condition, y = mean_correct, fill=trial_type_redo)) +
+      geom_dotplot(binaxis = "y", stackdir = "centerwhole", position = "dodge", dotsize=0.6) +
+      geom_hline(yintercept = 0.5, linetype = "dashed")
+```
+
+Get means by trial Version 2.
+
+```{r means by trial v2}
+ms_trial_v2 <- d.test.filt.v2 %>%
+                  group_by(itemNum, condition, trial_type_redo) %>%
+                  summarise(mean_correct = mean(correct),
+                          ci_high = ci.high(correct), 
+                          ci_low = ci.low(correct), 
+                          n_trial = n())
+```
+
+By trial plot Version 2
+
+```{r plot by trial v2}
+limits <- aes(ymax = mean_correct + ci_high, ymin= mean_correct - ci_low)
+
+qplot(data = ms_trial_v2, x = itemNum, y = mean_correct, 
+                              geom=c("point", "line"), color=trial_type_redo,
+                              ylim=c(0,1), xlab=c("Trial Number"), 
+                              ylab=c("Proportion Correct")) +
+                              geom_hline(yintercept = 0.5, linetype="dashed") +
+                              geom_errorbar(limits, width=0.1) +
+                              facet_grid(.~condition) 
+```
+
+Stats.
 
 ```{r stats}
 

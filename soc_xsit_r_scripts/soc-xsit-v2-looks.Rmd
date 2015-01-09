@@ -10,13 +10,13 @@ output: html_document
 Load libraries.
 
 ```{r load libraries, message=FALSE, warning=FALSE}
-library(reshape)
+source("/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysis/useful.R")
+library(reshape2)
 library(plyr)
 library(dplyr)
 library(bootstrap)
 library(lme4)
 library(ggplot2)
-source("/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysis/useful.R")
 ```
 
 Read in the master data file
@@ -41,28 +41,32 @@ d.all_df %>%
 #change values of faceIdx to correspond to values of chosenIdx 
 #(LU = 0, RU = 1, LD = 2, RD = 3, striaight = -1)
 d.all_df$faceIdx <- revalue(d.all_df$face, 
-                         c("silentLUlong"= 0, "silentLUmedium" = 0,
-                           "silentLUshort"= 0, "LUkidslonger" = 0,
-                           "silentRUlong" = 1, "silentRUmedium"= 1,
-                           "silentRUshort" = 1, "RUkidslonger" = 1,
-                           "silentLDlong" = 2, "silentLDmedium" = 2,
-                           "silentLDshort" = 2, "LDkidslonger" = 2,
-                           "silentRDlong" = 3, "silentRDmedium" = 3,
-                           "silentRDshort" = 3, "RDkidslonger" = 3, 
-                           "straightahead" = -1, "straightaheadlonger" = -1))
+                            c("silentLUlong"= 0, "silentLUmedium" = 0,
+                              "silentLUshort"= 0, "LUkidslonger" = 0,
+                              "noisyLU" = 0,
+                              "silentRUlong" = 1, "silentRUmedium"= 1,
+                              "silentRUshort" = 1, "RUkidslonger" = 1,
+                              "noisyRU" = 1,
+                              "silentLDlong" = 2, "silentLDmedium" = 2,
+                              "silentLDshort" = 2, "LDkidslonger" = 2,
+                              "noisyLD" = 2,
+                              "silentRDlong" = 3, "silentRDmedium" = 3,
+                              "silentRDshort" = 3, "RDkidslonger" = 3, 
+                              "noisyRD" = 3,
+                              "straightahead" = -1, "straightaheadlonger" = -1))
 
 #flag trial, if subs chose target of gaze
 d.expo_df <- d.all_df %>%
-                filter(exposure_trial == 1) %>%
-                mutate(correct_exposure = faceIdx == chosenIdx) %>%
-                select(subids, itemNum, correct_exposure)
+      filter(exposure_trial == 1) %>%
+      mutate(correct_exposure = faceIdx == chosenIdx) %>%
+      select(subids, itemNum, correct_exposure)
 ```
 
 #### Get test trials and merge exposure trial information. 
 
 ```{r test trials w/exposure}
 d.test_df <- d.all_df %>%
-                filter(test_trial == 1)
+      filter(test_trial == 1)
 
 d.test_df <- merge(d.expo_df, d.test_df, by = c("subids", "itemNum"))
 ```
@@ -71,19 +75,19 @@ Flag subs who got <25% of exposure trials correct. This can be used for exclusio
 
 ```{r all data flag subs <25% correct on exposure}
 d.test_df <- d.test_df %>%
-                group_by(subids) %>%
-                summarise(mean_acc_exp = mean(correct_exposure)) %>%
-                mutate(include_expo = ifelse(mean_acc_exp > 0.25,1,0)) %>%
-                join(d.test_df, by = "subids")
+      group_by(subids) %>%
+      summarise(mean_acc_exp = mean(correct_exposure)) %>%
+      mutate(include_expo = ifelse(mean_acc_exp > 0.25,1,0)) %>%
+      join(d.test_df, by = "subids")
 ```
 
 Flag trials with extremely slow or fast RTs (+/- 2SD).
 
 ```{r all data clean RTs}
 d.test_df <- d.test_df %>%
-                mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
-                                                log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                                0,1))
+      mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                            log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                      0,1))
 ```
 
 ### Summarize data set: means for acc on exposure and test
@@ -94,23 +98,23 @@ Filter data and output the number of subjects removed in each condition based on
 
 ```{r gaze-length filter}
 glength_df <- filter(d.test_df, experiment == "look_length", 
-                   include_good_rt == 1)
+                     include_good_rt == 1)
 
 glength_filt_df <- filter(d.test_df, experiment == "look_length", 
-                   include_good_rt == 1, include_expo == 1)
+                          include_good_rt == 1, include_expo == 1)
 
 #get number of subjects filtered out
 glength_n <- d.test_df %>%
-                  filter(experiment == "look_length") %>%
-                  group_by(gazeLength) %>%
-                  summarise(n_subs = n_distinct(subids))
+      filter(experiment == "look_length") %>%
+      group_by(gazeLength) %>%
+      summarise(n_subs = n_distinct(subids))
 
 glength_n_filtered <- glength_filt_df %>%
-                        filter(experiment == "look_length") %>%
-                        group_by(gazeLength) %>%
-                        summarise(n_subs_filt = n_distinct(subids)) %>%
-                        select(n_subs_filt)
-                  
+      filter(experiment == "look_length") %>%
+      group_by(gazeLength) %>%
+      summarise(n_subs_filt = n_distinct(subids)) %>%
+      select(n_subs_filt)
+
 cbind(glength_n, glength_n_filtered)
 ```
 
@@ -118,41 +122,41 @@ Accuracy on exposure trials both filtered and unfiltered.
 
 ```{r look-length exposure}
 ms_exp_looks <- glength_df %>%
-                        group_by(gazeLength) %>%
-                        summarise(accuracy_exposure = mean(correct_exposure),
-                                  ci_low = ci.low(correct_exposure),
-                                  ci_high = ci.high(correct_exposure))
+      group_by(gazeLength) %>%
+      summarise(accuracy_exposure = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure))
 
 ms_exp_looks_filt <- glength_filt_df %>%
-                        group_by(gazeLength) %>%
-                        summarise(accuracy_exposure = mean(correct_exposure),
-                                  ci_low = ci.low(correct_exposure),
-                                  ci_high = ci.high(correct_exposure))
+      group_by(gazeLength) %>%
+      summarise(accuracy_exposure = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure))
 
 ms_exp_looks$gazeLength <- factor(ms_exp_looks$gazeLength, 
                                   levels = c("Short", "Medium", "Long"))
 ms_exp_looks_filt$gazeLength <- factor(ms_exp_looks_filt$gazeLength, 
-                                  levels = c("Short", "Medium", "Long"))
+                                       levels = c("Short", "Medium", "Long"))
 
 glen_acc_exp <- ggplot(data=ms_exp_looks, 
-                   aes(x=gazeLength, y=accuracy_exposure,
-                       fill=gazeLength)) + 
-                    geom_bar(stat="identity") +
-                    geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
-                                  ymax=accuracy_exposure+ci_high), width = .1) +
-                    geom_hline(yintercept=0.25, linetype = "dashed") +
-                    scale_y_continuous(limits=c(0,1)) +
-                    ggtitle("Unfiltered")
+                       aes(x=gazeLength, y=accuracy_exposure,
+                           fill=gazeLength)) + 
+      geom_bar(stat="identity") +
+      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                          ymax=accuracy_exposure+ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Unfiltered")
 
 glen_acc_exp_filt <- ggplot(data=ms_exp_looks_filt, 
-                               aes(x=gazeLength, y=accuracy_exposure,
-                                   fill=gazeLength)) + 
-                                geom_bar(stat="identity") +
-                                geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
-                                              ymax=accuracy_exposure+ci_high), width = .1) +
-                                geom_hline(yintercept=0.25, linetype = "dashed") +
-                                scale_y_continuous(limits=c(0,1))+
-                                ggtitle("Filtered")
+                            aes(x=gazeLength, y=accuracy_exposure,
+                                fill=gazeLength)) + 
+      geom_bar(stat="identity") +
+      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                          ymax=accuracy_exposure+ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1))+
+      ggtitle("Filtered")
 
 multiplot(glen_acc_exp, glen_acc_exp_filt, cols=2)
 ```
@@ -161,44 +165,44 @@ Accuracy on test trials: same/switch. For both filtered and unfiltered.
 
 ```{r look-length acc test}
 ms_test_looks <- glength_df %>%
-                        group_by(gazeLength, trialType) %>%
-                        summarise(accuracy = mean(correct),
-                                  ci_low = ci.low(correct),
-                                  ci_high = ci.high(correct))
+      group_by(gazeLength, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_looks_filt <- glength_filt_df %>%
-                              group_by(gazeLength, trialType) %>%
-                              summarise(accuracy = mean(correct),
-                                        ci_low = ci.low(correct),
-                                        ci_high = ci.high(correct))
+      group_by(gazeLength, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_looks$gazeLength <- factor(ms_test_looks$gazeLength, 
-                                  levels = c("Short", "Medium", "Long"))
+                                   levels = c("Short", "Medium", "Long"))
 
 ms_test_looks_filt$gazeLength <- factor(ms_test_looks_filt$gazeLength, 
-                                  levels = c("Short", "Medium", "Long"))
+                                        levels = c("Short", "Medium", "Long"))
 
 glen_acc_test <- ggplot(ms_test_looks, 
-                         aes(x=gazeLength, y=accuracy, 
-                             group=trialType, colour=trialType)) +
-                          geom_point(size=2) +
-                          geom_line() +
-                          geom_pointrange(aes(ymin=accuracy - ci_low,
-                                            ymax=accuracy + ci_high), width = .1) +
-                          geom_hline(yintercept=0.25, linetype = "dashed") +
-                          scale_y_continuous(limits=c(0,1)) +
-                          ggtitle("Acc Test Unfiltered")
+                        aes(x=gazeLength, y=accuracy, 
+                            group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Acc Test Unfiltered")
 
 glen_acc_test_filt <- ggplot(ms_test_looks_filt, 
-                         aes(x=gazeLength, y=accuracy, 
-                             group=trialType, colour=trialType)) +
-                          geom_point(size=2) +
-                          geom_line() +
-                          geom_pointrange(aes(ymin=accuracy - ci_low,
-                                            ymax=accuracy + ci_high), width = .1) +
-                          geom_hline(yintercept=0.25, linetype = "dashed") +
-                          scale_y_continuous(limits=c(0,1)) +
-                          ggtitle("Acc Test Filtered")
+                             aes(x=gazeLength, y=accuracy, 
+                                 group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Acc Test Filtered")
 
 multiplot(glen_acc_test, glen_acc_test_filt, cols=2)
 ```
@@ -212,23 +216,23 @@ First, set up filters.
 
 ```{r between subjects filters}
 btw_subs_df <- filter(d.test_df, experiment == "soc_vs_no_soc_btw", 
-                   include_good_rt == 1)
+                      include_good_rt == 1)
 
 btw_subs_filt_df <- filter(d.test_df, experiment == "soc_vs_no_soc_btw", 
-                   include_good_rt == 1, include_expo == 1 | condition == "No-social")
+                           include_good_rt == 1, include_expo == 1 | condition == "No-social")
 
 #get number of subjects filtered out
 btw_subs_n <- d.test_df %>%
-                  filter(experiment == "soc_vs_no_soc_btw") %>%
-                  group_by(condition) %>%
-                  summarise(n_subs = n_distinct(subids))
+      filter(experiment == "soc_vs_no_soc_btw") %>%
+      group_by(condition) %>%
+      summarise(n_subs = n_distinct(subids))
 
 btw_subs_n_filtered <- btw_subs_filt_df %>%
-                        filter(experiment == "soc_vs_no_soc_btw") %>%
-                        group_by(condition) %>%
-                        summarise(n_subs_filt = n_distinct(subids)) %>%
-                        select(n_subs_filt)
-                  
+      filter(experiment == "soc_vs_no_soc_btw") %>%
+      group_by(condition) %>%
+      summarise(n_subs_filt = n_distinct(subids)) %>%
+      select(n_subs_filt)
+
 cbind(btw_subs_n, btw_subs_n_filtered)
 ```
 
@@ -237,77 +241,77 @@ cbind(btw_subs_n, btw_subs_n_filtered)
 
 ```{r between subs exposure}
 ms_exp_btw <- btw_subs_df %>%
-                        filter(condition == "Social") %>%
-                        summarise(accuracy_exposure = mean(correct_exposure),
-                                  ci_low = ci.low(correct_exposure),
-                                  ci_high = ci.high(correct_exposure)) %>%
-                        mutate(filtering = "unfiltered")
+      filter(condition == "Social") %>%
+      summarise(accuracy_exposure = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure)) %>%
+      mutate(filtering = "unfiltered")
 
 ms_exp_btw_filt <- btw_subs_filt_df %>%
-                        filter(condition == "Social") %>%
-                        summarise(accuracy_exposure = mean(correct_exposure),
-                                  ci_low = ci.low(correct_exposure),
-                                  ci_high = ci.high(correct_exposure)) %>%
-                        mutate(filtering = "filtered")
+      filter(condition == "Social") %>%
+      summarise(accuracy_exposure = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure)) %>%
+      mutate(filtering = "filtered")
 
 ms_exp_btw_bind <- rbind(ms_exp_btw, ms_exp_btw_filt)
 
 qplot(data=ms_exp_btw_bind, x=filtering, y=accuracy_exposure, fill=filtering) +
-                                geom_bar(stat="identity") +
-                                geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
-                                              ymax=accuracy_exposure+ci_high), width = .1) +
-                                geom_hline(yintercept=0.25, linetype = "dashed") +
-                                scale_y_continuous(limits=c(0,1))
+      geom_bar(stat="identity") +
+      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                          ymax=accuracy_exposure+ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1))
 ```
 
 ### Accuracy on test trials
 
 ```{r between subs test}
 ms_test_btw <- btw_subs_df %>%
-                        group_by(condition, trialType) %>%
-                        summarise(accuracy_test = mean(correct),
-                                  ci_low = ci.low(correct),
-                                  ci_high = ci.high(correct))
+      group_by(condition, trialType) %>%
+      summarise(accuracy_test = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_btw_filt <- btw_subs_filt_df %>%
-                        group_by(condition, trialType) %>%
-                        summarise(accuracy_test = mean(correct),
-                                  ci_low = ci.low(correct),
-                                  ci_high = ci.high(correct))
+      group_by(condition, trialType) %>%
+      summarise(accuracy_test = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_btw$condition <- factor(ms_test_btw$condition, 
-                                         levels = c("Social", "No-social"))
+                                levels = c("Social", "No-social"))
 ms_test_btw_filt$condition <- factor(ms_test_btw_filt$condition, 
-                                         levels = c("Social", "No-social"))
+                                     levels = c("Social", "No-social"))
 
 #now plot
 acc_test_btw <- ggplot(ms_test_btw, 
-                               aes(x=condition, y=accuracy_test, 
-                                   group=trialType, colour=trialType)) +
-                                geom_point(size=2.5) +
-                                geom_line() +
-                                geom_pointrange(aes(ymin=accuracy_test - ci_low,
-                                                  ymax=accuracy_test + ci_high), width = .1) +
-                                geom_hline(yintercept=0.25, linetype = "dashed") +
-                                scale_y_continuous(limits=c(0,1)) +
-                                xlab("Condition") +
-                                ylab("Proportion Correct") +
-                                labs(colour = "Trial Type") +
-                                ggtitle("Between-Subs (Smile) Unfiltered")
+                       aes(x=condition, y=accuracy_test, 
+                           group=trialType, colour=trialType)) +
+      geom_point(size=2.5) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy_test - ci_low,
+                          ymax=accuracy_test + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      xlab("Condition") +
+      ylab("Proportion Correct") +
+      labs(colour = "Trial Type") +
+      ggtitle("Between-Subs (Smile) Unfiltered")
 
 acc_test_btw_filt <- ggplot(ms_test_btw_filt, 
-                               aes(x=condition, y=accuracy_test, 
-                                   group=trialType, colour=trialType)) +
-                                geom_point(size=2.5) +
-                                geom_line() +
-                                geom_pointrange(aes(ymin=accuracy_test - ci_low,
-                                                  ymax=accuracy_test + ci_high), width = .1) +
-                                geom_hline(yintercept=0.25, linetype = "dashed") +
-                                scale_y_continuous(limits=c(0,1)) +
-                                xlab("Condition") +
-                                ylab("Proportion Correct") +
-                                labs(colour = "Trial Type") +
-                                ggtitle("Between-Subs (Smiley) Filtered")
+                            aes(x=condition, y=accuracy_test, 
+                                group=trialType, colour=trialType)) +
+      geom_point(size=2.5) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy_test - ci_low,
+                          ymax=accuracy_test + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      xlab("Condition") +
+      ylab("Proportion Correct") +
+      labs(colour = "Trial Type") +
+      ggtitle("Between-Subs (Smiley) Filtered")
 
 multiplot(acc_test_btw, acc_test_btw_filt, cols=2)
 ```
@@ -316,8 +320,8 @@ Model the data.
 
 ```{r soc-no-soc model random slope}
 inc.data <- filter(d.test_df, experiment == "soc_vs_no_soc_btw", 
-                               include_good_rt == 1,
-                               include_expo == 1 | condition == "No-social")
+                   include_good_rt == 1,
+                   include_expo == 1 | condition == "No-social")
 m1 <- glmer(correct ~ trialType * condition + (trialType | subids),
             data = inc.data,
             family=binomial)
@@ -326,7 +330,7 @@ summary(m1)
 
 ```{r explore model}
 ms <- aggregate(correct ~ trialType + condition, FUN=mean,
-          data = inc.data)
+                data = inc.data)
 
 f <- fixef(m1)
 ms$coef <- NA
@@ -341,9 +345,9 @@ hist(ranef(m1)$subids[,1])
 hist(ranef(m1)$subids[,2])
 
 mss <- aggregate(correct ~ subids + trialType + condition, FUN=mean,
-          data = inc.data)
+                 data = inc.data)
 
-cmss <- cast(mss, condition+ subids ~  trialType)
+cmss <- dcast(mss, condition+ subids ~  trialType)
 
 qplot(Same,Switch, data=cmss, position="jitter") + 
       facet_wrap(~condition)
@@ -351,8 +355,8 @@ qplot(Same,Switch, data=cmss, position="jitter") +
 
 ```{r glm btw-exp}
 lm1 <- glm(correct ~ trialType * condition,
-            data = inc.data,
-            family=binomial)
+           data = inc.data,
+           family=binomial)
 summary(lm1) 
 f <- coef(lm1)
 ms$lcoef <- NA
@@ -393,10 +397,11 @@ because there is less between subjects variability.
 Filter just trials from within-subjects experiment.
 
 ```{r within subs experiment}
-d_within_df <- filter(d.all_df, experiment == "soc_vs_no_soc_within")
+d_within_df <- filter(d.all_df, experiment == "soc_vs_no_soc_within" | 
+                            experiment == "within_replication")
 
 d_within_df %>%
-      group_by(condition) %>%
+      group_by(condition, experiment) %>%
       summarise(n_subs = n_distinct(subids))
 ```
 
@@ -407,24 +412,24 @@ track social vs. no-social. So we create a column to track this information
 
 ```{r flag social_trial_type within subs}
 d_within_df <- d_within_df %>%
-                  mutate(condition_trial = ifelse(condition == "No-socialFirst" 
-                                                  & itemNum <= 7, "no-social", 
-                                            ifelse(condition == "SocialFirst" 
-                                                   & itemNum <= 7, "social", 
-                                                   ifelse(condition == "No-socialFirst" 
-                                                          & itemNum >= 8, "social",
-                                                          ifelse(condition == "SocialFirst" 
-                                                                 & itemNum >= 8, 
-                                                                 "no-social", NA)))))
+      mutate(condition_trial = ifelse(condition == "No-socialFirst" 
+                                      & itemNum <= 7, "no-social", 
+                                      ifelse(condition == "SocialFirst" 
+                                             & itemNum <= 7, "social", 
+                                             ifelse(condition == "No-socialFirst" 
+                                                    & itemNum >= 8, "social",
+                                                    ifelse(condition == "SocialFirst" 
+                                                           & itemNum >= 8, 
+                                                           "no-social", NA)))))
 #flag trial, if subs chose target of gaze
 d_within_expo_df <- d_within_df %>%
-                        filter(exposure_trial == 1) %>%
-                        mutate(correct_exposure = faceIdx == chosenIdx) %>%
-                        select(subids, itemNum, correct_exposure)
+      filter(exposure_trial == 1) %>%
+      mutate(correct_exposure = faceIdx == chosenIdx) %>%
+      select(subids, itemNum, correct_exposure)
 
 #grab test trials
 d_within_test_df <- d_within_df %>%
-                        filter(test_trial == 1)
+      filter(test_trial == 1)
 
 #merge with test trials
 d_within_test_df <- join(d_within_test_df, d_within_expo_df, c("subids", "itemNum"))
@@ -436,10 +441,10 @@ Flag subs who got <25% of exposure trials correct. This can be used for exclusio
 d_within_soc_df <- filter(d_within_test_df, condition_trial == "social")
 
 d_within_soc_df <- d_within_soc_df %>%
-                            group_by(subids) %>%
-                            summarise(mean_acc_exp = mean(correct_exposure)) %>%
-                            mutate(include_expo = ifelse(mean_acc_exp > 0.25,1,0)) 
-                            
+      group_by(subids) %>%
+      summarise(mean_acc_exp = mean(correct_exposure)) %>%
+      mutate(include_expo = ifelse(mean_acc_exp > 0.25,1,0)) 
+
 d_within_test_df <- join(d_within_test_df, d_within_soc_df, by = "subids")
 ```
 
@@ -447,9 +452,9 @@ Flag trials with extremely slow or fast RTs (+/- 2SD).
 
 ```{r within subs clean RTs}
 d_within_test_df <- d_within_test_df %>%
-                        mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
-                                                              log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                                        0,1))
+      mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                            log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                      0,1))
 ```
 
 Set up filters 
@@ -461,21 +466,21 @@ d_within_expo <- filter(d_within_test_df,
 
 
 d_within_expo_filt <- filter(d_within_test_df,
-                        include_good_rt == 1, include_expo == 1, 
-                               condition_trial == "social")
+                             include_good_rt == 1, include_expo == 1, 
+                             correct_exposure == T, condition_trial == "social")
 ```
 
 Get the number of subjects filtered out
 
 ```{r within subs filter subjects}
 #get number of subjects filtered out
-within_n<- d_within_expo %>%
-                  summarise(n_subs = n_distinct(subids))
+within_n <- d_within_expo %>%
+      summarise(n_subs = n_distinct(subids))
 
 within_n_filt <- d_within_expo_filt %>%
-                        summarise(n_subs_filt = n_distinct(subids)) %>%
-                        select(n_subs_filt)
-                  
+      summarise(n_subs_filt = n_distinct(subids)) %>%
+      select(n_subs_filt)
+
 cbind(within_n, within_n_filt)
 ```
 
@@ -483,39 +488,37 @@ cbind(within_n, within_n_filt)
 
 ```{r within subs acc exposure, fig.width=10, fig.height=6}
 ms_expo_within <- d_within_expo %>%
-                        group_by(condition, condition_trial) %>%
-                        summarise(accuracy_exposure = mean(correct_exposure),
-                                  ci_low = ci.low(correct_exposure),
-                                  ci_high = ci.high(correct_exposure))
+      group_by(condition, condition_trial) %>%
+      summarise(accuracy_exposure = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure))
 
 ms_expo_within_filt <- d_within_expo_filt %>%
-                              group_by(condition, condition_trial) %>%
-                              summarise(accuracy_exposure = mean(correct_exposure),
-                                        ci_low = ci.low(correct_exposure),
-                                        ci_high = ci.high(correct_exposure))
+      group_by(condition, condition_trial) %>%
+      summarise(accuracy_exposure = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure))
 
 ms_expo_within$condition <- factor(ms_expo_within$condition)
 ms_expo_within_filt$condition <- factor(ms_expo_within_filt$condition)
 
 acc_exp_within <- ggplot(data=ms_expo_within, 
-                         aes(x=condition, y=accuracy_exposure,
-                             fill=condition)) + 
-                          geom_bar(stat="identity") +
-                          geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
-                                        ymax=accuracy_exposure+ci_high), width = .1) +
-                          geom_hline(yintercept=0.25, linetype = "dashed") +
-                          scale_y_continuous(limits=c(0,1)) +
-                          ggtitle("Acc Exposure Unfiltered")
+                         aes(x=condition, y=accuracy_exposure)) + 
+      geom_bar(stat="identity", fill = I("grey50")) +
+      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                          ymax=accuracy_exposure+ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Proportion chose target of eye gaze \n Schematic/Unfiltered")
 
 acc_exp_within_filt <- ggplot(data=ms_expo_within_filt, 
-                         aes(x=condition, y=accuracy_exposure,
-                             fill=condition)) + 
-                          geom_bar(stat="identity") +
-                          geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
-                                        ymax=accuracy_exposure+ci_high), width = .1) +
-                          geom_hline(yintercept=0.25, linetype = "dashed") +
-                          scale_y_continuous(limits=c(0,1)) +
-                          ggtitle("Acc Exposure Filtered")
+                         aes(x=condition, y=accuracy_exposure)) + 
+      geom_bar(stat="identity", fill = I("grey50")) +
+      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                          ymax=accuracy_exposure+ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Proportion chose target of eye gaze \n Schematic/Filtered")
 
 multiplot(acc_exp_within, acc_exp_within_filt, cols=2)
 ```
@@ -524,26 +527,27 @@ multiplot(acc_exp_within, acc_exp_within_filt, cols=2)
 #Apply different filters
 sub_level_filter <- filter(d_within_test_df,
                            include_good_rt == 1, include_expo == 1,
-                               condition_trial == "social")
+                           condition_trial == "social")
 
 trial_level_filter <- filter(d_within_test_df,
-                           include_good_rt == 1, condition_trial == "social")
+                             include_good_rt == 1, condition_trial == "social")
 
 
 mss_expo_within_sub_lev <- sub_level_filter %>%
-                              group_by(condition, condition_trial, subids) %>%
-                              summarise(accuracy_exposure = mean(correct_exposure))
+      group_by(condition, condition_trial, subids) %>%
+      summarise(accuracy_exposure = mean(correct_exposure))
 
 mss_expo_within_trial_lev <- trial_level_filter %>%
-                                    group_by(condition, condition_trial, subids) %>%
-                                    summarise(accuracy_exposure = mean(correct_exposure))
+      group_by(condition, condition_trial, subids) %>%
+      summarise(accuracy_exposure = mean(correct_exposure))
 
 
 sub_hist <- qplot(accuracy_exposure, geom="bar",
                   facets=.~condition, data=mss_expo_within_sub_lev)
 
-trial_hist <- qplot(accuracy_exposure, geom="bar",
-                  facets=.~condition, data=mss_expo_within_trial_lev)
+trial_hist <- qplot(accuracy_exposure, geom="bar",facets=.~condition, 
+                    main = c("Histogram Acc Exposure (Schematic)"), 
+                    data=mss_expo_within_trial_lev)
 
 trial_hist
 ```
@@ -568,7 +572,8 @@ qplot(trial.num, accuracy_exposure, col=condition, facets=.~condition,
 inc.data.within_sub_level <- filter(d_within_test_df, include_good_rt == 1, include_expo == 1)
 
 inc.data.within_trial_level <- filter(d_within_test_df, include_good_rt == 1 & 
-                                    correct_exposure == TRUE | condition_trial == "no-social")
+                                            correct_exposure == TRUE & include_expo == 1 | 
+                                            condition_trial == "no-social")
 
 inc.data.within_unfilt <- filter(d_within_test_df, include_good_rt == 1)
 ```
@@ -578,72 +583,72 @@ Test accuracy computations with different filters.
 ```{r within subs test acc computations}
 ##Subject level
 ms_test_within_sub_level <- inc.data.within_sub_level %>%
-                                          group_by(condition, condition_trial, trialType) %>%
-                                          summarise(accuracy = mean(correct),
-                                                ci_low = ci.low(correct),
-                                                ci_high = ci.high(correct))
+      group_by(condition, condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_within_sub_level$condition <- factor(ms_test_within_sub_level$condition)
 ms_test_within_sub_level$condition_trial <- factor(ms_test_within_sub_level$condition_trial, 
-                                         levels = c("social", "no-social"))
+                                                   levels = c("social", "no-social"))
 
 acc_test_within_blocks_sub_level <- ggplot(ms_test_within_sub_level, 
-                                     aes(x=condition_trial, y=accuracy, 
-                                         group=trialType, colour=trialType)) +
-                                      geom_point(size=2) +
-                                      geom_line() +
-                                      geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                        ymax=accuracy + ci_high), width = .1) +
-                                      geom_hline(yintercept=0.25, linetype = "dashed") +
-                                      scale_y_continuous(limits=c(0,1)) +
-                                      facet_wrap(~condition) + 
-                                      ggtitle("Within-subs Subject-level")
+                                           aes(x=condition_trial, y=accuracy, 
+                                               group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      facet_wrap(~condition) + 
+      ggtitle("Within-subs Subject-level")
 
 ##Trial level
 ms_test_within_trial_level <- inc.data.within_trial_level %>%
-                                          group_by(condition, condition_trial, trialType) %>%
-                                          summarise(accuracy = mean(correct),
-                                                ci_low = ci.low(correct),
-                                                ci_high = ci.high(correct))
+      group_by(condition, condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_within_trial_level$condition <- factor(ms_test_within_trial_level$condition)
 ms_test_within_trial_level$condition_trial <- factor(ms_test_within_trial_level$condition_trial, 
-                                         levels = c("social", "no-social"))
+                                                     levels = c("social", "no-social"))
 
 acc_test_within_blocks_trial_level <- ggplot(ms_test_within_trial_level, 
-                                           aes(x=condition_trial, y=accuracy, 
-                                               group=trialType, colour=trialType)) +
-                                            geom_point(size=2) +
-                                            geom_line() +
-                                            geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                              ymax=accuracy + ci_high), width = .1) +
-                                            geom_hline(yintercept=0.25, linetype = "dashed") +
-                                            scale_y_continuous(limits=c(0,1)) +
-                                            facet_wrap(~condition) + 
-                                            ggtitle("Within-subs-Trial-Level")
+                                             aes(x=condition_trial, y=accuracy, 
+                                                 group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width=.1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      facet_wrap(~condition) + 
+      ggtitle("Within-subs-Trial-Level")
 
 ##Unfiltered
 ms_test_within_unfilt <- inc.data.within_unfilt %>%
-                                          group_by(condition, condition_trial, trialType) %>%
-                                          summarise(accuracy = mean(correct),
-                                                ci_low = ci.low(correct),
-                                                ci_high = ci.high(correct))
+      group_by(condition, condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_within_unfilt$condition <- factor(ms_test_within_unfilt$condition)
 ms_test_within_unfilt$condition_trial <- factor(ms_test_within_unfilt$condition_trial, 
-                                         levels = c("social", "no-social"))
+                                                levels = c("social", "no-social"))
 
 acc_test_within_blocks_unfilt <- ggplot(ms_test_within_unfilt, 
-                                           aes(x=condition_trial, y=accuracy, 
-                                               group=trialType, colour=trialType)) +
-                                            geom_point(size=2) +
-                                            geom_line() +
-                                            geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                              ymax=accuracy + ci_high), width = .1) +
-                                            geom_hline(yintercept=0.25, linetype = "dashed") +
-                                            scale_y_continuous(limits=c(0,1)) +
-                                            facet_wrap(~condition) + 
-                                            ggtitle("Within-subs Unfiltered")
+                                        aes(x=condition_trial, y=accuracy, 
+                                            group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      facet_wrap(~condition) + 
+      ggtitle("Within-subs Unfiltered")
 
 multiplot(acc_test_within_blocks_sub_level, acc_test_within_blocks_trial_level, 
           acc_test_within_blocks_unfilt, cols = 2)
@@ -654,65 +659,65 @@ Now do the same accuracy computation but collapse across blocks
 ```{r acc test collapse blocks, fig.width=10, fig.height=6}
 #Computations 
 ms_test_within_collapse <- inc.data.within_sub_level %>%
-                                    group_by(condition_trial, trialType) %>%
-                                    summarise(accuracy = mean(correct),
-                                              ci_low = ci.low(correct),
-                                              ci_high = ci.high(correct))
+      group_by(condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_within_collapse_trial <- inc.data.within_trial_level %>%
-                                          group_by(condition_trial, trialType) %>%
-                                          summarise(accuracy = mean(correct),
-                                                    ci_low = ci.low(correct),
-                                                    ci_high = ci.high(correct))
+      group_by(condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_within_collapse_unfilt <- inc.data.within_unfilt %>%
-                                          group_by(condition_trial, trialType) %>%
-                                          summarise(accuracy = mean(correct),
-                                                    ci_low = ci.low(correct),
-                                                    ci_high = ci.high(correct))
+      group_by(condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 #refactor things for plotting
 ms_test_within_collapse$condition_trial <- factor(ms_test_within_collapse$condition_trial,
                                                   levels = c("social", "no-social"))
 
 ms_test_within_collapse_trial$condition_trial <- factor(ms_test_within_collapse_trial$condition_trial,
-                                                  levels = c("social", "no-social"))
+                                                        levels = c("social", "no-social"))
 
 ms_test_within_collapse_unfilt$condition_trial <- factor(ms_test_within_collapse_unfilt$condition_trial,
-                                                  levels = c("social", "no-social"))
+                                                         levels = c("social", "no-social"))
 
 #now plot
 acc_test_within_sub <- ggplot(ms_test_within_collapse, 
-                               aes(x=condition_trial, y=accuracy, 
-                                   group=trialType, colour=trialType)) +
-                                geom_point(size=2) +
-                                geom_line() +
-                                geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                  ymax=accuracy + ci_high), width = .1) +
-                                geom_hline(yintercept=0.25, linetype = "dashed") +
-                                scale_y_continuous(limits=c(0,1)) +
-                                ggtitle("Within-subs Subject Filter")
+                              aes(x=condition_trial, y=accuracy, 
+                                  group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Within-subs Subject Filter")
 
 acc_test_within_trial <- ggplot(ms_test_within_collapse_trial, 
-                               aes(x=condition_trial, y=accuracy, 
-                                   group=trialType, colour=trialType)) +
-                                geom_point(size=2) +
-                                geom_line() +
-                                geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                  ymax=accuracy + ci_high), width = .1) +
-                                geom_hline(yintercept=0.25, linetype = "dashed") +
-                                scale_y_continuous(limits=c(0,1)) +
-                                ggtitle("Within-subs Trial Filter")
+                                aes(x=condition_trial, y=accuracy, 
+                                    group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Within-subs Trial Filter")
 
 acc_test_within_unfilt <- ggplot(ms_test_within_collapse_unfilt, 
-                               aes(x=condition_trial, y=accuracy, 
-                                   group=trialType, colour=trialType)) +
-                                geom_point(size=2) +
-                                geom_line() +
-                                geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                  ymax=accuracy + ci_high), width = .1) +
-                                geom_hline(yintercept=0.25, linetype = "dashed") +
-                                scale_y_continuous(limits=c(0,1)) +
-                                ggtitle("Within-subs Unfiltered")
+                                 aes(x=condition_trial, y=accuracy, 
+                                     group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Within-subs Unfiltered")
 
 multiplot(acc_test_within_sub, acc_test_within_trial, acc_test_within_unfilt, cols=2)
 ```
@@ -721,13 +726,13 @@ multiplot(acc_test_within_sub, acc_test_within_trial, acc_test_within_unfilt, co
 
 ```{r model within subs}
 m1_within <- glmer(correct ~ trialType * condition_trial + (trialType | subids),
-            data = inc.data.within_trial_level,
-            family=binomial)
+                   data = inc.data.within_trial_level,
+                   family=binomial)
 summary(m1_within)
 
 m1_within_unfilt <- glmer(correct ~ trialType * condition_trial + (trialType | subids),
-            data = inc.data.within_unfilt,
-            family=binomial)
+                          data = inc.data.within_unfilt,
+                          family=binomial)
 summary(m1_within_unfilt)
 ```
 
@@ -735,7 +740,7 @@ summary(m1_within_unfilt)
 
 Goal is to replicate the dip in accuracy on same trials in the no-social condition because this effect only came out in the first within-subs experiment.
 
-Filter just trials from within-subjects  experiment.
+Filter just trials from within-subjects replication experiment.
 
 ```{r filter within subs replication}
 d_within_rep_df <- filter(d.all_df, experiment == "within_replication")
@@ -752,24 +757,24 @@ track social vs. no-social. So we create a column to track this information
 
 ```{r flag social_trial_type within subs replication}
 d_within_rep_df <- d_within_rep_df %>%
-                  mutate(condition_trial = ifelse(condition == "No-socialFirst" 
-                                                  & trial.num <= 20, "no-social", 
-                                            ifelse(condition == "SocialFirst" 
-                                                   & trial.num <= 20, "social", 
-                                                   ifelse(condition == "No-socialFirst" 
-                                                          & trial.num >= 21, "social",
-                                                          ifelse(condition == "SocialFirst" 
-                                                                 & trial.num >= 21, 
-                                                                 "no-social", NA)))))
+      mutate(condition_trial = ifelse(condition == "No-socialFirst" 
+                                      & trial.num <= 20, "no-social", 
+                                      ifelse(condition == "SocialFirst" 
+                                             & trial.num <= 20, "social", 
+                                             ifelse(condition == "No-socialFirst" 
+                                                    & trial.num >= 21, "social",
+                                                    ifelse(condition == "SocialFirst" 
+                                                           & trial.num >= 21, 
+                                                           "no-social", NA)))))
 #flag trial, if subs chose target of gaze
 d_within_rep_expo_df <- d_within_rep_df %>%
-                        filter(exposure_trial == 1) %>%
-                        mutate(correct_exposure = faceIdx == chosenIdx) %>%
-                        select(subids, itemNum, correct_exposure)
+      filter(exposure_trial == 1) %>%
+      mutate(correct_exposure = faceIdx == chosenIdx) %>%
+      select(subids, itemNum, correct_exposure)
 
 #grab test trials
 d_within_rep_test_df <- d_within_rep_df %>%
-                        filter(test_trial == 1)
+      filter(test_trial == 1)
 
 #merge with test trials
 d_within_rep_test_df <- join(d_within_rep_test_df, d_within_rep_expo_df, c("subids", "itemNum"))
@@ -779,20 +784,20 @@ Flag subs who got <25% of exposure trials correct. This can be used for exclusio
 
 ```{r within subs replication flag subs <25% correct on exposure}
 d_within_rep_test_df <- d_within_rep_test_df %>%
-                            filter(condition_trial == "social") %>%
-                            group_by(subids) %>%
-                            summarise(mean_acc_exp = mean(correct_exposure)) %>%
-                            mutate(include_expo = ifelse(mean_acc_exp > 0.25,1,0)) %>%
-                            join(d_within_rep_test_df, by = "subids")
+      filter(condition_trial == "social") %>%
+      group_by(subids) %>%
+      summarise(mean_acc_exp = mean(correct_exposure)) %>%
+      mutate(include_expo = ifelse(mean_acc_exp > 0.25,1,0)) %>%
+      join(d_within_rep_test_df, by = "subids")
 ```
 
 Flag trials with extremely slow or fast RTs (+/- 2SD).
 
 ```{r within subs replication clean RTs}
 d_within_rep_test_df <- d_within_rep_test_df %>%
-                        mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
-                                                              log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                                        0,1))
+      mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                            log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                      0,1))
 ```
 
 
@@ -800,13 +805,13 @@ d_within_rep_test_df <- d_within_rep_test_df %>%
 
 ```{r within-subs replication filters}
 d_within_expo_rep <- filter(d_within_rep_test_df,
-                        include_good_rt == 1, 
-                        condition_trial == "social")
+                            include_good_rt == 1, 
+                            condition_trial == "social")
 
 
 d_within_expo_rep_filt <- filter(d_within_rep_test_df,
-                        include_good_rt == 1, include_expo == 1, 
-                               condition_trial == "social")
+                                 include_good_rt == 1, include_expo == 1, 
+                                 condition_trial == "social")
 ```
 
 Get number of subjects filtered out by subject level filtering process
@@ -814,12 +819,12 @@ Get number of subjects filtered out by subject level filtering process
 ```{r within subs replication filtering process}
 #get number of subjects filtered out
 within_n_rep<- d_within_expo_rep %>%
-                  summarise(n_subs = n_distinct(subids))
+      summarise(n_subs = n_distinct(subids))
 
 within_n_filt_rep <- d_within_expo_rep_filt %>%
-                        summarise(n_subs_filt = n_distinct(subids)) %>%
-                        select(n_subs_filt)
-                  
+      summarise(n_subs_filt = n_distinct(subids)) %>%
+      select(n_subs_filt)
+
 cbind(within_n_rep, within_n_filt_rep)
 ```
 
@@ -828,39 +833,39 @@ cbind(within_n_rep, within_n_filt_rep)
 
 ```{r within subs replication acc exposure, fig.width=10, fig.height=6}
 ms_expo_within_rep <-  d_within_expo_rep %>%
-                              group_by(condition, condition_trial) %>%
-                              summarise(accuracy_exposure = mean(correct_exposure),
-                                        ci_low = ci.low(correct_exposure),
-                                        ci_high = ci.high(correct_exposure))
+      group_by(condition, condition_trial) %>%
+      summarise(accuracy_exposure = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure))
 
 ms_expo_within_rep_filt <- d_within_expo_rep_filt %>%
-                              group_by(condition, condition_trial) %>%
-                              summarise(accuracy_exposure = mean(correct_exposure),
-                                        ci_low = ci.low(correct_exposure),
-                                        ci_high = ci.high(correct_exposure))
+      group_by(condition, condition_trial) %>%
+      summarise(accuracy_exposure = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure))
 #factor for plotting
 ms_expo_within_rep$condition <- factor(ms_expo_within_rep$condition)
 ms_expo_within_rep_filt$condition <- factor(ms_expo_within_rep_filt$condition)
 
 acc_expo_within_rep <- ggplot(data=ms_expo_within_rep, 
-                                     aes(x=condition, y=accuracy_exposure,
-                                         fill=condition)) + 
-                                      geom_bar(stat="identity") +
-                                      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
-                                                    ymax=accuracy_exposure+ci_high), width = .1) +
-                                      geom_hline(yintercept=0.25, linetype = "dashed") +
-                                      scale_y_continuous(limits=c(0,1)) +
-                                      ggtitle("Within-subs Replication Unfiltered")
+                              aes(x=condition, y=accuracy_exposure,
+                                  fill=condition)) + 
+      geom_bar(stat="identity") +
+      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                          ymax=accuracy_exposure+ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Within-subs Replication Unfiltered")
 
 acc_expo_within_rep_filt <- ggplot(data=ms_expo_within_rep_filt, 
-                                     aes(x=condition, y=accuracy_exposure,
-                                         fill=condition)) + 
-                                      geom_bar(stat="identity") +
-                                      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
-                                                    ymax=accuracy_exposure+ci_high), width = .1) +
-                                      geom_hline(yintercept=0.25, linetype = "dashed") +
-                                      scale_y_continuous(limits=c(0,1)) +
-                                      ggtitle("Within-subs Replication Filtered")
+                                   aes(x=condition, y=accuracy_exposure,
+                                       fill=condition)) + 
+      geom_bar(stat="identity") +
+      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                          ymax=accuracy_exposure+ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Within-subs Replication Filtered")
 
 multiplot(acc_expo_within_rep, acc_expo_within_rep_filt, cols=2)
 ```
@@ -871,58 +876,58 @@ multiplot(acc_expo_within_rep, acc_expo_within_rep_filt, cols=2)
 ```{r accuracy on test within subs replication}
 #subject filter
 inc.data.within_rep_sub_level <- filter(d_within_rep_test_df, include_good_rt == 1, include_expo == 1 & 
-                                    correct_exposure == TRUE | condition_trial == "no-social")
+                                              correct_exposure == TRUE | condition_trial == "no-social")
 #trial filter
 inc.data.within_rep_trial_level <- filter(d_within_rep_test_df, include_good_rt == 1 & 
-                                    correct_exposure == TRUE | condition_trial == "no-social")
+                                                correct_exposure == TRUE | condition_trial == "no-social")
 
 #unfiltered
 inc.data.within_rep_unfilt <- filter(d_within_rep_test_df, include_good_rt == 1)
 
 #accuracy computations
 ms_test_within_rep_sub_level <- inc.data.within_rep_sub_level %>%
-                                          group_by(condition, condition_trial, trialType) %>%
-                                          summarise(accuracy = mean(correct),
-                                                ci_low = ci.low(correct),
-                                                ci_high = ci.high(correct))
+      group_by(condition, condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_within_rep_sub_level$condition <- factor(ms_test_within_rep_sub_level$condition)
 ms_test_within_rep_sub_level$condition_trial <- factor(ms_test_within_rep_sub_level$condition_trial, 
-                                         levels = c("social", "no-social"))
+                                                       levels = c("social", "no-social"))
 
 acc_test_within_rep_blocks_sub_level <- ggplot(ms_test_within_rep_sub_level, 
-                                     aes(x=condition_trial, y=accuracy, 
-                                         group=trialType, colour=trialType)) +
-                                      geom_point(size=2) +
-                                      geom_line() +
-                                      geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                        ymax=accuracy + ci_high), width = .1) +
-                                      geom_hline(yintercept=0.25, linetype = "dashed") +
-                                      scale_y_continuous(limits=c(0,1)) +
-                                      facet_wrap(~condition) + 
-                                      ggtitle("Within-subs Replication Subject Level")
+                                               aes(x=condition_trial, y=accuracy, 
+                                                   group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      facet_wrap(~condition) + 
+      ggtitle("Within-subs Replication Subject Level")
 
 ms_test_within_rep_trial_level <- inc.data.within_rep_trial_level %>%
-                                          group_by(condition, condition_trial, trialType) %>%
-                                          summarise(accuracy = mean(correct),
-                                                ci_low = ci.low(correct),
-                                                ci_high = ci.high(correct))
+      group_by(condition, condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_within_rep_trial_level$condition <- factor(ms_test_within_rep_trial_level$condition)
 ms_test_within_rep_trial_level$condition_trial <- factor(ms_test_within_rep_trial_level$condition_trial, 
-                                         levels = c("social", "no-social"))
+                                                         levels = c("social", "no-social"))
 
-acc_test_within_rep_blocks_trial_level <- ggplot(ms_test_within_trial_level, 
-                                           aes(x=condition_trial, y=accuracy, 
-                                               group=trialType, colour=trialType)) +
-                                            geom_point(size=2) +
-                                            geom_line() +
-                                            geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                              ymax=accuracy + ci_high), width = .1) +
-                                            geom_hline(yintercept=0.25, linetype = "dashed") +
-                                            scale_y_continuous(limits=c(0,1)) +
-                                            facet_wrap(~condition) + 
-                                            ggtitle("Within-subs Replication blocks")
+acc_test_within_rep_blocks_trial_level <- ggplot(ms_test_within_rep_trial_level, 
+                                                 aes(x=condition_trial, y=accuracy, 
+                                                     group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      facet_wrap(~condition) + 
+      ggtitle("Within-subs Replication blocks")
 
 multiplot(acc_test_within_rep_blocks_sub_level, acc_test_within_rep_blocks_trial_level)
 ```
@@ -931,66 +936,66 @@ Now do the same accuracy computation but collapse across blocks
 
 ```{r within subs replication acc test collapse blocks}
 ms_test_within_rep_collapse_sub <- inc.data.within_rep_sub_level %>%
-                                    group_by(condition_trial, trialType) %>%
-                                    summarise(accuracy = mean(correct),
-                                              ci_low = ci.low(correct),
-                                              ci_high = ci.high(correct))
+      group_by(condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_within_rep_collapse_trial <- inc.data.within_rep_trial_level %>%
-                                    group_by(condition_trial, trialType) %>%
-                                    summarise(accuracy = mean(correct),
-                                              ci_low = ci.low(correct),
-                                              ci_high = ci.high(correct))
+      group_by(condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 ms_test_within_rep_collapse_unfilt <- inc.data.within_rep_unfilt %>%
-                                    group_by(condition_trial, trialType) %>%
-                                    summarise(accuracy = mean(correct),
-                                              ci_low = ci.low(correct),
-                                              ci_high = ci.high(correct))
+      group_by(condition_trial, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
 
 
 
 ms_test_within_rep_collapse_sub$condition_trial <- factor(ms_test_within_rep_collapse_sub$condition_trial,
-                                                  levels = c("social", "no-social"))
+                                                          levels = c("social", "no-social"))
 ms_test_within_rep_collapse_trial$condition_trial <- factor(ms_test_within_rep_collapse_trial$condition_trial,
-                                                  levels = c("social", "no-social"))
+                                                            levels = c("social", "no-social"))
 ms_test_within_rep_collapse_unfilt$condition_trial <- factor(ms_test_within_rep_collapse_unfilt$condition_trial,
-                                                  levels = c("social", "no-social"))
+                                                             levels = c("social", "no-social"))
 
 # subject filter
 acc_test_within_rep_sub <- ggplot(ms_test_within_rep_collapse_sub, 
-                               aes(x=condition_trial, y=accuracy, 
-                                   group=trialType, colour=trialType)) +
-                                geom_point(size=2) +
-                                geom_line() +
-                                geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                  ymax=accuracy + ci_high), width = .1) +
-                                geom_hline(yintercept=0.25, linetype = "dashed") +
-                                scale_y_continuous(limits=c(0,1)) +
-                                ggtitle("Within-subs Replication Sub-level")
+                                  aes(x=condition_trial, y=accuracy, 
+                                      group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Within-subs Replication Sub-level")
 # trial filter
 acc_test_within_rep_trial <- ggplot(ms_test_within_rep_collapse_trial, 
-                                     aes(x=condition_trial, y=accuracy, 
-                                         group=trialType, colour=trialType)) +
-                                      geom_point(size=2) +
-                                      geom_line() +
-                                      geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                        ymax=accuracy + ci_high), width = .1) +
-                                      geom_hline(yintercept=0.25, linetype = "dashed") +
-                                      scale_y_continuous(limits=c(0,1)) +
-                                      ggtitle("Within-subs Replication Trial-level")
+                                    aes(x=condition_trial, y=accuracy, 
+                                        group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Within-subs Replication Trial-level")
 
 #unfiltered
 acc_test_within_rep_unfilt <- ggplot(ms_test_within_rep_collapse_unfilt, 
-                               aes(x=condition_trial, y=accuracy, 
-                                   group=trialType, colour=trialType)) +
-                                geom_point(size=2) +
-                                geom_line() +
-                                geom_pointrange(aes(ymin=accuracy - ci_low,
-                                                  ymax=accuracy + ci_high), width = .1) +
-                                geom_hline(yintercept=0.25, linetype = "dashed") +
-                                scale_y_continuous(limits=c(0,1)) +
-                                ggtitle("Within-subs Replication Unfiltered")
+                                     aes(x=condition_trial, y=accuracy, 
+                                         group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Within-subs Replication Unfiltered")
 
 
 multiplot(acc_test_within_rep_sub, acc_test_within_rep_trial, acc_test_within_rep_unfilt, cols=2)
@@ -1000,15 +1005,105 @@ Now model the within subs replication data
 
 ```{r within subjects replication model}
 m1_within_rep <- glmer(correct ~ trialType * condition_trial + (trialType | subids),
-            data = inc.data.within_rep_sub_level,
-            family=binomial)
+                       data = inc.data.within_rep_sub_level,
+                       family=binomial)
 summary(m1_within_rep)
 
 m1_within_rep_unfilt <- glmer(correct ~ trialType * condition_trial + (trialType | subids),
-            data = inc.data.within_rep_unfilt,
-            family=binomial)
+                              data = inc.data.within_rep_unfilt,
+                              family=binomial)
 summary(m1_within_rep_unfilt)
 ```
+
+### Experiment #6 Noisy Channel
+
+Our goal is to see if a super short ("noisy channel") gaze cue will result in intermediate accuracy performance on switch trials, between social and no-social.
+
+We used a between subjects design with three conditions: Social-short, Social-noisy, No-social.Note, we might want to run this again using a within subjects design.
+
+Grab noisy channel data
+
+```{r noisy channel experiment}
+d.noisy <- filter(d.test_df, experiment == "noisy_channel")
+```
+
+Get number of subjects by condition 
+
+```{r noisy get number of subs}
+d.noisy %>%
+      group_by(experiment, condition, gazeLength) %>%
+      summarise(n_subs = n_distinct(subids))
+```
+
+## Analyze performance on exposure trials 
+
+```{r noisy exposure analysis}
+ms_exp_noisy <- d.noisy %>%
+      filter(condition != "No-social") %>%
+      group_by(condition, gazeLength) %>%
+      summarise(accuracy_exposure = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure))
+
+noisy_acc_exp <- ggplot(data=ms_exp_noisy, 
+                        aes(x=gazeLength, y=accuracy_exposure,
+                            fill=gazeLength)) + 
+      geom_bar(stat="identity") +
+      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                          ymax=accuracy_exposure+ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Unfiltered")
+```
+
+Set up filters. We remove subjects who performed worse than chance on exposure trials and any other trials on which subjects didn't choose the target of eye gaze.
+
+```{r noisy filters}
+d.noisy.filt <- filter(d.noisy,include_good_rt == 1, 
+                       include_expo == 1 & correct_exposure == T | 
+                             condition == "No-social")
+```
+
+Analyze accuracy on test trials for filtered dataset.
+
+```{r noisy test accuracy}
+ms_test_noisy <- d.noisy.filt %>%
+      group_by(gazeLength, condition, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+
+#create new condition column for plotting
+ms_test_noisy <- ms_test_noisy %>%
+      mutate(condition_full = paste(gazeLength, condition, sep="-"))
+
+#change factor levels for plotting 
+ms_test_noisy$condition_full <- factor(ms_test_noisy$condition_full, 
+                                       levels = c("Short-Social", "Noisy-Social", "Short-No-social"))
+
+acc.test.noisy <- ggplot(ms_test_noisy, aes(x=condition_full, y=accuracy, 
+                                            group=trialType, colour=trialType)) +
+      geom_point(size=2) +
+      geom_line() +
+      geom_pointrange(aes(ymin=accuracy - ci_low,
+                          ymax=accuracy + ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Noisy Channel Test accuracy")
+```
+
+### This vs. One Experiment
+
+Filter this experiment
+
+```{r this/one filter}
+d.this.one <- filter(d.all_df,  experiment == "this_one")
+```
+
+
+
+
 
 ### Replot fyp data
 
@@ -1034,7 +1129,8 @@ acc_test_fyp <- ggplot(data=filter(d_fyp_df, intervalNum==0, numPicN==4),
       xlab("Condition") +
       ylab("Proportion Correct") +
       labs(colour = "Trial Type") +
-      ggtitle("FYP (between)")
+      scale_colour_manual(values=c("firebrick1", "dodgerblue")) +
+      theme(text = element_text(size=20))
 ```
 
 #### Plot all accuracy data together using subject-level filter (FYP data, Between-subs design, Within-subs design)

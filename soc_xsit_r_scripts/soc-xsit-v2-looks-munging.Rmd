@@ -10,9 +10,9 @@ This script munges, merges, and saves a tidy file, which has all the raw data fr
 Load libraries 
 
 ```{r libraries}
+source("/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysis/useful.R")
 library(plyr)
 library(dplyr)
-source("/Users/kmacdonald/Documents/Projects/SOC_XSIT/XSIT-MIN/analysis/Ranalysis/useful.R")
 ```
 
 
@@ -34,6 +34,10 @@ read_path_fyp <- file.path("/Users", "kmacdonald", "Documents",
                        "Projects", "SOC_XSIT", "processed_data", 
                        "adult-fyp/")
 
+read_path_live <- file.path("/Users", "kmacdonald", "Documents", 
+                       "Projects", "SOC_XSIT", "processed_data", 
+                       "adult-live/")
+
 d <- tbl_df(read.csv(paste(read_path, 
                            "soc_xsit_looks_pilot.csv", sep="")))
 d1 <- tbl_df(read.csv(paste(read_path, 
@@ -46,6 +50,8 @@ d4 <- tbl_df(read.csv(paste(read_path,
                             "soc_xsit_looks_withinsubs_replication.csv", sep="")))
 d5 <- tbl_df(read.csv(paste(read_path, 
                             "soc_xsit_looks_noisy_channel.csv", sep="")))
+d6 <- tbl_df(read.csv(paste(read_path_live,
+                            "soc_xsit_live.csv", sep ="")))
 ```
 
 #### Merge data sets, tracking experiment version. 
@@ -74,10 +80,10 @@ d2 <- mutate(d2, experiment = "soc_vs_no_soc_within")
 d3 <- mutate(d3, experiment = "this_one")
 d4 <- mutate(d4, experiment = "within_replication")
 d5 <- mutate(d5, experiment = "noisy_channel")
-
+d6 <- mutate(d6, experiment = "live")
 
 # wrap in list 
-d.list <- list(d, d1, d2, d3, d4, d5)
+d.list <- list(d, d1, d2, d3, d4, d5, d6)
 
 #join all data frames
 d.all_df <- ldply(.data = d.list, .fun = rbind())

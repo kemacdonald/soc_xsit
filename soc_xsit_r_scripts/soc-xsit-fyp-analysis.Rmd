@@ -136,30 +136,30 @@ Accuracy on test trials, filtering out subjects who performed below chance on ex
 
 ```{r acc test subject and trial filtering}
 ms_test_looks_filtered <- d.test_df %>%
-                        filter(include_good_rt == 1, 
-                               (condition == "No-Social") | 
-                                       (include_expo == 1 & correct_exposure == TRUE)
-                               ) %>%
-                        group_by(condition, intervalNum, numPic, trialType) %>%
-                        summarise(accuracy = mean(correct),
-                                  ci_low = ci.low(correct),
-                                  ci_high = ci.high(correct),
-                                  exclusionary_criteria = "subject-level")
+      filter(include_good_rt == 1, 
+             (condition == "No-Social") | 
+                   (include_expo == 1 & correct_exposure == TRUE)
+             ) %>%
+      group_by(condition, intervalNum, numPic, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct),
+                exclusionary_criteria = "subject-level")
 
 acc_test_1 <- ggplot(data=ms_test_looks_filtered, aes(x=intervalNum, y=accuracy, 
-                               colour = condition)) + 
-                        geom_line(aes(linetype = trialType)) +
-                        geom_errorbar(aes(ymin=accuracy - ci_low, 
-                                      ymax=accuracy + ci_high), width = .1) +
-                        geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
-                        scale_x_continuous(limits=c(-0.5, 7.5), breaks=c(0,1,3,7)) +
-                        scale_y_continuous(limits=c(0,1)) +
-                        scale_colour_manual(values=c("firebrick1", "dodgerblue")) +
-                        facet_grid(. ~ numPic) + 
-                        xlab("Intervening Trials") + 
-                        ylab("Proportion Correct") +
-                        labs(colour = "Condition") +
-                        labs(linetype = "Trial Type")
+                                                      colour = condition)) + 
+      geom_line(aes(linetype = trialType)) +
+      geom_errorbar(aes(ymin=accuracy - ci_low, 
+                        ymax=accuracy + ci_high), width = .1) +
+      geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
+      scale_x_continuous(limits=c(-0.5, 7.5), breaks=c(0,1,3,7)) +
+      scale_y_continuous(limits=c(0,1)) +
+      scale_colour_manual(values=c("firebrick1", "dodgerblue")) +
+      facet_grid(. ~ numPic) + 
+      xlab("Intervening Trials") + 
+      ylab("Proportion Correct") +
+      labs(colour = "Condition") +
+      labs(linetype = "Trial Type")
 ```
 
 Accuracy on test trials, without filtering subjects (only trial level filtering)
