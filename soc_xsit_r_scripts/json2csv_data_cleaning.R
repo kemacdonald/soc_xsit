@@ -1,5 +1,8 @@
 ##### GET RELEVANT FIELDS FROM JSON OUTPUT #####
 
+# Clear workspace
+rm(list=ls())
+
 ## Load libraries 
 source("/Users/kmacdonald/Documents/programming/rscripts/useful.R")
 library(rjson)
@@ -7,13 +10,13 @@ library(plyr)
 library(dplyr)
 
 ## set file paths for reading and writing data
-read_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC_XSIT", "soc_xsit_expts", "soc_xsit_live/")
+read_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC_XSIT", "soc_xsit_expts", "soc_xsit_reliability/")
 write_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC_XSIT", "processed_data", "adult-live/")
 
 ## gets all .results files at one time
 all_results <- list.files(path = read_path, pattern = '*.results', all.files = FALSE)
 
-# all_results <- all_results[2] ## within subs expt
+# all_results <- all_results[1] ## within subs expt
 # all_results <- all_results[3] ## this/one btw subs expt
 
 ## creates empty data frame
@@ -44,7 +47,7 @@ for(f in 1:length(all_results)) {
                                               ,start=4)
       long.data$trial.num[c] <- j
       long.data$gazeLength[c] <- fromJSON(as.character(data$Answer.condition[i]))       
-      long.data$condition[c] <- fromJSON(as.character(data$Answer.social_cond[i]))       
+      long.data$condition[c] <- fromJSON(as.character(data$Answer.prop_cond[i]))       
       long.data$interval[c] <- fromJSON(as.character(data$Answer.delay_condition[i]))  
       long.data$numPic[c] <- fromJSON(as.character(data$Answer.numReferents[i]))
       long.data$browser[c] <- fromJSON(as.character(data$Answer.browser[i]))
@@ -64,13 +67,25 @@ for(f in 1:length(all_results)) {
   }
 }  
 
+## rbind the two different delay conditions together
+long.data <- rbind(long.data, long.data1)
+
+exposure_trials <- c(5,6,7,8,13,14,15,16,21,22,23,24,29,30,31,32)
+test_trials <- c(9,10,11,12,17,18,19,20,25,26,27,28,33,34,35,36)
+
 ## Flag exposure, test, and example trials (within subs experiment)
 long.data <- long.data %>% 
         group_by(subid) %>%
-        mutate(trial_cat = ifelse(trial.num %in% seq(1,4), "example", 
+        mutate(trial_cat = if (interval == "Zero") {ifelse(trial.num %in% seq(1,4), "example", 
                                   ifelse(trial.num %in% seq(from=5, to=35, by=2), "exposure",
                                          ifelse(trial.num %in% seq(from=6, to=36, by=2), "test",
-                                                NA)))) %>%
+                                                NA)))
+        } else {
+            ifelse(trial.num %in% seq(1,4), "example", 
+                   ifelse(trial.num %in% exposure_trials, "exposure",
+                          ifelse(trial.num %in% test_trials, "test",
+                                 NA)))
+        }) %>%
         arrange(subid, trial.num)
 
 all.data <- long.data
@@ -184,5 +199,5 @@ keep.data <- anonymize.sids(keep.data, "subid")
 
 ##### SAVE OUTPUT  #####
 
-write.csv(keep.data, paste(write_path, "soc_xsit_live.csv", sep=""),
+write.csv(keep.data, paste(write_path, "soc_xsit_reliability.csv", sep=""),
           row.names=FALSE)

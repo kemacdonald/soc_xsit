@@ -7,6 +7,12 @@ output: html_document
 
 #### Analysis code for SOC-XSIT-LIVE experiment. 
 
+Clear workspace
+
+```{r clear workspace}
+rm(list=ls())
+```
+
 Load libraries.
 
 ```{r load libraries, message=FALSE, warning=FALSE}
@@ -19,17 +25,27 @@ library(lme4)
 library(ggplot2)
 ```
 
-Read in the master data file
+Read in the tidy data files for the zero delay and the three delay experiments
 
 ```{r read in data}
 setwd("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/adult-live/")
-df_live <- read.csv("soc_xsit_live.csv")
+
+# read in data
+df_live <- read.csv("soc_xsit_live_all.csv")
+df_reliability <- read.csv("soc_xsit_reliability.csv")
+
+## reorder factor levels 
+df_live$interval <- relevel(df_live$interval, ref = "Zero")
 ```
 
 #### Get the number of subjects in each experiment and condition.
 
 ```{r get number of subs, echo=FALSE}
 df_live %>%
+      group_by(condition) %>%
+      summarise(n_subs = n_distinct(subids))
+
+df_reliability %>%
       group_by(condition) %>%
       summarise(n_subs = n_distinct(subids))
 ```
@@ -40,9 +56,14 @@ Flag trials with extremely slow or fast RTs (+/- 2SD).
 
 ```{r all data clean RTs}
 df_live <- df_live %>%
-      mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
-                                            log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                      0,1))
+    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                    0,1))
+
+df_reliability <- df_reliability %>%
+    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                    0,1))
 ```
 
 ### Flag social vs. no-social trials
@@ -70,10 +91,16 @@ Flag subs who got <25% of exposure trials correct. This can be used for exclusio
 ss_exposure <- df_live %>%
       filter(trial_cat == "exposure" & condition_trial == "social") %>%
       group_by(subids) %>%
+      summarise(mean_acc_exp = mean(correct))
+
+ss_exposure_rel <- df_reliability %>%
+      filter(trial_cat == "exposure") %>%
+      group_by(subids) %>%
       summarise(mean_acc_exp = mean(correct)) 
 
 # merge mean acc with the rest of the dataset
 df_live <- merge(df_live, ss_exposure, by = "subids")
+df_reliability <- merge(df_reliability, ss_exposure_rel, by = "subids")
 ```
 
 Flag test trials where subject chose target of eye gaze.
@@ -81,6 +108,18 @@ Flag test trials where subject chose target of eye gaze.
 ```{r chose target of eye gaze?}
 df_test <- df_live %>%
       filter(trial_cat == "test")
+
+df_test_rel <- df_reliability %>%
+      filter(trial_cat == "test")
+
+# create continuous variable for reliability
+df_test_rel$reliability <- .50
+df_test_rel$reliability[df_test_rel$condition=="75same25switch"] <- .75
+df_test_rel$reliability[df_test_rel$condition=="25same75switch"] <- .25
+
+# flag blocks first half vs. second half
+df_test <- df_test %>%
+    mutate(block = ifelse(itemNum <= 7, "first","second"))
 
 # extract exposure trials and create a correct on exposure column 
 df_expo <- df_live %>%
@@ -91,6 +130,16 @@ df_expo <- df_live %>%
 # join with test trials
 df_test <- merge(df_test, df_expo)
 df_test <- arrange(df_test, subids, itemNum)
+
+# now do the same for reliablity expt
+df_expo_rel <- df_reliability %>%
+      filter(trial_cat == "exposure") %>%
+      mutate(correct_exposure = faceIdx == chosenIdx) %>%
+      select(subids, itemNum, correct_exposure)
+
+# join with test trials
+df_test_rel <- merge(df_test_rel, df_expo_rel)
+df_test_rel <- arrange(df_test_rel, subids, itemNum)
 ```
 
 #### Analyze Exposure Trials
@@ -100,14 +149,23 @@ Set up filters
 ```{r within-subs filters}
 # just RT filter
 df_exposure <- filter(df_live,
-                      include_good_rt == 1, 
+                      include_good_rt == 1,
                       condition_trial == "social",
+                      trial_cat == "exposure")
+
+df_exposure_rel <- filter(df_reliability,
+                      include_good_rt == 1,
                       trial_cat == "exposure")
 
 # RT, subject level and trial level filter 
 df_exposure_filt <- filter(df_live,
                            trial_cat == "exposure",
                            condition_trial == "social" & mean_acc_exp > 0.25,
+                           include_good_rt == 1)
+
+df_exposure_rel_filt <- filter(df_reliability,
+                           trial_cat == "exposure",
+                           mean_acc_exp > 0.25,
                            include_good_rt == 1)
 ```
 
@@ -121,113 +179,201 @@ df_n <- df_exposure %>%
 df_n_filt <- df_exposure_filt %>%
                         summarise(n_subs_filt = n_distinct(subids)) %>%
                         select(n_subs_filt)
+
+#get number of subjects filtered out reliability expt
+df_n_rel <- df_exposure_rel %>%
+                  summarise(n_subs = n_distinct(subids))
+
+df_n_rel_filt <- df_exposure_rel_filt %>%
+                        summarise(n_subs_filt = n_distinct(subids)) %>%
+                        select(n_subs_filt)
                   
 cbind(df_n, df_n_filt)
+cbind(df_n_rel, df_n_rel_filt)
 ```
 
 ### Accuracy on exposure trials
 
 ```{r within subs acc exposure, fig.width=10, fig.height=6}
+ms_expo_rel <- df_exposure_rel %>%
+      group_by(condition) %>%
+      summarise(accuracy_exposure = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ms_expo_rel$condition <- factor(ms_expo_rel$condition)
+
+acc_exp_rel <- ggplot(data=ms_expo_rel, 
+                       aes(x=condition, y=accuracy_exposure)) + 
+      geom_bar(stat="identity", fill = I("grey50")) +      
+      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                          ymax=accuracy_exposure+ci_high), width = .1) +
+      geom_hline(yintercept=0.25, linetype = "dashed") +
+      scale_y_continuous(limits=c(0,1)) +
+      ggtitle("Relability Expt: Proportion chose target of eye gaze (Real)")
+
+acc_exp_rel
+
+# now do the same for the delay expt
 ms_expo <- df_exposure %>%
-      group_by(condition, condition_trial) %>%
+      group_by(condition, condition_trial, interval) %>%
       summarise(accuracy_exposure = mean(correct),
                 ci_low = ci.low(correct),
                 ci_high = ci.high(correct))
 
 ms_expo$condition <- factor(ms_expo$condition)
 
-acc_exp_live <- ggplot(data=ms_expo, 
+acc_exp <- ggplot(data=ms_expo, 
+                  aes(x=interval, y=accuracy_exposure)) + 
+    geom_bar(stat="identity", fill = I("grey50")) +      
+    geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                        ymax=accuracy_exposure+ci_high), width = .1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) +
+    facet_wrap(~condition) +
+    ggtitle("Proportion chose target of eye gaze (Real)")
+
+acc_exp
+```
+
+Now we do the same thing, but filtering out the subjects who performed below chance levels selecting the target of eye gaze. 
+
+```{r accuracy exposure filtered,}
+ms_expo_rel_filt <- df_exposure_rel_filt %>%
+      group_by(condition) %>%
+      summarise(accuracy_exposure = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ms_expo_rel_filt$condition <- factor(ms_expo_rel_filt$condition)
+
+acc_exp_rel_filt <- ggplot(data=ms_expo_rel_filt, 
                        aes(x=condition, y=accuracy_exposure)) + 
       geom_bar(stat="identity", fill = I("grey50")) +      
       geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
                           ymax=accuracy_exposure+ci_high), width = .1) +
       geom_hline(yintercept=0.25, linetype = "dashed") +
       scale_y_continuous(limits=c(0,1)) +
-      ggtitle("Proportion chose target of eye gaze (Real)")
+      ggtitle("Relability Expt: Proportion chose target of eye gaze (Real)")
 
-acc_exp_live
-```
+acc_exp_rel_filt
 
-Now we do the same thing, but filtering out the subjects who performed below chance levels selecting the target of eye gaze. 
-
-```{r accuracy exposure filtered,}
+# now do the same for the delay expt
 ms_expo_filt <- df_exposure_filt %>%
-      group_by(condition, condition_trial) %>%
+      group_by(condition, condition_trial, interval) %>%
       summarise(accuracy_exposure = mean(correct),
                 ci_low = ci.low(correct),
                 ci_high = ci.high(correct))
 
 ms_expo_filt$condition <- factor(ms_expo_filt$condition)
 
-acc_exp_live_filt <- ggplot(data=ms_expo_filt, 
-                       aes(x=condition, y=accuracy_exposure)) + 
-      geom_bar(stat="identity", fill = I("grey50")) +      
-      geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
-                          ymax=accuracy_exposure+ci_high), width = .1) +
-      geom_hline(yintercept=0.25, linetype = "dashed") +
-      scale_y_continuous(limits=c(0,1)) +
-      ggtitle("Proportion chose target of eye gaze (Real)")
+acc_exp_filt <- ggplot(data=ms_expo_filt, 
+                  aes(x=interval, y=accuracy_exposure)) + 
+    geom_bar(stat="identity", fill = I("grey50")) +      
+    geom_pointrange(aes(ymin=accuracy_exposure-ci_low, 
+                        ymax=accuracy_exposure+ci_high), width = .1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) +
+    facet_wrap(~condition) +
+    ggtitle("Proportion chose target of eye gaze (Real)")
 
-acc_exp_live_filt
+acc_exp_filt
 ```
 
 Anayze RT on exposure trials.
 
 ```{r RT exposure trials}
+# delay expt
 df_exposure_filt_all <- filter(df_live,
-                           trial_cat == "exposure",
-                           mean_acc_exp > 0.25,
-                           include_good_rt == 1)
+                               trial_cat == "exposure",
+                               mean_acc_exp > 0.25,
+                               include_good_rt == 1)
 
 ms_rt_expo_filt <- df_exposure_filt_all %>%
-      group_by(condition_trial) %>%
-      summarise(rt_exposure = mean(rt),
-                ci_low = ci.low(rt),
-                ci_high = ci.high(rt))
+    group_by(condition_trial, interval) %>%
+    summarise(rt_exposure = mean(rt),
+              ci_low = ci.low(rt),
+              ci_high = ci.high(rt))
 
-ms_rt_expo_filt$condition <- factor(ms_rt_expo_filt$condition)
+ms_rt_expo_filt$condition_trial <- factor(ms_rt_expo_filt$condition_trial)
 
 ggplot(ms_rt_expo_filt, 
-       aes(x=condition_trial, y=rt_exposure)) +
-      geom_point(size=3) +
-      geom_pointrange(aes(ymin=rt_exposure - ci_low,
-                          ymax=rt_exposure + ci_high), width = .1) + 
-      scale_y_continuous(limits=c(2000,4000)) +
-      ylab("Response Time (ms)") +
-      xlab("Condition") +
-      theme(text = element_text(size=20))
+       aes(x=interval, y=rt_exposure, colour=condition_trial)) +
+    geom_point(size=3) +
+    geom_pointrange(aes(ymin=rt_exposure - ci_low,
+                        ymax=rt_exposure + ci_high), width = .1) + 
+    scale_y_continuous(limits=c(0,4000)) +
+    ylab("Response Time (ms)") +
+    xlab("Interval between exposure and test") +
+    theme(text = element_text(size=20))
+
+# now vizualize rt for reliability experiment
+df_exposure_rel_filt_all <- filter(df_reliability,
+                               trial_cat == "exposure",
+                               mean_acc_exp > 0.25,
+                               include_good_rt == 1)
+
+ms_rt_expo_rel_filt <- df_exposure_rel_filt_all %>%
+    group_by(condition) %>%
+    summarise(rt_exposure = mean(rt),
+              ci_low = ci.low(rt),
+              ci_high = ci.high(rt))
+
+ms_rt_expo_rel_filt$condition <- factor(ms_rt_expo_rel_filt$condition)
+
+ggplot(ms_rt_expo_rel_filt, 
+       aes(x=condition, y=rt_exposure)) +
+    geom_point(size=3) +
+    geom_pointrange(aes(ymin=rt_exposure - ci_low,
+                        ymax=rt_exposure + ci_high), width = .1) + 
+    scale_y_continuous(limits=c(500,3000)) +
+    ylab("Response Time (ms)") +
+    xlab("Condition") +
+    theme(text = element_text(size=20))
 ```
 
 
 ```{r explore individual data exposure}
 mss_expo <- df_exposure %>%
-      group_by(condition, condition_trial, subids) %>%
+      group_by(condition, interval, condition_trial, subids) %>%
       summarise(accuracy_exposure = mean(correct))
 
-hist_expo_live <- qplot(accuracy_exposure, geom="bar", facets=.~condition, 
+hist_expo_live <- qplot(accuracy_exposure, geom="bar", facets=interval~condition, 
                         main = c("Histogram Acc Exposure (Real)"), data=mss_expo)
 
 hist_expo_live
+
+# reliablity data
+mss_expo_rel <- df_exposure_rel %>%
+      group_by(condition, subids) %>%
+      summarise(accuracy_exposure = mean(correct))
+
+hist_expo_rel <- qplot(accuracy_exposure, geom="bar", facets=~condition, 
+                       main = c("Histogram Acc Exposure: Reliablity Expt"), data=mss_expo_rel)
+
+hist_expo_rel
 ```
 
 Explore subjects performance over trials.
 
 ```{r explore ind subs data}
 dss <- df_exposure %>%
-      group_by(condition, condition_trial, itemNum) %>%
-      summarise(accuracy_exposure = mean(correct))
+    group_by(condition, condition_trial, itemNum, interval) %>%
+    summarise(accuracy_exposure = mean(correct), 
+              ci_low = ci.low(correct),
+              ci_high = ci.high(correct))
 
-qplot(itemNum, accuracy_exposure, col=condition, facets=.~condition,
+qplot(itemNum, accuracy_exposure, col=condition, facets=interval~condition,
       geom=c("point","line"),
       data=dss) +
-      scale_y_continuous(limits=c(0,1))
+    scale_y_continuous(limits=c(0,1)) +
+    geom_pointrange(aes(ymin=accuracy_exposure - ci_low,
+                        ymax=accuracy_exposure + ci_high), width = .1)
 ```
 
 #### Accuracy on test trials within subjects experiment 
 
-Test accuracy computations with different filters.
-
-Set up filters
+Test accuracy computations with different filters. First, set up filters
 
 ```{r set up test trial filters}
 # just RT filter
@@ -241,12 +387,145 @@ df_test_filt <- filter(df_test,
                        mean_acc_exp > 0.25 ,
                        include_good_rt == 1,
                        correct_exposure == T | condition_trial == "no-social")
+
+# now do the same filters to the reliability expt
+df_test_rel <- filter(df_test,
+                      trial_cat == "test",
+                      include_good_rt == 1)
+
+# RT, subject level and trial level filter 
+df_test_rel_filt <- filter(df_test,
+                       trial_cat == "test",
+                       mean_acc_exp > 0.25 ,
+                       include_good_rt == 1,
+                       correct_exposure == T)
 ```
 
-```{r within subs test acc computations, fig.width=10, fig.height=6}
+
+Now we do the same plots for the delay expt.
+
+```{r acc test unfilt delay}
 # No filter
 ms_test <- df_test %>%
-      group_by(condition, condition_trial, trialType) %>%
+      group_by(condition, trialType, condition_trial, interval) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ms_test$condition <- factor(ms_test$condition)
+ms_test$condition_trial <- factor(ms_test$condition_trial, 
+                                  levels = c("social", "no-social"))
+
+# means by blocks
+ms_test_blocks <- df_test %>%
+      group_by(block, trialType, condition_trial, interval) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ms_test_blocks$condition_trial <- factor(ms_test_blocks$condition_trial, 
+                                  levels = c("social", "no-social"))
+
+acc_test_plot <- ggplot(ms_test, 
+                        aes(x=interval, y=accuracy, 
+                            colour=condition_trial,
+                            shape=trialType)) +
+    geom_point(size=2)  +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), width = .1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) + 
+    facet_grid(.~condition) +
+    ggtitle("Accuracy on Same/Switch Trials")
+
+# now plot by block
+acc_test_plot_blocks <- ggplot(ms_test_blocks, 
+                        aes(x=interval, y=accuracy, 
+                            colour=condition_trial,
+                            shape=trialType)) +
+    geom_point(size=3)  +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), width = .1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) + 
+    facet_grid(.~block) +
+    ggtitle("Accuracy on Same/Switch Trials: By Block")
+
+# now plot filtering out subjects and trials that didn't choose target of gaze 
+ms_test_filt_blocks <- df_test_filt %>%
+      group_by(condition_trial, trialType, block, interval) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ms_test_filt$condition <- factor(ms_test_filt$condition)
+ms_test_filt$condition_trial <- factor(ms_test_filt$condition_trial, 
+                                  levels = c("social", "no-social"))
+
+acc_test_plot_filt_blocks <- ggplot(ms_test_filt_blocks, 
+                                    aes(x=interval, y=accuracy, 
+                                        colour=condition_trial,
+                                        shape=trialType)) +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), 
+                    width = .1,
+                    position = "dodge",
+                    size=1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) + 
+    facet_grid(.~block) +
+    ggtitle("Accuracy on Same/Switch Trials: By Block (Filtered data)")
+
+
+multiplot(acc_test_plot, acc_test_filt_plot)
+
+```
+
+Do the same analysis within the first block. 
+
+```{r first block acc}
+df_block1 <- filter(df_test_filt, block == "first")
+
+df_block1 %>% 
+    group_by(condition_trial, interval) %>%
+    summarise(n_subs = n_distinct(subids))
+
+# divide block 1 into block1a vs. block1b
+df_block1 <- df_block1 %>% mutate(within_block = ifelse(itemNum <= 3, "A", "B"))
+
+# means by block
+ms_within_b1 <- df_block1 %>%
+    group_by(interval, condition_trial, within_block, trialType) %>%
+    summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+# now plot
+acc_test_block1 <- ggplot(ms_within_b1, 
+                                    aes(x=interval, y=accuracy, 
+                                        colour=condition_trial,
+                                        shape=trialType)) +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), 
+                    width = .1,
+                    position = "dodge",
+                    size=1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) + 
+    facet_grid(.~within_block) +
+    ggtitle("Accuracy on Same/Switch Trials: Within Block (Filtered data)")
+
+acc_test_block1
+```
+
+TODO: fix chunks below this 
+
+Now we generate plots for the reliablity expt
+
+```{r acc test unfilt reliablity, fig.width=10, fig.height=6}
+# No filter
+ms_test <- df_test_rel %>%
+      group_by(condition, trialType) %>%
       summarise(accuracy = mean(correct),
                 ci_low = ci.low(correct),
                 ci_high = ci.high(correct))
@@ -256,20 +535,19 @@ ms_test$condition_trial <- factor(ms_test$condition_trial,
                                   levels = c("social", "no-social"))
 
 acc_test_plot <- ggplot(ms_test, 
-                        aes(x=condition_trial, y=accuracy, 
+                        aes(x=condition, y=accuracy, 
                             group=trialType, colour=trialType)) +
       geom_point(size=2) +
       geom_line() +
       geom_pointrange(aes(ymin=accuracy - ci_low,
                           ymax=accuracy + ci_high), width = .1) +
       geom_hline(yintercept=0.25, linetype = "dashed") +
-      scale_y_continuous(limits=c(0,1)) +
-      facet_wrap(~condition) + 
+      scale_y_continuous(limits=c(0,1)) + 
       ggtitle("Accuracy on Same/Switch Trials")
 
 # Filtered 
 ms_test_filt <- df_test_filt %>%
-      group_by(condition, condition_trial, trialType) %>%
+      group_by(condition, trialType) %>%
       summarise(accuracy = mean(correct),
                 ci_low = ci.low(correct),
                 ci_high = ci.high(correct))
@@ -279,7 +557,7 @@ ms_test_filt$condition_trial <- factor(ms_test_filt$condition_trial,
                                   levels = c("social", "no-social"))
 
 acc_test_filt_plot <- ggplot(ms_test_filt, 
-                             aes(x=condition_trial, y=accuracy, 
+                             aes(x=condition, y=accuracy, 
                                  group=trialType, colour=trialType)) +
       geom_point(size=2) +
       geom_line() +
@@ -287,7 +565,6 @@ acc_test_filt_plot <- ggplot(ms_test_filt,
                           ymax=accuracy + ci_high), width=.1) +
       geom_hline(yintercept=0.25, linetype = "dashed") +
       scale_y_continuous(limits=c(0,1)) +
-      facet_wrap(~condition) + 
       ggtitle("Accuracy on Same/Switch Trials") + 
       scale_colour_manual(values=c("firebrick1", "dodgerblue")) +
       xlab("Condition") + 
@@ -296,7 +573,7 @@ acc_test_filt_plot <- ggplot(ms_test_filt,
       theme(text = element_text(size=18))
 
 
-multiplot(acc_test_plot, acc_test_filt_plot, cols = 2)
+multiplot(acc_test_plot, acc_test_filt_plot)
 ```
 
 Now do the same accuracy computation but collapse across blocks
@@ -304,7 +581,7 @@ Now do the same accuracy computation but collapse across blocks
 ```{r acc test collapse blocks, fig.width=10, fig.height=6}
 ##Subject level
 ms_test_collapsed <- df_test %>%
-      group_by(condition_trial, trialType) %>%
+      group_by(condition_trial, trialType, interval) %>%
       summarise(accuracy = mean(correct),
                 ci_low = ci.low(correct),
                 ci_high = ci.high(correct))
@@ -313,10 +590,9 @@ ms_test_collapsed$condition_trial <- factor(ms_test_collapsed$condition_trial,
                                   levels = c("social", "no-social"))
 
 acc_test_plot_2 <- ggplot(ms_test_collapsed, 
-                        aes(x=condition_trial, y=accuracy, 
-                            group=trialType, colour=trialType)) +
+                        aes(x=interval, y=accuracy, colour=condition_trial)) +
       geom_point(size=3) +
-      geom_line() +
+      geom_line(aes(linetype = trialType)) +
       geom_pointrange(aes(ymin=accuracy - ci_low,
                           ymax=accuracy + ci_high), width = .1) +
       geom_hline(yintercept=0.25, linetype = "dashed") +
@@ -329,7 +605,7 @@ acc_test_plot_2 <- ggplot(ms_test_collapsed,
 
 # Filtered 
 ms_test_filt_collapsed <- df_test_filt %>%
-      group_by(condition_trial, trialType) %>%
+      group_by(condition_trial, trialType, interval) %>%
       summarise(accuracy = mean(correct),
                 ci_low = ci.low(correct),
                 ci_high = ci.high(correct))
@@ -338,10 +614,9 @@ ms_test_filt_collapsed$condition_trial <- factor(ms_test_filt_collapsed$conditio
                                   levels = c("social", "no-social"))
 
 acc_test_filt_plot_2 <- ggplot(ms_test_filt_collapsed, 
-                             aes(x=condition_trial, y=accuracy, 
-                                 group=trialType, colour=trialType)) +
+                             aes(x=interval, y=accuracy, colour=condition_trial)) +
       geom_point(size = 3) +
-      geom_line(size = 0.8) +
+      geom_line(aes(linetype = trialType)) +
       geom_pointrange(aes(ymin=accuracy - ci_low,
                           ymax=accuracy + ci_high), width=.1) +
       geom_hline(yintercept=0.25, linetype = "dashed") +
@@ -359,26 +634,47 @@ multiplot(acc_test_plot_2, acc_test_filt_plot_2, cols = 2)
 Look at performance on same/switch trials over time in the task.
 
 ```{r test trials over time}
-ms_test_trials <- df_test_filt %>%
-      group_by(condition_trial, trialType, itemNum) %>%
+ms_test_trials <- df_test %>%
+      group_by(condition, trialType, itemNum) %>%
       summarise(accuracy = mean(correct),
                 ci_low = ci.low(correct),
                 ci_high = ci.high(correct))
 
 ggplot(ms_test_trials, 
        aes(x=itemNum, y=accuracy, 
-           colour=condition_trial)) +
+           colour=condition)) +
       geom_point(size = 3) +
       geom_line(size = 0.8, aes(linetype=trialType)) +
       geom_pointrange(aes(ymin=accuracy - ci_low,
                           ymax=accuracy + ci_high), width=.1) +
       geom_hline(yintercept=0.25, linetype = "dashed") +
       scale_y_continuous(limits=c(0,1)) +
-      scale_colour_manual(values=c("firebrick1", "dodgerblue")) +
       xlab("Trial Number") + 
       ylab("Proportion Correct") +
       labs(colour = "Condition", linetype = "Trial Type") +
       theme(text = element_text(size=20))
+
+ms_test_trials_block <- df_test %>%
+      group_by(condition, trialType, block) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ggplot(ms_test_trials_block, 
+       aes(x=condition, y=accuracy, colour=trialType, group=trialType)) +
+    geom_point(size = 3) +
+    geom_line() + 
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                    ymax=accuracy + ci_high), width=.1) +
+    facet_wrap(~block) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) +
+    scale_colour_manual(values=c("firebrick1", "dodgerblue")) +
+    xlab("Block") + 
+    ylab("Proportion Correct") +
+    labs(colour = "Trial Type") +
+    theme(text = element_text(size=20))
+
 ```
 
 RT on test trials
@@ -408,19 +704,36 @@ rt_test_filt_plot <- ggplot(ms_test_filt_rt,
 
 ```
 
-
 ##### Model the data
 
 ```{r model data}
 # unfiltered
-m1_within_unfilt <- glmer(correct ~ trialType * condition_trial + (trialType | subids),
-            data = df_test,
-            family=binomial)
+m1_within_unfilt <- glmer(correct ~ trialType * reliability + 
+                              (trialType | subids),
+            data = df_test, 
+            family = binomial)
+summary(m1_within_unfilt)
+
+m1_within_unfilt <- glmer(correct ~ trialType * reliability * block + 
+                              (block * trialType | subids),
+            data = df_test, 
+            family = binomial)
 summary(m1_within_unfilt)
 
 # subject level and trial level filter
-m1_within <- glmer(correct ~ trialType * condition_trial + (trialType | subids),
+m1_within <- glmer(correct ~ trialType * reliability + 
+                       (trialType | subids),
             data = df_test_filt,
             family=binomial)
 summary(m1_within)
+```
+
+Model just the first block data.
+
+```{r model first block}
+m1_block1 <- glmer(correct ~ trialType * condition_trial * intervalNum + 
+                              (trialType | subids), nAGQ=0,
+            data = df_block1, 
+            family = binomial)
+summary(m1_block1)
 ```
