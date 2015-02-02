@@ -1,4 +1,4 @@
-This is BibTeX, Version 0.99d (TeX Live 2013)
+This is BibTeX, Version 0.99d (TeX Live 2014/MacPorts 2014_3)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: km_soc_xsit_cogsci.aux
 The style file: apacite.bst
@@ -8,53 +8,50 @@ Reallocated glb_str_end (elt_size=4) to 20 items from 10.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
 Database file #1: soc-xsit.bib
-apacite.bst [2009/03/01 v4.05 APA bibliography style]
-Warning--No address in bloom2002children
-Warning--No address in clark2009first
-Warning--No publisher in vul2009one
-Warning--No address in vul2009one
+apacite.bst [2012/02/25 v6.01 APA bibliography style]
 Warning--No journal in yurovsky2014algorithmic
-You've used 17 entries,
-            6361 wiz_defined-function locations,
-            1282 strings with 12353 characters,
-and the built_in function-call counts, 32080 in all, are:
-= -- 3933
-> -- 279
-< -- 1543
-+ -- 1680
-- -- 34
-* -- 2098
-:= -- 5954
-add.period$ -- 70
-call.type$ -- 17
-change.case$ -- 86
+You've used 16 entries,
+            6735 wiz_defined-function locations,
+            1335 strings with 12858 characters,
+and the built_in function-call counts, 30777 in all, are:
+= -- 3826
+> -- 260
+< -- 1467
++ -- 1597
+- -- 32
+* -- 1973
+:= -- 5671
+add.period$ -- 64
+call.type$ -- 16
+change.case$ -- 272
 chr.to.int$ -- 0
-cite$ -- 39
-duplicate$ -- 887
-empty$ -- 1251
-format.name$ -- 470
-if$ -- 6020
+cite$ -- 33
+duplicate$ -- 832
+empty$ -- 1189
+format.name$ -- 446
+if$ -- 5794
 int.to.chr$ -- 0
-int.to.str$ -- 34
+int.to.str$ -- 32
 missing$ -- 0
-newline$ -- 412
-num.names$ -- 136
-pop$ -- 519
+newline$ -- 404
+num.names$ -- 128
+pop$ -- 459
 preamble$ -- 1
-purify$ -- 68
+purify$ -- 64
 quote$ -- 0
-skip$ -- 2000
+skip$ -- 1989
 stack$ -- 0
-substring$ -- 1869
-swap$ -- 513
-text.length$ -- 41
+substring$ -- 1767
+swap$ -- 474
+text.length$ -- 32
 text.prefix$ -- 0
 top$ -- 1
-type$ -- 1424
-warning$ -- 5
-while$ -- 171
+type$ -- 1280
+warning$ -- 1
+while$ -- 162
 width$ -- 0
-write$ -- 525
-(There were 5 warnings)
+write$ -- 511
+(There was 1 warning)

@@ -8,7 +8,7 @@
 %% 
 %% This is a generated file.
 %% 
-%% Copyright (C) 1994-2009 Erik Meijer and any individual authors listed
+%% Copyright (C) 1994-8888 Erik Meijer and any individual authors listed
 %% elsewhere in this file.
 %% 
 %% This file is part of the `apacite' package.
@@ -26,10 +26,12 @@
 %% 
 %% The `apacite' package consists of the files apacite.dtx and
 %% apacite.ins, and the following generated files:
-%% apacite.sty, apacite.bst, apacitex.bst, apa5ex.bib,
-%% apacite.drv, apacdoc.sty, apacann.bst,  apacannx.bst,
-%% english.apc, dutch.apc,   finnish.apc,  french.apc,  german.apc,
-%% ngerman.apc, greek.apc,   norsk.apc,   spanish.apc,  swedish.apc.
+%% apacite.sty, apacdoc.sty,  apacite.drv,
+%% apacite.bst, apacitex.bst, apacann.bst,  apacannx.bst,
+%% apa5ex.bib,  apacxmpl.tex,
+%% english.apc, dutch.apc,    finnish.apc,  french.apc,
+%% german.apc,  ngerman.apc,  greek.apc,    norsk.apc,
+%% spanish.apc, swedish.apc.
 %% 
 %% This work has the LPPL maintenance status `maintained'
 %% 
@@ -42,7 +44,7 @@
 %% 
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
 \ProvidesPackage{apacite}
-   [2009/03/01 v4.05 APA citation]
+   [2012/02/25 v6.01 APA citation]
 %%
 %% apacite.sty : citation and reference list according to APA manual
 %% Written by Erik Meijer
@@ -66,6 +68,67 @@
 \DeclareOption{BCAY}{% compatibility with old .bbl files
    \def\@year@\BCAY#1#2#3{#3}%
 }
+\newif\if@APAC@classic@cite
+\newif\if@APAC@natbib@emu
+\newif\if@APAC@natbib@apa
+\newif\if@APAC@classic@or@emu
+\newif\if@APAC@any@natbib
+\newif\if@APAC@anycitation
+\DeclareOption{apaciteclassic}{%
+  \@APAC@classic@citetrue
+  \@APAC@natbib@emufalse
+  \@APAC@natbib@apafalse
+  \@APAC@classic@or@emutrue
+  \@APAC@any@natbibfalse
+  \@APAC@anycitationtrue
+}
+\DeclareOption{natbibemu}{%
+  \@APAC@classic@citefalse
+  \@APAC@natbib@emutrue
+  \@APAC@natbib@apafalse
+  \@APAC@classic@or@emutrue
+  \@APAC@any@natbibtrue
+  \@APAC@anycitationtrue
+}
+\DeclareOption{natbibapa}{%
+  \@APAC@classic@citefalse
+  \@APAC@natbib@emufalse
+  \@APAC@natbib@apatrue
+  \@APAC@classic@or@emufalse
+  \@APAC@any@natbibtrue
+  \@APAC@anycitationtrue
+}
+\DeclareOption{nocitation}{%
+  \@APAC@classic@citefalse
+  \@APAC@natbib@emufalse
+  \@APAC@natbib@apafalse
+  \@APAC@classic@or@emufalse
+  \@APAC@any@natbibfalse
+  \@APAC@anycitationfalse
+}
+\newif\if@APAC@mask
+\DeclareOption{mask}{\@APAC@masktrue}
+\DeclareOption{unmask}{\@APAC@maskfalse}
+%% ^^A \cmd{\if} somehow gives an error
+\newif\if@numberedbib
+\DeclareOption{numberedbib}{\@numberedbibtrue}
+\DeclareOption{unnumberedbib}{\@numberedbibfalse}
+\DeclareOption{sectionbib}{%
+  \@ifundefined{@sectionbibtrue}{\newif\if@sectionbib}{}%
+  \@sectionbibtrue
+}
+\DeclareOption{nosectionbib}{%
+  \@ifundefined{@sectionbibfalse}{\newif\if@sectionbib}{}%
+  \@sectionbibfalse
+}
+\newif\if@tocbib
+\DeclareOption{tocbib}{\@tocbibtrue}
+\DeclareOption{notocbib}{\@tocbibfalse}
+\DeclareOption{bibnewpage}{\def\@bibnewpage{\bibnewpage}}
+\DeclareOption{nobibnewpage}{\let\@bibnewpage\relax}
+\newif\if@doi
+\DeclareOption{doi}{\@doitrue}
+\DeclareOption{nodoi}{\@doifalse}
 %% ^^A \cmd{\if} somehow gives an error
 \newif\if@APAC@index
 \DeclareOption{noindex}{\@APAC@indexfalse}%
@@ -99,23 +162,6 @@
   \AtEndOfPackage{\APACltxemindex}% EM's index environment without the index
                                  %% package (see below)
 }
-%% ^^A \cmd{\if} somehow gives an error
-\newif\if@numberedbib
-\DeclareOption{numberedbib}{\@numberedbibtrue}
-\DeclareOption{unnumberedbib}{\@numberedbibfalse}
-\DeclareOption{sectionbib}{%
-  \@ifundefined{@sectionbibtrue}{\newif\if@sectionbib}{}%
-  \@sectionbibtrue
-}
-\DeclareOption{nosectionbib}{%
-  \@ifundefined{@sectionbibfalse}{\newif\if@sectionbib}{}%
-  \@sectionbibfalse
-}
-\newif\if@tocbib
-\DeclareOption{tocbib}{\@tocbibtrue}
-\DeclareOption{notocbib}{\@tocbibfalse}
-\DeclareOption{bibnewpage}{\def\@bibnewpage{\bibnewpage}}
-\DeclareOption{nobibnewpage}{\let\@bibnewpage\relax}
 \DeclareOption{hyper}{%
   \PackageWarningNoLine{apacite}{Obsolete option `hyper' ignored}%
 }
@@ -128,12 +174,84 @@
 \DeclareOption{noaccentfix}{%
   \PackageWarningNoLine{apacite}{Obsolete option `noaccentfix' ignored}%
 }
-\ExecuteOptions{noindex,indexpackage,unnumberedbib,tocbib,%
-                nobibnewpage,suppresscorporate}
+\ExecuteOptions{apaciteclassic,noindex,indexpackage,unnumberedbib,tocbib,%
+                nobibnewpage,suppresscorporate,doi,unmask}
 \ProcessOptions
+\AtBeginDocument{%
+  \@ifundefined{citeauthoryear}{\def\citeauthoryear#1#2#3{}}{}%
+}
+\AtBeginDocument{%
+  \@ifundefined{themaskedRefs}{\newcounter{maskedRefs}}{}}
 \newif\if@F@cite\@F@citetrue
 \newif\if@A@cite\@A@citefalse
 \newif\if@Y@cite\@Y@citefalse
+\if@APAC@classic@or@emu
+\def\nocite#1{%
+  \@bsphack
+  \ifx\@onlypreamble\document
+    \@for\@citeb:=#1\do{%
+      \edef\@citeb{\expandafter\@firstofone\@citeb}%
+      \if@filesw
+        \immediate\write\@newciteauxhandle{\string\citation{\@citeb}}%
+      \fi
+      \@ifundefined{b@\@citeb\APAC@extra@b@citeb}{%
+        \edef\B@my@dummy{*}%
+        \ifx\@citeb\B@my@dummy
+        \else
+          \G@refundefinedtrue
+          \@latex@warning{Citation `\@citeb' undefined}%
+        \fi
+      }{}%
+    }%
+  \else
+     \AtBeginDocument{\nocite{#1}}%
+  \fi
+  \@esphack
+  \@restore@auxhandle
+}
+\global\def\B@my@dummy{*}%
+\def\@ifauthorsequalc@de#1{%
+  \if@F@cite
+     \@F@citefalse
+  \else
+     \if@Y@cite
+        {\@BBY}%
+     \fi
+  \fi
+  \if@Y@cite
+     \hyper@natlinkstart{#1}%
+     {\csname Y@\@citeb\APAC@extra@b@citeb\endcsname}%
+     \hyper@natlinkend
+  \fi
+}
+\def\@ifauthorsunequalc@de#1{%
+  \if@F@cite
+     \@F@citefalse
+  \else
+     \if@Y@cite
+        {\@BAY}%
+     \fi
+     {\@BBC}%
+  \fi
+  \edef\@cite@undefined{?}%
+  \def\BBA{\@BBA}%
+  \if@A@cite
+     \hyper@natlinkstart{#1}%
+     {\csname b@\@citeb\APAC@extra@b@citeb\endcsname}%
+     \hyper@natlinkend
+     \if@Y@cite
+        {\@BBAY}%
+     \fi
+  \fi
+  \if@Y@cite
+     \hyper@natlinkstart{#1}%
+     {\csname Y@\@citeb\APAC@extra@b@citeb\endcsname}%
+     \hyper@natlinkend
+  \fi
+  \let\BBA\relax
+}
+\fi
+\if@APAC@classic@cite
 \def\cite{%
     \def\BCAY##1##2##3{\BCA{##1}{##2}}% kept for compat. with prev. versions
     \def\citeauthoryear##1##2##3{\BCA{##1}{##2}}%
@@ -350,46 +468,6 @@
         {\@@cite<#1>}%
         {\@@cite<#1>[]}%
 }
-\def\@ifauthorsequalc@de#1{%
-  \if@F@cite%
-     \@F@citefalse%
-  \else%
-     \if@Y@cite%
-        {\@BBY}%
-     \fi%
-  \fi%
-  \if@Y@cite%
-     \hyper@natlinkstart{#1}%
-     {\csname Y@\@citeb\APAC@extra@b@citeb\endcsname}%
-     \hyper@natlinkend
-  \fi%
-}
-\def\@ifauthorsunequalc@de#1{%
-  \if@F@cite%
-     \@F@citefalse%
-  \else%
-     \if@Y@cite%
-        {\@BAY}%
-     \fi%
-     {\@BBC}%
-  \fi%
-  \edef\@cite@undefined{?}%
-  \def\BBA{\@BBA}%
-  \if@A@cite%
-     \hyper@natlinkstart{#1}%
-     {\csname b@\@citeb\APAC@extra@b@citeb\endcsname}%
-     \hyper@natlinkend
-     \if@Y@cite%
-        {\@BBAY}%
-     \fi%
-  \fi%
-  \if@Y@cite%
-     \hyper@natlinkstart{#1}%
-     {\csname Y@\@citeb\APAC@extra@b@citeb\endcsname}%
-     \hyper@natlinkend
-  \fi%
-  \let\BBA\relax%
-}
 \def\@@cite<#1>[#2]#3{%
     \nocite{#3}%
     \edef\@citeP{}%
@@ -436,44 +514,626 @@
     {\@BBCP}%
     \@F@citetrue %
 }
-\def\nocite#1{%
+\newcommand{\maskcitations}{%
+    \def\masknocite##1{}%
+    \def\maskcite{%
+        \@ifnextchar<%     % >
+            {\mask@cite}%
+            {\mask@cite<>}%
+    }%
+    \def\mask@cite<##1>{%
+        \@ifnextchar[%      % ]
+            {\mask@@cite<##1>}%
+            {\mask@@cite<##1>[]}%
+    }%
+    \def\mask@@cite<##1>[##2]##3{%
+        \relax
+        \setcounter{maskedRefs}{0}%
+        \@for\@citeb:=##3\do{%
+            \addtocounter{maskedRefs}{1}%
+        }%
+        \ifnum\value{maskedRefs} = 1%
+            \onemaskedcitationmsg{\themaskedRefs}%
+        \else
+            \maskedcitationsmsg{\themaskedRefs}%
+        \fi
+    }%
+    \let\maskfullcite\maskcite
+    \let\maskshortcite\maskcite
+    \let\maskciteNP\maskcite
+    \let\maskfullciteNP\maskciteNP
+    \let\maskshortciteNP\maskciteNP
+    \let\maskciteA\maskcite
+    \let\maskfullciteA\maskciteA
+    \let\maskshortciteA\maskciteA
+    \let\maskciteauthor\maskcite
+    \let\maskfullciteauthor\maskciteauthor
+    \let\maskshortciteauthor\maskciteauthor
+    \let\maskciteauthorNP\maskciteauthor
+    \let\maskfullciteauthorNP\maskciteauthorNP
+    \let\maskshortciteauthorNP\maskciteauthorNP
+    \let\maskciteyear\maskcite
+    \let\maskciteyearNP\maskciteyear
+    \DeclareRobustCommand{\masktext}[2][]{##1}%
+}
+\newcommand{\unmaskcitations}{%
+    \let\masknocite\nocite
+    \let\maskcite\cite
+    \let\maskfullcite\fullcite
+    \let\maskshortcite\shortcite
+    \let\maskciteNP\citeNP
+    \let\maskfullciteNP\fullciteNP
+    \let\maskshortciteNP\shortciteNP
+    \let\maskciteA\citeA
+    \let\maskfullciteA\fullciteA
+    \let\maskshortciteA\shortciteA
+    \let\maskciteauthor\citeauthor
+    \let\maskfullciteauthor\fullciteauthor
+    \let\maskshortciteauthor\shortciteauthor
+    \let\maskciteauthorNP\citeauthorNP
+    \let\maskfullciteauthorNP\fullciteauthorNP
+    \let\maskshortciteauthorNP\shortciteauthorNP
+    \let\maskciteyear\citeyear
+    \let\maskciteyearNP\citeyearNP
+    \DeclareRobustCommand{\masktext}[2][]{##2}
+}
+\fi
+\newif\if@APAC@alias@cite
+\@APAC@alias@citefalse
+\if@APAC@natbib@emu
+\DeclareRobustCommand\citep{%
+    \@ifstar{% full cite
+        \def\BCAY##1##2##3{\BCA{##1}{##1}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##1}}%
+    }{% else
+        \def\BCAY##1##2##3{\BCA{##1}{##2}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##2}}%
+    }%
+    \def\@BBOP{\BBOP}% % open parenthesis
+    \def\@BBCP{\BBCP}% % close parenthesis
+    \@ifnextchar[%     % ]
+        {\APACNAT@citep}%
+        {\APACNAT@citep[]}%
+}
+\DeclareRobustCommand\shortcitep{%
+    \def\BCAY##1##2##3{\BCA{##2}{##2}}% kept for compat. with prev. versions
+    \def\citeauthoryear##1##2##3{\BCA{##2}{##2}}%
+    \def\@BBOP{\BBOP}% % open parenthesis
+    \def\@BBCP{\BBCP}% % close parenthesis
+    \@ifnextchar[%     % ]
+        {\APACNAT@citep}%
+        {\APACNAT@citep[]}%
+}
+\DeclareRobustCommand\citealp{%
+    \@ifstar{% full cite
+        \def\BCAY##1##2##3{\BCA{##1}{##1}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##1}}%
+    }{% else
+        \def\BCAY##1##2##3{\BCA{##1}{##2}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##2}}%
+    }%
+    \def\@BBOP{}% % open parenthesis
+    \def\@BBCP{}% % close parenthesis
+    \@ifnextchar[%% ]
+        {\APACNAT@citep}%
+        {\APACNAT@citep[]}%
+}
+\DeclareRobustCommand\shortcitealp{%
+    \def\BCAY##1##2##3{\BCA{##2}{##2}}% kept for compat. with prev. versions
+    \def\citeauthoryear##1##2##3{\BCA{##2}{##2}}%
+    \def\@BBOP{}% % open parenthesis
+    \def\@BBCP{}% % close parenthesis
+    \@ifnextchar[%% ]
+        {\APACNAT@citep}%
+        {\APACNAT@citep[]}%
+}
+\newcommand\APACNAT@citep{}
+\def\APACNAT@citep[#1]{%
+    \def\@BAP{\BAP}%   % after precitation [=#1] before first citation
+    \def\@BBA{\BBAA}%  % `and' between authors
+    \def\@BBAY{\BBAY}% % between author and year
+    \def\@BAY{}%       % after year
+    \def\@BBY{\BBYY}%  % between years of multiple citations with same author
+    \def\@BBC{\BBC}%   % between cites
+    \def\@BBN{\BBN}%   % after last citation before note/postcitation [=#2]
+    \def\@BAstyle{\BAstyle}% text style of authors
+    \@A@citetrue%       % cite authors
+    \@Y@citetrue%       % cite years
+    \@ifnextchar[%      % ]
+        {\@citex[#1]}%
+        {\@citex[][#1]}%
+}
+\DeclareRobustCommand\citet{%
+    \@ifstar{%
+        \def\BCAY##1##2##3{\BCA{##1}{##1}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##1}}%
+    }{% else
+        \def\BCAY##1##2##3{\BCA{##1}{##2}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##2}}%
+    }%
+    \def\@BBAY{ \BBOP}%% between author and year
+    \@ifnextchar[%          %]
+        {\APACNAT@citet}%
+        {\APACNAT@citet[]}%
+}
+\DeclareRobustCommand\shortcitet{%
+    \def\BCAY##1##2##3{\BCA{##2}{##2}}% kept for compat. with prev. versions
+    \def\citeauthoryear##1##2##3{\BCA{##2}{##2}}%
+    \def\@BBAY{ \BBOP}%% between author and year
+    \@ifnextchar[%          %]
+        {\APACNAT@citet}%
+        {\APACNAT@citet[]}%
+}
+\DeclareRobustCommand\citealt{%
+    \@ifstar{% full cite
+        \def\BCAY##1##2##3{\BCA{##1}{##1}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##1}}%
+    }{% else
+        \def\BCAY##1##2##3{\BCA{##1}{##2}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##2}}%
+    }%
+    \def\@BBOP{}% % open parenthesis
+    \def\@BBCP{}% % close parenthesis
+    \def\@BBAY{ }%% between author and year
+    \@ifnextchar[%% ]
+        {\APACNAT@citet}%
+        {\APACNAT@citet[]}%
+}
+\DeclareRobustCommand\shortcitealt{%
+    \def\BCAY##1##2##3{\BCA{##2}{##2}}% kept for compat. with prev. versions
+    \def\citeauthoryear##1##2##3{\BCA{##2}{##2}}%
+    \def\@BBOP{}% % open parenthesis
+    \def\@BBCP{}% % close parenthesis
+    \def\@BBAY{ }%% between author and year
+    \@ifnextchar[%% ]
+        {\APACNAT@citet}%
+        {\APACNAT@citet[]}%
+}
+\newcommand\APACNAT@citet{}
+\def\APACNAT@citet[#1]{%
+    \def\@BBOP{}%       % open parenthesis.
+    \def\@BAP{\BAP}%    % after precitation [=#1] before first citation
+    \def\@BBA{\BBAB}%   % `and' between authors
+%%   \def\@BBAY{ \BBOP}%% between author and year
+    \def\@BAY{\BBCP}%   % after year
+    \def\@BBY{\BBYY}%   % between years of multiple citations with same author
+    \def\@BBC{\BBC}%    % between cites
+    \def\@BBN{\BBN}%    % after last citation before note/postcitation [=#2]
+    \def\@BBCP{}%       % close parenthesis
+    \def\@BAstyle{\BAstyle}% text style of authors
+    \@A@citetrue%       % cite authors
+    \@Y@citetrue%       % cite years
+    \@ifnextchar[%      % ]
+        {\@citex[#1]}%
+        {\@citex[][#1]}%
+}
+\DeclareRobustCommand\citeauthort{%
+    \@ifstar{%
+        \def\BCAY##1##2##3{\BCA{##1}{##1}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##1}}%
+    }{% else
+        \def\BCAY##1##2##3{\BCA{##1}{##2}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##2}}%
+    }%
+    \@ifnextchar[%    %]
+        {\APACNAT@citeauthort}%
+        {\APACNAT@citeauthort[]}%
+}
+\DeclareRobustCommand\shortciteauthort{%
+    \def\BCAY##1##2##3{\BCA{##2}{##2}}% kept for compat. with prev. versions
+    \def\citeauthoryear##1##2##3{\BCA{##2}{##2}}%
+    \@ifnextchar[%    %]
+        {\APACNAT@citeauthort}%
+        {\APACNAT@citeauthort[]}%
+}
+\DeclareRobustCommand\citeauthorp{%
+    \@ifstar{%
+        \def\BCAY##1##2##3{\BCA{##1}{##1}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##1}}%
+    }{% else
+        \def\BCAY##1##2##3{\BCA{##1}{##2}}% kept for compat. with prev. versions
+        \def\citeauthoryear##1##2##3{\BCA{##1}{##2}}%
+    }%
+    \@ifnextchar[%    %]
+        {\APACNAT@citeauthorp}%
+        {\APACNAT@citeauthorp[]}%
+}
+\DeclareRobustCommand\shortciteauthorp{%
+    \def\BCAY##1##2##3{\BCA{##2}{##2}}% kept for compat. with prev. versions
+    \def\citeauthoryear##1##2##3{\BCA{##2}{##2}}%
+    \@ifnextchar[%    %]
+        {\APACNAT@citeauthorp}%
+        {\APACNAT@citeauthorp[]}%
+}
+\DeclareRobustCommand\citeauthor{\citeauthort}
+\DeclareRobustCommand\citefullauthor{\citeauthort*}
+\DeclareRobustCommand\shortciteauthor{\shortciteauthort}
+\newcommand\APACNAT@citeauthort{}
+\def\APACNAT@citeauthort[#1]{%
+    \def\@BBOP{}%      % open parenthesis
+    \def\@BAP{\BAP}%   % after precitation [=#1] before first citation
+    \def\@BBA{\BBAB}%  % `and' between authors
+    \def\@BBAY{}%      % between author and year
+    \def\@BAY{}%       % after year
+    \def\@BBY{}%       % between years of multiple citations with same author
+    \def\@BBC{\BBC}%   % between cites
+    \def\@BBN{\BBN}%   % after last citation before note/postcitation [=#2]
+    \def\@BBCP{}%      % close parenthesis
+    \def\@BAstyle{\BAastyle}% text style of authors
+    \@A@citetrue%      % cite authors
+    \@Y@citefalse%     % do not cite years
+    \@ifnextchar[%     % ]
+        {\@citex[#1]}%
+        {\@citex[][#1]}%
+}
+\newcommand\APACNAT@citeauthorp{}
+\def\APACNAT@citep[#1]{%
+    \def\@BBOP{}%      % open parenthesis
+    \def\@BAP{\BAP}%   % after precitation [=#1] before first citation
+    \def\@BBA{\BBAA}%  % `and' between authors
+    \def\@BBAY{}%      % between author and year
+    \def\@BAY{}%       % after year
+    \def\@BBY{}%       % between years of multiple citations with same author
+    \def\@BBC{\BBC}%   % between cites
+    \def\@BBN{\BBN}%   % after last citation before note/postcitation [=#2]
+    \def\@BBCP{}%      % close parenthesis
+    \def\@BAstyle{\BAastyle}% text style of authors
+    \@A@citetrue%      % cite authors
+    \@Y@citefalse%     % do not cite years
+    \@ifnextchar[%     % ]
+        {\@citex[#1]}%
+        {\@citex[][#1]}%
+}
+\DeclareRobustCommand\citeyearpar{%
+    \def\BCAY##1##2##3{\BCA{##1}{##2}}% kept for compat. with prev. versions
+    \def\citeauthoryear##1##2##3{\BCA{##1}{##2}}%
+    \def\@BBOP{\BBOP}% % open parenthesis
+    \def\@BBCP{\BBCP}% % close parenthesis
+    \@ifnextchar[%     % ]
+        {\APACNAT@citeyear}%
+        {\APACNAT@citeyear[]}%
+}
+\DeclareRobustCommand\citeyear{%
+    \def\BCAY##1##2##3{\BCA{##1}{##2}}% kept for compat. with prev. versions
+    \def\citeauthoryear##1##2##3{\BCA{##1}{##2}}%
+    \def\@BBOP{}%   % open parenthesis
+    \def\@BBCP{}%   % close parenthesis
+    \@ifnextchar[%  % ]
+        {\APACNAT@citeyear}%
+        {\APACNAT@citeyear[]}%
+}
+\newcommand\APACNAT@citeyear{}
+\def\APACNAT@citeyear[#1]{%
+    \def\@BAP{\BAP}%   % after precitation [=#1] before first citation
+    \def\@BBA{}%       % `and' between authors
+    \def\@BBAY{}%      % between author and year
+    \def\@BAY{}%       % after year
+    \def\@BBY{\BBYY}%  % between years of multiple citations with same author
+    \def\@BBC{\BBC}%   % between cites
+    \def\@BBN{\BBN}%   % after last citation before note/postcitation [=#2]
+    \def\@BAstyle{}%   % text style of authors
+    \@A@citefalse%     % do not cite authors
+    \@Y@citetrue%      % cite years
+    \@ifnextchar[%     % ]
+        {\@citex[#1]}%
+        {\@citex[][#1]}%
+}
+\newcommand\APACNAT@citex{}
+\def\APACNAT@citex[#1][#2]#3{%
+    \nocite{#3}%
+    \edef\@citeP{}%
+    \mbox{\@BBOP}%
+    \ifx\@empty#1\@empty
+    \else%
+      {\ignorespaces #1\@BAP}%
+    \fi%
+    \@for\@citeb:=#3\do{%
+        \edef\@citeb{\expandafter\@firstofone\@citeb}%
+        \back@cite{\@citeb}%
+        \if@APAC@alias@cite
+          \@ifundefined{al@\@citeb\APAC@extra@b@citeb}%
+            {\PackageWarning{apacite}{Undefined alias for citation \@citeb}
+             \expandafter\def\csname al@\@citeb\APAC@extra@b@citeb\endcsname{?}%
+            }{}%
+          \@Y@citefalse  % do not cite years
+          \def\BCA##1##2{{\@BAstyle \csname
+            al@\@citeb\APAC@extra@b@citeb\endcsname}}%
+          \@ifauthorsunequalc@de{\@citeb\APAC@extra@b@citeb}%
+        \else
+          \@ifundefined{b@\@citeb\APAC@extra@b@citeb}%
+            {\expandafter\def\csname b@\@citeb\APAC@extra@b@citeb\endcsname{?}%
+             \expandafter\def\csname Y@\@citeb\APAC@extra@b@citeb\endcsname{?}%
+            }%
+            {\@ifundefined{flag@\@citeb\APAC@extra@b@citeb}%
+               {\global\expandafter
+                \def\csname flag@\@citeb\APAC@extra@b@citeb\endcsname{DUMMY}%
+                \def\BCA##1##2{{\@BAstyle ##1}}%
+               }%
+               {\def\BCA##1##2{{\@BAstyle ##2}}%
+               }%
+            }%
+          \protected@edef\B@my@dummy{\csname
+            b@\@citeb\APAC@extra@b@citeb\endcsname}%
+          \ifx\@citeP\B@my@dummy
+              \@ifauthorsequalc@de{\@citeb\APAC@extra@b@citeb}%
+          \else
+              \@ifauthorsunequalc@de{\@citeb\APAC@extra@b@citeb}%
+          \fi
+          \protected@edef\@citeP{\csname
+            b@\@citeb\APAC@extra@b@citeb\endcsname}%
+          \let\BCA\relax
+        \fi
+    }%
+    \ifx\@empty#2\@empty
+    \else%
+      {\@BBN #2}%
+    \fi%
+    \if@Y@cite%
+       {\@BAY}%
+    \fi%
+    {\@BBCP}%
+    \@F@citetrue %
+}
+\newcommand\citetext[1]{\mbox{}\BBOP{}#1\BBCP}
+\let\@citex\APACNAT@citex
+\DeclareRobustCommand\cite{%
+  \@ifstar{%
+    \@ifnextchar[%    %]
+        {\citep*}%
+        {\citet*}%
+  }{%
+    \@ifnextchar[%    %]
+        {\citep}%
+        {\citet}%
+  }%
+}
+\DeclareRobustCommand\Citet{\citet}
+\DeclareRobustCommand\Citep{\citep}
+\DeclareRobustCommand\Citealt{\citealt}
+\DeclareRobustCommand\Citealp{\citealp}
+\DeclareRobustCommand\Citeauthort{\citeauthort}
+\DeclareRobustCommand\Citeauthorp{\citeauthorp}
+\DeclareRobustCommand\Citeauthor{\citeauthor}
+\DeclareRobustCommand\Citefullauthor{\citefullauthor}
+\DeclareRobustCommand\Cite{\cite}
+\DeclareRobustCommand\shortCitet{\shortcitet}
+\DeclareRobustCommand\shortCitep{\shortcitep}
+\DeclareRobustCommand\shortCitealt{\shortcitealt}
+\DeclareRobustCommand\shortCitealp{\shortcitealp}
+\DeclareRobustCommand\shortCiteauthort{\shortciteauthort}
+\DeclareRobustCommand\shortCiteauthorp{\shortciteauthorp}
+\DeclareRobustCommand\shortCiteauthor{\shortciteauthor}
+\newcommand\shortcites[1]{%
   \@bsphack
-  \ifx\@onlypreamble\document
     \@for\@citeb:=#1\do{%
       \edef\@citeb{\expandafter\@firstofone\@citeb}%
-      \if@filesw
-        \immediate\write\@newciteauxhandle{\string\citation{\@citeb}}%
-      \fi
-      \@ifundefined{b@\@citeb\APAC@extra@b@citeb}{%
-        \edef\B@my@dummy{*}%
-        \ifx\@citeb\B@my@dummy
-        \else
-          \G@refundefinedtrue
-          \@latex@warning{Citation `\@citeb' undefined}%
-        \fi
-      }{}%
+      \global\expandafter
+         \def\csname flag@\@citeb\APAC@extra@b@citeb\endcsname{DUMMY}%
     }%
-  \else
-     \AtBeginDocument{\nocite{#1}}%
-  \fi
   \@esphack
-  \@restore@auxhandle
+}
+\newcommand\defcitealias[2]{%
+   \@ifundefined{al@#1\APAC@extra@b@citeb}{}
+   {\PackageWarning{apacite}{Overwriting existing alias for citation #1}}
+   \@namedef{al@#1\APAC@extra@b@citeb}{#2}}
+\DeclareRobustCommand\citetalias{%
+  \@APAC@alias@citetrue
+  \citet
+}
+\DeclareRobustCommand\citepalias{%
+  \@APAC@alias@citetrue
+  \citep
+}
+\newif\ifciteindex \citeindexfalse
+\newcommand\citeindextype{default}
+\let\citenumfont=\@empty
+\newcommand\bibpunct[7][, ]%
+  {\gdef\BBOP{#2}\gdef\BBCP{#3}\gdef\BBC{#4}%
+   \gdef\BBAY{#6}\gdef\BBYY{#7}\gdef\BBN{#1}%
+  }
+\newcommand\bibstyle@apacite{%
+    \bibpunct[, ]{(}{)}{; }{a}{, }{, }%
+    \setlength{\bibhang}{2.5em}%
+    \setlength{\bibsep}{0pt}%
+}
+\let\bibstyle@apa=\bibstyle@apacite
+\newcommand\citestyle[1]{\csname bibstyle@#1\endcsname}
+\newcommand\setcitestyle[1]{%
+ \@for\@tempa:=#1\do
+ {\def\@tempb{round}\ifx\@tempa\@tempb
+    \renewcommand\BBOP{(}\renewcommand\BBCP{)}\fi
+  \def\@tempb{square}\ifx\@tempa\@tempb
+    \renewcommand\BBOP{[}\renewcommand\BBCP{]}\fi
+  \def\@tempb{angle}\ifx\@tempa\@tempb
+    \renewcommand\BBOP{$<$}\renewcommand\BBCP{$>$}\fi
+  \def\@tempb{curly}\ifx\@tempa\@tempb
+    \renewcommand\BBOP{\{}\renewcommand\BBCP{\}}\fi
+  \def\@tempb{semicolon}\ifx\@tempa\@tempb
+    \renewcommand\BBC{; }\fi
+  \def\@tempb{colon}\ifx\@tempa\@tempb
+    \renewcommand\BBC{: }\fi
+  \def\@tempb{comma}\ifx\@tempa\@tempb
+    \renewcommand\BBC{, }\fi
+  \def\@tempb{authoryear}\ifx\@tempa\@tempb
+    \fi
+  \def\@tempb{numbers}\ifx\@tempa\@tempb
+    \fi
+  \def\@tempb{super}\ifx\@tempa\@tempb
+    \fi
+  \expandafter\APAC@find@eq\@tempa=\relax\@nil
+  \if\@tempc\relax\else
+    \expandafter\APAC@rem@eq\@tempc
+    \def\@tempb{open}\ifx\@tempa\@tempb
+     \xdef\BBOP{\@tempc}\fi
+    \def\@tempb{close}\ifx\@tempa\@tempb
+     \xdef\BBCP{\@tempc}\fi
+    \def\@tempb{aysep}\ifx\@tempa\@tempb
+     \xdef\BBAY{\@tempc}\fi
+    \def\@tempb{yysep}\ifx\@tempa\@tempb
+     \xdef\BBYY{\@tempc}\fi
+    \def\@tempb{notesep}\ifx\@tempa\@tempb
+     \xdef\BBN{\@tempc}\fi
+    \def\@tempb{citesep}\ifx\@tempa\@tempb
+     \xdef\BBC{\@tempc}\fi
+  \fi
+ }%
+}
+\def\APAC@find@eq#1=#2\@nil{\def\@tempa{#1}\def\@tempc{#2}}
+\def\APAC@rem@eq#1={\def\@tempc{#1}}
+\fi
+\newcommand{\BBA@nat}{%
+  \ifNAT@swa
+    \BBAA
+  \else
+    \BBAB
+  \fi
+}
+\if@APAC@natbib@apa
+\AtEndOfPackage{%
+\RequirePackage[longnamesfirst,sort]{natbib}
+\renewcommand\NAT@parse@date{}
+\def\NAT@parse@date#1#2#3#4#5#6@@{%
+    \def\NAT@year{#1#2}\def\NAT@exlab{{#3}}}
+\DeclareRobustCommand{\BBA}{\BBA@nat}
+\let\orig@nat@@lbibitem\@lbibitem
+\def\@lbibitem{\NAT@swatrue\orig@nat@@lbibitem}
+\renewcommand\citetext[1]{\NAT@open\begingroup\NAT@swatrue
+  #1\endgroup\NAT@close}
+\DeclareRobustCommand\citeauthort{\citeauthor}
+\DeclareRobustCommand\Citeauthort{\Citeauthor}
+\DeclareRobustCommand\citeauthorp
+   {\begingroup\NAT@swatrue\let\NAT@ctype\@ne\NAT@parfalse
+    \@ifstar{\NAT@fulltrue\NAT@citetp}{\NAT@fullfalse\NAT@citetp}}
+\DeclareRobustCommand\Citeauthorp
+   {\begingroup\NAT@swatrue\let\NAT@ctype\@ne\NAT@parfalse
+     \let\NAT@up\NAT@Up
+    \@ifstar{\NAT@fulltrue\NAT@citetp}{\NAT@fullfalse\NAT@citetp}}
+\DeclareRobustCommand{\Citefullauthor}{\Citeauthor*}
+\DeclareRobustCommand{\citefullauthort}{\citeauthort*}
+\DeclareRobustCommand{\citefullauthorp}{\citeauthorp*}
+\DeclareRobustCommand{\Citefullauthort}{\Citeauthort*}
+\DeclareRobustCommand{\Citefullauthorp}{\Citeauthorp*}
+\providecommand\bibstyle@apacite{%
+    \renewcommand{\BBAY}{,\ignorespaces }%
+    \bibpunct[\BBN ]{\BBOP }{\BBCP }{\BBC }{a}{\BBAY }{\BBYY }%
+    \setlength{\bibhang}{2.5em}%
+    \setlength{\bibsep}{0pt}%
+}
+\providecommand\bibstyle@apa{\bibstyle@apacite}
+\citestyle{apacite}
+}% end \cmd{\AtEndOfPackage}
+\fi
+\if@APAC@any@natbib
+\newcommand{\maskcitations}{%
+    \def\masknocite##1{}%
+    \DeclareRobustCommand\maskcite{%
+        \@ifnextchar[%     % ]
+            {\mask@cite}%
+            {\mask@cite[]}%
+    }%
+    \def\mask@cite[##1]{%
+        \@ifnextchar[%      % ]
+            {\mask@@cite[##1]}%
+            {\mask@@cite[##1][]}%
+    }%
+    \def\mask@@cite[##1][##2]##3{%
+        \relax
+        \setcounter{maskedRefs}{0}%
+        \@for\@citeb:=##3\do{%
+            \addtocounter{maskedRefs}{1}%
+        }%
+        \ifnum\value{maskedRefs} = 1%
+            \onemaskedcitationmsg{\themaskedRefs}%
+        \else
+            \maskedcitationsmsg{\themaskedRefs}%
+        \fi
+    }%
+    \let\maskcitep\maskcite
+    \let\maskcitealp\maskcite
+    \let\maskcitet\maskcite
+    \let\maskcitealt\maskcite
+    \let\maskciteauthor\maskcite
+    \let\maskcitefullauthor\maskcite
+    \let\maskciteyearpar\maskcite
+    \let\maskciteyear\maskcite
+    \let\maskcitetalias\maskcite
+    \let\maskcitepalias\maskcite
+    \let\maskCitet\maskcite
+    \let\maskCitep\maskcite
+    \let\maskCitealt\maskcite
+    \let\maskCitealp\maskcite
+    \let\maskCiteauthor\maskcite
+    \let\maskcitenum\maskcite
+    \let\maskciteauthort\maskcite
+    \let\maskciteauthorp\maskcite
+    \let\maskCitefullauthor\maskcite
+    \let\maskCiteauthort\maskcite
+    \let\maskCiteauthorp\maskcite
+    \DeclareRobustCommand{\masktext}[2][]{##1}%
+}
+\newcommand{\unmaskcitations}{%
+    \let\masknocite\nocite
+    \let\maskcitep\citep
+    \let\maskcitealp\citealp
+    \let\maskcitet\citet
+    \let\maskcitealt\citealt
+    \let\maskciteauthor\citeauthor
+    \let\maskcitefullauthor\citefullauthor
+    \let\maskciteyearpar\citeyearpar
+    \let\maskciteyear\citeyear
+    \let\maskcite\cite
+    \let\maskcitetalias\citetalias
+    \let\maskcitepalias\citepalias
+    \let\maskCitet\Citet
+    \let\maskCitep\Citep
+    \let\maskCitealt\Citealt
+    \let\maskCitealp\Citealp
+    \let\maskCiteauthor\Citeauthor
+    \let\maskcitenum\citenum
+    \let\maskciteauthort\citeauthort
+    \let\maskciteauthorp\citeauthorp
+    \let\maskCitefullauthor\Citefullauthor
+    \let\maskCiteauthort\Citeauthort
+    \let\maskCiteauthorp\Citeauthorp
+    \DeclareRobustCommand{\masktext}[2][]{##2}
+}
+\fi
+\if@APAC@anycitation
+    \AtEndOfPackage{%
+        \if@APAC@mask
+            \maskcitations
+        \else
+            \unmaskcitations
+        \fi
+    }%
+\fi
+\def\definemetaflag#1{%
+  \@bsphack
+  \expandafter\global\expandafter\def
+    \csname APAC@metaprenote@\APAC@extra@b@citeb\endcsname{%
+      \APACmetaprenote}%
+  \@for\@citeb:=#1\do{%
+    \edef\@citeb{\expandafter\@firstofone\@citeb}%
+    \@ifundefined{flagmeta@\@citeb\APAC@extra@b@citeb}%
+      {\global\expandafter
+       \def\csname flagmeta@\@citeb\APAC@extra@b@citeb\endcsname{DUMMY}%
+      }%
+      {}%
+  }%
+  \@esphack
 }
 \def\nocitemeta#1{%
     \nocite{#1}%
-    \@bsphack%
-    \expandafter\global\expandafter\def
-      \csname APAC@metaprenote@\APAC@extra@b@citeb\endcsname{%
-        \APACmetaprenote}%
-    \@for\@citeb:=#1\do{%
-       \edef\@citeb{\expandafter\@firstofone\@citeb}%
-       \@ifundefined{flagmeta@\@citeb\APAC@extra@b@citeb}%
-         {\global\expandafter
-          \def\csname flagmeta@\@citeb\APAC@extra@b@citeb\endcsname{DUMMY}%
-         }%
-         {}%
+    \@bsphack
+    \if@filesw
+      \@for\@citeb:=#1\do{%
+        \edef\@citeb{\expandafter\@firstofone\@citeb}%
+        \immediate\write
+          \@newciteauxhandle{\string\definemetaflag{\@citeb}}%
     }%
-    \@esphack%
+    \fi
+    \@esphack
+    \@restore@auxhandle
 }
 \def\bibnewpage{\clearpage}%
 \def\@biblabel#1{}
@@ -544,15 +1204,15 @@
         \fi
        }%
     }%
-  \bibliographytypesize% e.g., to put the bibliography in \small type
-  \bibliographyprenote%  some explanatory note before the references
+  \bibliographytypesize % e.g., to put the bibliography in \small type
+  \bibliographyprenote  % some explanatory note before the references
   \@ifundefined{APAC@metaprenote@\APAC@extra@b@citeb}%
     {}% skip
     {\csname APAC@metaprenote@\APAC@extra@b@citeb\endcsname}%
-  \list{\relax}{\labelsep=0em%
-                \parsep=\bibparsep%
-                \itemsep=\bibitemsep%
-                \leftmargin=\bibleftmargin%
+  \list{\relax}{\labelsep=\biblabelsep
+                \parsep=\bibparsep
+                \itemsep=\bibitemsep
+                \leftmargin=\bibleftmargin
                 \itemindent=\bibindent}% changed to cope with 4th ed.
    \def\newblock{\hskip .11em plus .33em minus .07em}%
    \sloppy\clubpenalty4000\widowpenalty4000
@@ -589,6 +1249,9 @@
       {{\APACmetastar}}%
   }%
 }
+\newenvironment{APACrefauthors}{%
+  \begingroup \APACrefauthstyle
+}{\endgroup }
 \newcommand{\APACrefYear}[1]{%
   {\BBOP}{#1}{\BBCP}%
 }
@@ -637,11 +1300,19 @@
 \let\APAChowpublished\relax
 \newenvironment{APACrefURL}[1][]{%
   \ifx\@empty#1\@empty
-    \BAvailFrom    % Available from
+    \BRetrievedFrom % Retrieved from
   \else
-    \BRetrieved{#1}% Retrieved <date>, from
+    \BRetrieved{#1}%  Retrieved <date>, from
   \fi
 }{}
+\newenvironment{APACrefDOI}{%
+  \global\let\old@doi\doi
+  \if@doi
+    \doiprefix
+  \else
+    \global\let\doi\@gobble
+  \fi
+  }{\global\let\doi\old@doi }
 \newenvironment{APACrefURLmsg}{%
   \BMsgPostedTo
 }{}
@@ -762,6 +1433,7 @@
 }{\end{quotation}}
 \newcommand{\BAstyle}{}%
 \newcommand{\BAastyle}{}%
+\newcommand{\APACrefauthstyle}{}%
 \newcommand{\APACciteatitle}[1]{``#1''}
 \newcommand{\APACcitebtitle}[1]{{\em #1\/}}
 \newcommand{\APACyear}[1]{{#1}}%
@@ -777,10 +1449,12 @@
 \newskip{\bibindent}
 \newskip{\bibparsep}
 \newskip{\bibitemsep}
-\bibleftmargin=2.5em
-\bibindent=-\bibleftmargin
-\bibparsep=0pt%
-\bibitemsep\z@ \@plus .3\p@\relax
+\newskip{\biblabelsep}
+\setlength{\bibleftmargin}{2.5em}
+\setlength{\bibindent}{-\bibleftmargin}
+\setlength{\bibparsep}{0pt}
+\setlength{\bibitemsep}{0pt plus .3pt}
+\setlength{\biblabelsep}{0pt}
 \let\bibcorporate\relax
 \newcommand{\BBA}{\BBAA}% `\&'
 \let\Bem\emph
@@ -1076,16 +1750,31 @@
     \def\url#1{\texttt{#1}}%
   }{}%
 }
+\AtBeginDocument{%
+  \expandafter\ifx\csname urlstyle\endcsname\relax
+    \providecommand{\doi}[1]{#1}\else
+    \providecommand{\doi}{\begingroup \urlstyle{APACsame}\Url}\fi
+}
+\@ifundefined{doiprefix}{%
+  \newcommand{\doiprefix}{doi:\penalty0{}}%
+}{}%
 \@ifundefined{bbl@cite@choice}{}{%
   \g@addto@macro\bbl@cite@choice{%
     \let\bibcite\APACbibcite
   }%
 }
+\if@APAC@natbib@apa
+\else
 \AtBeginDocument{%
   \@ifpackageloaded{natbib}{%
     \def\NAT@parse@date#1#2#3#4#5#6@@{%
       \def\NAT@year{{#1}}\def\NAT@exlab{{#2}}%
     }%
+  }{}%
+}
+\fi
+\AtBeginDocument{%
+  \@ifpackageloaded{natbib}{%
     \let\@oldbibpreamble\bibpreamble
     \def\bibpreamble{%
       \@oldbibpreamble%
@@ -1274,17 +1963,46 @@
 \AtBeginDocument{%
   \@ifundefined{newcites}{\global\let\@restore@auxhandle\relax}{}%
 }
+\if@APAC@classic@cite
 \def\@mb@citenamelist{%
   cite,fullcite,shortcite,citeNP,fullciteNP,shortciteNP,%
   citeA,fullciteA,shortciteA,citeauthor,fullciteauthor,shortciteauthor,%
   citeauthorNP,fullciteauthorNP,shortciteauthorNP,%
-  citeyear,citeyearNP,nocite,nocitemeta%
-}%
-\AtBeginDocument{%
-  \@ifpackageloaded{splitbib}{%
-    \def\citeauthoryear{\string\citeauthoryear}%
-  }{}%
+  citeyear,citeyearNP,nocite,nocitemeta,%
+  maskcite,maskfullcite,maskshortcite,maskciteNP,maskfullciteNP,%
+  maskshortciteNP,maskciteA,maskfullciteA,maskshortciteA,%
+  maskciteauthor,maskfullciteauthor,maskshortciteauthor,%
+  maskciteauthorNP,maskfullciteauthorNP,maskshortciteauthorNP,%
+  maskciteauthorA,maskfullciteauthorA,maskshortciteauthorA,%
+  maskciteyear,maskciteyearNP,masknocite%
 }
+\fi
+\if@APAC@natbib@apa
+\AtEndOfPackage{%
+\@ifundefined{@mb@citenamelist}{%
+  \def\@mb@citenamelist{%
+    nocite,citep,citealp,citet,citealt,citeauthor,citefullauthor,%
+    citeyearpar,citeyear,citetext,cite,shortcites,citetalias,%
+    citepalias,Citet,Citep,Citealt,Citealp,Citeauthor,citenum}%
+}{}
+\let\orig@mb@citenamelist\@mb@citenamelist
+\edef\@mb@citenamelist{%
+  \orig@mb@citenamelist,%
+  citeauthort,citeauthorp,citefullauthort,citefullauthorp,Citeauthort,%
+  Citeauthorp,Citefullauthort,Citefullauthorp,%
+  masknocite,maskcitep,maskcitealp,maskcitet,maskcitealt,%
+  maskciteauthor,maskcitefullauthor,maskciteyearpar,maskciteyear,%
+  maskcite,maskcitetalias,maskcitepalias,maskCitet,maskCitep,%
+  maskCitealt,maskCitealp,maskCiteauthor,maskcitenum,maskciteauthort,%
+  maskciteauthorp,maskCitefullauthor,maskCiteauthort,maskCiteauthorp,%
+  nocitemeta%
+}
+}
+\fi
+\newcommand{\onemaskedcitationmsg}[1]{%
+    \emph{(#1\ citation removed for masked review)}}
+\newcommand{\maskedcitationsmsg}[1]{%
+    \emph{(#1\ citations removed for masked review)}}
 \def\refname{References}% Name of ref. list if it's a section.
 \def\bibname{References}% Name of ref. list if it's a chapter.
 \newcommand{\authorindexname}{Author Index}
@@ -1337,6 +2055,7 @@
 \newcommand{\BAvailFrom}{Available from\ }%          Websites; note the space.
 %% The argument is the date on which it was last checked.
 \newcommand{\BRetrieved}[1]{Retrieved {#1}, from\ }% Websites; note the space.
+\newcommand{\BRetrievedFrom}{Retrieved from\ }%      Websites; note the space.
 \newcommand{\BMsgPostedTo}{Message posted to\ }%     Messages; note the space.
 \newcommand{\BBOP}{(}   % opening parenthesis
 \newcommand{\BBCP}{)}   % closing parenthesis
@@ -1355,6 +2074,7 @@
 \newcommand{\BCBT}{,}   % comma between authors in ref. list when no. of
                        %% authors = 2
 \newcommand{\BCBL}{,}   % comma before last author when no. of authors > 2
+\newcommand{\BDBL}{, \dots{} }% dots before last author when no. of authors > 7
 \newcommand{\APACmonth}[1]{\ifcase #1\or January\or February\or March\or
     April\or May\or June\or July\or August\or September\or October\or
     November\or December\or Winter\or Spring\or Summer\or Fall\else

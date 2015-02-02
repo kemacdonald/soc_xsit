@@ -1,440 +1,429 @@
 \begin{thebibliography}{}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Baldwin%
 }{%
 Baldwin%
 }{%
-{\protect\APACyear{1993}}%
+{\protect \APACyear {1993}}%
 }]{%
+baldwin1993infants}
+\APACinsertmetastar {%
 baldwin1993infants}%
-\APACinsertmetastar{%
-baldwin1993infants}%
+\begin{APACrefauthors}%
 Baldwin, D\BPBI A.%
-%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{1993}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{Infants' ability to consult the speaker for clues to word
-  reference}{Infants' ability to consult the speaker for clues to word
-  reference}.\BBCQ{}
+{\BBOQ}\APACrefatitle {Infants' ability to consult the speaker for clues to
+  word reference} {Infants' ability to consult the speaker for clues to word
+  reference}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Journal of child language}{20}{02}{395--418}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Bloom%
 }{%
 Bloom%
 }{%
-{\protect\APACyear{2002}}%
+{\protect \APACyear {2002}}%
 }]{%
+bloom2002children}
+\APACinsertmetastar {%
 bloom2002children}%
-\APACinsertmetastar{%
-bloom2002children}%
+\begin{APACrefauthors}%
 Bloom, P.%
-%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYear{2002}.
 \newblock
-\APACrefbtitle{How children learn the meaning of words}{How children learn the
-  meaning of words}.
+\APACrefbtitle {How children learn the meaning of words} {How children learn
+  the meaning of words}.
 \newblock
 \APACaddressPublisher{}{The MIT Press}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Clark%
 }{%
 Clark%
 }{%
-{\protect\APACyear{2009}}%
+{\protect \APACyear {2009}}%
 }]{%
+clark2009first}
+\APACinsertmetastar {%
 clark2009first}%
-\APACinsertmetastar{%
-clark2009first}%
+\begin{APACrefauthors}%
 Clark, E\BPBI V.%
-%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYear{2009}.
 \newblock
-\APACrefbtitle{First language acquisition}{First language acquisition}.
+\APACrefbtitle {First language acquisition} {First language acquisition}.
 \newblock
 \APACaddressPublisher{}{Cambridge University Press}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Griffiths%
 , Lieder%
 , Goodman%
-\BCBL{}\ \BBA{} Griffiths%
+\BCBL {}\ \BBA {} Griffiths%
 }{%
 Griffiths%
-\ \protect\BOthers{.}}{%
-{\protect\APACyear{2014}}%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
 }]{%
+griffiths2014rational}
+\APACinsertmetastar {%
 griffiths2014rational}%
-\APACinsertmetastar{%
-griffiths2014rational}%
+\begin{APACrefauthors}%
 Griffiths, T\BPBI L.%
 , Lieder, F.%
 , Goodman, N\BPBI D.%
-\BCBL{}\ \BBA{} Griffiths, T.%
-%
+\BCBL {}\ \BBA {} Griffiths, T.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{2014}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{Rational use of cognitive resources: Levels of analysis
-  between the computational and the algorithmic}{Rational use of cognitive
+{\BBOQ}\APACrefatitle {Rational use of cognitive resources: Levels of analysis
+  between the computational and the algorithmic} {Rational use of cognitive
   resources: Levels of analysis between the computational and the
-  algorithmic}.\BBCQ{}
+  algorithmic}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Topics in Cognitive Science. forthcoming}{}{}{}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Kanwisher%
 , Woods%
 , Iacoboni%
-\BCBL{}\ \BBA{} Mazziotta%
+\BCBL {}\ \BBA {} Mazziotta%
 }{%
 Kanwisher%
-\ \protect\BOthers{.}}{%
-{\protect\APACyear{1997}}%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {1997}}%
 }]{%
+kanwisher1997locus}
+\APACinsertmetastar {%
 kanwisher1997locus}%
-\APACinsertmetastar{%
-kanwisher1997locus}%
+\begin{APACrefauthors}%
 Kanwisher, N.%
 , Woods, R\BPBI P.%
 , Iacoboni, M.%
-\BCBL{}\ \BBA{} Mazziotta, J\BPBI C.%
-%
+\BCBL {}\ \BBA {} Mazziotta, J\BPBI C.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{1997}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{A locus in human extrastriate cortex for visual shape
-  analysis}{A locus in human extrastriate cortex for visual shape
-  analysis}.\BBCQ{}
+{\BBOQ}\APACrefatitle {A locus in human extrastriate cortex for visual shape
+  analysis} {A locus in human extrastriate cortex for visual shape
+  analysis}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Journal of Cognitive Neuroscience}{9}{1}{133--142}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Koenig%
 , Cl{\'e}ment%
-\BCBL{}\ \BBA{} Harris%
+\BCBL {}\ \BBA {} Harris%
 }{%
 Koenig%
-\ \protect\BOthers{.}}{%
-{\protect\APACyear{2004}}%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2004}}%
 }]{%
+koenig2004trust}
+\APACinsertmetastar {%
 koenig2004trust}%
-\APACinsertmetastar{%
-koenig2004trust}%
+\begin{APACrefauthors}%
 Koenig, M\BPBI A.%
 , Cl{\'e}ment, F.%
-\BCBL{}\ \BBA{} Harris, P\BPBI L.%
-%
+\BCBL {}\ \BBA {} Harris, P\BPBI L.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{2004}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{Trust in testimony: Children's use of true and false
-  statements}{Trust in testimony: Children's use of true and false
-  statements}.\BBCQ{}
+{\BBOQ}\APACrefatitle {Trust in testimony: Children's use of true and false
+  statements} {Trust in testimony: Children's use of true and false
+  statements}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Psychological Science}{15}{10}{694--698}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 McMurray%
 , Horst%
-\BCBL{}\ \BBA{} Samuelson%
+\BCBL {}\ \BBA {} Samuelson%
 }{%
 McMurray%
-\ \protect\BOthers{.}}{%
-{\protect\APACyear{2012}}%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2012}}%
 }]{%
+mcmurray2012word}
+\APACinsertmetastar {%
 mcmurray2012word}%
-\APACinsertmetastar{%
-mcmurray2012word}%
+\begin{APACrefauthors}%
 McMurray, B.%
 , Horst, J\BPBI S.%
-\BCBL{}\ \BBA{} Samuelson, L\BPBI K.%
-%
+\BCBL {}\ \BBA {} Samuelson, L\BPBI K.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{2012}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{Word learning emerges from the interaction of online
-  referent selection and slow associative learning.}{Word learning emerges from
-  the interaction of online referent selection and slow associative
-  learning.}\BBCQ{}
+{\BBOQ}\APACrefatitle {Word learning emerges from the interaction of online
+  referent selection and slow associative learning.} {Word learning emerges
+  from the interaction of online referent selection and slow associative
+  learning.}{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Psychological review}{119}{4}{831}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Quine%
 }{%
 Quine%
 }{%
-{\protect\APACyear{1960}}%
+{\protect \APACyear {1960}}%
 }]{%
+quine19600}
+\APACinsertmetastar {%
 quine19600}%
-\APACinsertmetastar{%
-quine19600}%
+\begin{APACrefauthors}%
 Quine, W\BPBI V.%
-%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{1960}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{0. Word and object}{0. word and object}.\BBCQ{}
+{\BBOQ}\APACrefatitle {0. Word and object} {0. word and object}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{111e MIT Press}{}{}{}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 K.~Smith%
 , Smith%
-\BCBL{}\ \BBA{} Blythe%
+\BCBL {}\ \BBA {} Blythe%
 }{%
 K.~Smith%
-\ \protect\BOthers{.}}{%
-{\protect\APACyear{2011}}%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2011}}%
 }]{%
+smith2011cross}
+\APACinsertmetastar {%
 smith2011cross}%
-\APACinsertmetastar{%
-smith2011cross}%
+\begin{APACrefauthors}%
 Smith, K.%
 , Smith, A\BPBI D.%
-\BCBL{}\ \BBA{} Blythe, R\BPBI A.%
-%
+\BCBL {}\ \BBA {} Blythe, R\BPBI A.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{2011}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{Cross-Situational Learning: An Experimental Study of
-  Word-Learning Mechanisms}{Cross-situational learning: An experimental study
-  of word-learning mechanisms}.\BBCQ{}
+{\BBOQ}\APACrefatitle {Cross-Situational Learning: An Experimental Study of
+  Word-Learning Mechanisms} {Cross-situational learning: An experimental study
+  of word-learning mechanisms}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Cognitive Science}{35}{3}{480--498}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 L.~Smith%
-\ \BBA{} Yu%
+\ \BBA {} Yu%
 }{%
 L.~Smith%
-\ \BBA{} Yu%
+\ \BBA {} Yu%
 }{%
-{\protect\APACyear{2008}}%
+{\protect \APACyear {2008}}%
 }]{%
+smith2008infants}
+\APACinsertmetastar {%
 smith2008infants}%
-\APACinsertmetastar{%
-smith2008infants}%
+\begin{APACrefauthors}%
 Smith, L.%
-\BCBT{}\ \BBA{} Yu, C.%
-%
+\BCBT {}\ \BBA {} Yu, C.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{2008}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{Infants rapidly learn word-referent mappings via
-  cross-situational statistics}{Infants rapidly learn word-referent mappings
-  via cross-situational statistics}.\BBCQ{}
+{\BBOQ}\APACrefatitle {Infants rapidly learn word-referent mappings via
+  cross-situational statistics} {Infants rapidly learn word-referent mappings
+  via cross-situational statistics}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Cognition}{106}{3}{1558--1568}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 L\BPBI B.~Smith%
 , Suanda%
-\BCBL{}\ \BBA{} Yu%
+\BCBL {}\ \BBA {} Yu%
 }{%
 L\BPBI B.~Smith%
-\ \protect\BOthers{.}}{%
-{\protect\APACyear{2014}}%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
 }]{%
+smith2014unrealized}
+\APACinsertmetastar {%
 smith2014unrealized}%
-\APACinsertmetastar{%
-smith2014unrealized}%
+\begin{APACrefauthors}%
 Smith, L\BPBI B.%
 , Suanda, S\BPBI H.%
-\BCBL{}\ \BBA{} Yu, C.%
-%
+\BCBL {}\ \BBA {} Yu, C.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{2014}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{The unrealized promise of infant statistical
-  word--referent learning}{The unrealized promise of infant statistical
-  word--referent learning}.\BBCQ{}
+{\BBOQ}\APACrefatitle {The unrealized promise of infant statistical
+  word--referent learning} {The unrealized promise of infant statistical
+  word--referent learning}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Trends in Cognitive Sciences}{18}{5}{251--258}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Trueswell%
 , Medina%
 , Hafri%
-\BCBL{}\ \BBA{} Gleitman%
+\BCBL {}\ \BBA {} Gleitman%
 }{%
 Trueswell%
-\ \protect\BOthers{.}}{%
-{\protect\APACyear{2013}}%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2013}}%
 }]{%
+trueswell2013propose}
+\APACinsertmetastar {%
 trueswell2013propose}%
-\APACinsertmetastar{%
-trueswell2013propose}%
+\begin{APACrefauthors}%
 Trueswell, J\BPBI C.%
 , Medina, T\BPBI N.%
 , Hafri, A.%
-\BCBL{}\ \BBA{} Gleitman, L\BPBI R.%
-%
+\BCBL {}\ \BBA {} Gleitman, L\BPBI R.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{2013}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{Propose but verify: Fast mapping meets cross-situational
-  word learning}{Propose but verify: Fast mapping meets cross-situational word
-  learning}.\BBCQ{}
+{\BBOQ}\APACrefatitle {Propose but verify: Fast mapping meets cross-situational
+  word learning} {Propose but verify: Fast mapping meets cross-situational word
+  learning}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Cognitive psychology}{66}{1}{126--156}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Vouloumanos%
 }{%
 Vouloumanos%
 }{%
-{\protect\APACyear{2008}}%
+{\protect \APACyear {2008}}%
 }]{%
+vouloumanos2008fine}
+\APACinsertmetastar {%
 vouloumanos2008fine}%
-\APACinsertmetastar{%
-vouloumanos2008fine}%
+\begin{APACrefauthors}%
 Vouloumanos, A.%
-%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{2008}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{Fine-grained sensitivity to statistical information in
-  adult word learning}{Fine-grained sensitivity to statistical information in
-  adult word learning}.\BBCQ{}
+{\BBOQ}\APACrefatitle {Fine-grained sensitivity to statistical information in
+  adult word learning} {Fine-grained sensitivity to statistical information in
+  adult word learning}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Cognition}{107}{2}{729--742}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Vul%
 , Goodman%
 , Griffiths%
-\BCBL{}\ \BBA{} Tenenbaum%
+\BCBL {}\ \BBA {} Tenenbaum%
 }{%
 Vul%
-\ \protect\BOthers{.}}{%
-{\protect\APACyear{2009}}%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
 }]{%
-vul2009one}%
-\APACinsertmetastar{%
-vul2009one}%
+vul2014}
+\APACinsertmetastar {%
+vul2014}%
+\begin{APACrefauthors}%
 Vul, E.%
-, Goodman, N\BPBI D.%
+, Goodman, N.%
 , Griffiths, T\BPBI L.%
-\BCBL{}\ \BBA{} Tenenbaum, J\BPBI B.%
-%
+\BCBL {}\ \BBA {} Tenenbaum, J\BPBI B.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
-\APACrefYearMonthDay{2009}{}{}.
+\APACrefYearMonthDay{2014}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{One and done? Optimal decisions from very few
-  samples}{One and done? optimal decisions from very few samples}.\BBCQ{}
+{\BBOQ}\APACrefatitle {One and done? Optimal decisions from very few samples}
+  {One and done? optimal decisions from very few samples}.{\BBCQ}
 \newblock
-\BIn{} \APACrefbtitle{Proceedings of the 31st annual conference of the
-  cognitive science society}{Proceedings of the 31st annual conference of the
-  cognitive science society}\ (\BVOL~1, \BPGS\ 66--72).
+\APACjournalVolNumPages{Cognitive science}{38}{4}{599--637}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
-Xu%
-\ \BBA{} Tenenbaum%
-}{%
-Xu%
-\ \BBA{} Tenenbaum%
-}{%
-{\protect\APACyear{2007}}%
-}]{%
-xu2007sampling}%
-\APACinsertmetastar{%
-xu2007sampling}%
-Xu, F.%
-\BCBT{}\ \BBA{} Tenenbaum, J\BPBI B.%
-%
-\unskip\
-\newblock
-\APACrefYearMonthDay{2007}{}{}.
-\newblock
-\BBOQ{}\APACrefatitle{Sensitivity to sampling in Bayesian word
-  learning}{Sensitivity to sampling in bayesian word learning}.\BBCQ{}
-\newblock
-\APACjournalVolNumPages{Developmental Science}{10}{3}{288-297}.
-\PrintBackRefs{\CurrentBib}
-
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Yu%
-\ \BBA{} Smith%
+\ \BBA {} Smith%
 }{%
 Yu%
-\ \BBA{} Smith%
+\ \BBA {} Smith%
 }{%
-{\protect\APACyear{2012}}%
+{\protect \APACyear {2012}}%
 }]{%
+yu2012embodied}
+\APACinsertmetastar {%
 yu2012embodied}%
-\APACinsertmetastar{%
-yu2012embodied}%
+\begin{APACrefauthors}%
 Yu, C.%
-\BCBT{}\ \BBA{} Smith, L\BPBI B.%
-%
+\BCBT {}\ \BBA {} Smith, L\BPBI B.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{2012}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{Embodied attention and word learning by
-  toddlers}{Embodied attention and word learning by toddlers}.\BBCQ{}
+{\BBOQ}\APACrefatitle {Embodied attention and word learning by toddlers}
+  {Embodied attention and word learning by toddlers}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Cognition}{}{}{}.
 \PrintBackRefs{\CurrentBib}
 
-\bibitem[\protect\citeauthoryear{%
+\bibitem [\protect \citeauthoryear {%
 Yurovsky%
-\ \BBA{} Frank%
+\ \BBA {} Frank%
 }{%
 Yurovsky%
-\ \BBA{} Frank%
+\ \BBA {} Frank%
 }{%
-{\protect\APACyear{under review}}%
+{\protect \APACyear {under review}}%
 }]{%
+yurovsky2014algorithmic}
+\APACinsertmetastar {%
 yurovsky2014algorithmic}%
-\APACinsertmetastar{%
-yurovsky2014algorithmic}%
+\begin{APACrefauthors}%
 Yurovsky, D.%
-\BCBT{}\ \BBA{} Frank, M.%
-%
+\BCBT {}\ \BBA {} Frank, M.%
+\end{APACrefauthors}%
 \unskip\
 \newblock
 \APACrefYearMonthDay{under review}{}{}.
 \newblock
-\BBOQ{}\APACrefatitle{Algorithmic-Level Constraints on Cross-Situational Word
-  Learning}{Algorithmic-level constraints on cross-situational word
-  learning}.\BBCQ{}
+{\BBOQ}\APACrefatitle {Algorithmic-Level Constraints on Cross-Situational Word
+  Learning} {Algorithmic-level constraints on cross-situational word
+  learning}.{\BBCQ}
 \newblock
 
 \PrintBackRefs{\CurrentBib}

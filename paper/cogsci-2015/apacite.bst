@@ -8,7 +8,7 @@
 %% 
 %% This is a generated file.
 %% 
-%% Copyright (C) 1994-2009 Erik Meijer and any individual authors listed
+%% Copyright (C) 1994-8888 Erik Meijer and any individual authors listed
 %% elsewhere in this file.
 %% 
 %% This file is part of the `apacite' package.
@@ -26,10 +26,12 @@
 %% 
 %% The `apacite' package consists of the files apacite.dtx and
 %% apacite.ins, and the following generated files:
-%% apacite.sty, apacite.bst, apacitex.bst, apa5ex.bib,
-%% apacite.drv, apacdoc.sty, apacann.bst,  apacannx.bst,
-%% english.apc, dutch.apc,   finnish.apc,  french.apc,  german.apc,
-%% ngerman.apc, greek.apc,   norsk.apc,   spanish.apc,  swedish.apc.
+%% apacite.sty, apacdoc.sty,  apacite.drv,
+%% apacite.bst, apacitex.bst, apacann.bst,  apacannx.bst,
+%% apa5ex.bib,  apacxmpl.tex,
+%% english.apc, dutch.apc,    finnish.apc,  french.apc,
+%% german.apc,  ngerman.apc,  greek.apc,    norsk.apc,
+%% spanish.apc, swedish.apc.
 %% 
 %% This work has the LPPL maintenance status `maintained'
 %% 
@@ -41,46 +43,39 @@
 %% the generated files.
 %% 
 %% apacite.bst
-%%   [2009/03/01 v4.05 APA bibliography style]
+%%   [2012/02/25 v6.01 APA bibliography style]
 %% apacite.bst : reference list according to APA manual
 %% Written by Erik Meijer
 
 FUNCTION {identify.apacite.version}
 { % Put identifying string in the .blg file
   "apacite.bst"
-  " [2009/03/01 v4.05 APA bibliography style]"
+  " [2012/02/25 v6.01 APA bibliography style]"
   * top$
 }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 ENTRY
   { address
-    annote       % only used for annotated version
-    annotate     % only used for annotated version
+    annote
+    annotate
     author
-    booktitle    % for articles in books
-    chair        % for lectures
-    chapter      % for incollection, esp. internet documents
+    booktitle
+    chair
+    chapter
     day
+    doi
     edition
     editor
-    englishtitle % english translation of title in other language
-    firstkey     % key for first citation
+    englishtitle
+    firstkey
     howpublished
-    institution  % for technical reports
+    institution
     journal
-    key          % key for second and later citations, or all
-                 % citations if firstkey is missing
-    lastchecked  % for URL's
+    key
+    lastchecked
     month
     note
-    number       % number of journal or report
-    organization % for unpublished
-        %
-        % for reprints, translations, etc.
-        %
+    number
+    organization
     originaladdress
     originalbooktitle
     originaledition
@@ -91,46 +86,38 @@ ENTRY
     originalpublisher
     originalvolume
     originalyear
-        %
-        % back to normal
-        %
     pages
     publisher
-    school       % for theses
-    series       % not used
-    symposium    % for lectures
-    text         % for literals
+    school
+    series
+    symposium
+    text
     title
-    translator   % translator of book (or article)
-    type         % type of phdthesis (e.g., Doctoral dissertation)
-                 % or type of article (e.g., Letter to the editor)
-                 % etc.
+    translator
+    type
     url
+    urldate
     volume
     year
   }
-  { title.number           % for sorting titles
-    cite.initials          % dummy (0-1) indicating whether or not
-                           % initials of the 1st author must
-                           % be used for citing
-    cite.num.names.full    % number of names to be cited for full and
-    cite.num.names.short   % short cite
-    add.to.year            % For a, b, c, etc. after year
-                           % in multiple citations with same author-year
+  { title.number           %% for sorting titles
+    cite.initials          %% dummy (0-1) indicating whether or not
+                           %% initials of the 1st author must
+                           %% be used for citing
+    cite.num.names.full    %% number of names to be cited for full and
+    cite.num.names.short   %% short cite
+    add.to.year            %% For a, b, c, etc. after year
+                           %% in multiple citations with same author-year
   }
-  { year.label             % For sorting entries by year
-    author.year.sort.label % For sorting entries and checking whether
-                           % initials should be added, how many authors
-                           % should be cited and whether a, b, etc.
-                           % after year is necessary
-    title.sort.label       % for sorting titles
-    type.2                 % Replacement for type with misc entries and
-                           % entries that revert to misc.
+  { year.label             %% For sorting entries by year
+    author.year.sort.label %% For sorting entries and checking whether
+                           %% initials should be added, how many authors
+                           %% should be cited and whether a, b, etc.
+                           %% after year is necessary
+    title.sort.label       %% for sorting titles
+    type.2                 %% Replacement for type with misc entries and
+                           %% entries that revert to misc.
   }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 INTEGERS { len  pos  name.max  old.number  numnames  numnames.old
            nameptr  lastname  format.num.names  cite.initials.old
            cite.num.names.old add.to.year.old  forward
@@ -146,56 +133,24 @@ STRINGS  { s  t  u old.label  field
            aut6          aut6.old
            year.label.old
          }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 FUNCTION {test} { #0 }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 FUNCTION {make.index} { #0 }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 MACRO {jan}    {"{\APACmonth{01}}"}
-
 MACRO {feb}    {"{\APACmonth{02}}"}
-
 MACRO {mar}    {"{\APACmonth{03}}"}
-
 MACRO {apr}    {"{\APACmonth{04}}"}
-
 MACRO {may}    {"{\APACmonth{05}}"}
-
 MACRO {jun}    {"{\APACmonth{06}}"}
-
 MACRO {jul}    {"{\APACmonth{07}}"}
-
 MACRO {aug}    {"{\APACmonth{08}}"}
-
 MACRO {sep}    {"{\APACmonth{09}}"}
-
 MACRO {oct}    {"{\APACmonth{10}}"}
-
 MACRO {nov}    {"{\APACmonth{11}}"}
-
 MACRO {dec}    {"{\APACmonth{12}}"}
-
 MACRO {winter} {"{\APACmonth{13}}"}
-
 MACRO {spring} {"{\APACmonth{14}}"}
-
 MACRO {summer} {"{\APACmonth{15}}"}
-
 MACRO {fall}   {"{\APACmonth{16}}"}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 FUNCTION {not}
 {   { #0 }
     { #1 }
@@ -695,39 +650,31 @@ FUNCTION {output.dot.new.block}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FUNCTION {start.new.block}
-{ newline$
-  "\unskip\ " write$ newline$
+{ "\unskip\ " write$ newline$
   "\newblock " write$ newline$
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % finish current entry
-    % by writing what's left on the stack and starting a new line
-    %
-FUNCTION {fin.entry}
-{ output.end.block
-  "\PrintBackRefs{\CurrentBib}" write$ newline$
-  test
-    { "\vspace{\baselineskip}" write$ newline$ }
-    'skip$
-  if$
-}
+FUNCTION {sort.name.format.classic} { "{ll{}}{  f{}}{  vv{}}{  jj{}}" }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+FUNCTION {cite.name.format.classic} { "{ll}" }
 
-FUNCTION {sort.name.format} { "{ll{}}{  f{}}{  vv{}}{  jj{}}" }
+FUNCTION {author.name.format.classic} { "{ll}{, f{\BPBI }.}{ vv}{, jj}" }
 
-FUNCTION {cite.name.format} { "{ll}" }
+FUNCTION {index.name.format.classic} { "{ll}{, f{\BPBI }.}{ vv}{, jj}" }
+
+FUNCTION {sort.name.format} { "{vv{}}{ll{}}{  f{}}{  jj{}}" }
+
+FUNCTION {cite.name.format} { "{vv }{ll}" }
 
 FUNCTION {cite.initials.name.format} { "{f{\BPBI }.~~}{vv }{ll}{ jj}" }
 
-FUNCTION {author.name.format} { "{ll}{, f{\BPBI }.}{ vv}{, jj}" }
+FUNCTION {author.name.format} { "{vv }{ll}{, f{\BPBI }.}{, jj}" }
 
 FUNCTION {editor.name.format} { "{f{\BPBI }.~~}{vv }{ll}{ jj}" }
 
-FUNCTION {index.name.format} { "{ll}{, f{\BPBI }.}{ vv}{, jj}" }
+FUNCTION {index.name.format} { "{vv }{ll}{, f{\BPBI }.}{, jj}" }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1560,10 +1507,12 @@ FUNCTION {make.tentative.year.sort.label}
   year empty$
     { "0000" 'year.label := }
     { year "\bibnodate" =
-        year "n.d." =
-        or
+      year "l" change.case$ "no date" = or
+      year "l" change.case$ "n.d."    = or
         { "0000" 'year.label := }
         { year "\BIP" =
+          year "l" change.case$ "in press"    =  or
+          year "l" change.case$ "forthcoming" =  or
             { "9999" 'year.label := }
             {   % It is not checked whether the year field
                 % makes sense.
@@ -2135,18 +2084,20 @@ FUNCTION {make.title.number}
     }
   if$
 }
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+FUNCTION {last.part.name.format.classic} { "{ll}" }
 
+FUNCTION {von.junior.name.format.classic} { "{ vv}{, jj}" }
 
-FUNCTION {last.part.name.format} { "{ll}" }
+FUNCTION {last.part.name.format} { "{vv }{ll}" }
 
 FUNCTION {initials.with.space.name.format} { "{f.}" }
 
 FUNCTION {von.last.junior.name.format} { "{vv }{ll}{ jj}" }
 
-FUNCTION {von.junior.name.format} { "{ vv}{, jj}" }
+FUNCTION {von.junior.name.format} { "{, jj}" }
 
 FUNCTION {one.complete.name.format} { "{vv }{ll}{, jj}{, ff}" }
 
@@ -2364,22 +2315,21 @@ FUNCTION {format.index.name}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-FUNCTION {comma.between.two} { "\BCBT{}" }
+FUNCTION {comma.between.two} { "\BCBT {}" }
 
 FUNCTION {comma.between.names} { ", " }
 
-FUNCTION {comma.before.last} { "\BCBL{}" }
+FUNCTION {comma.before.last} { "\BCBL {}" }
 
-FUNCTION {and.before.last} { "\ \BBA{} " }
+FUNCTION {dots.before.last} { "\BDBL {}" }
 
-FUNCTION {et.al.string.cite} { "\ \protect\BOthers{.}" }
+FUNCTION {and.before.last} { "\ \BBA {} " }
 
-FUNCTION {et.al.string} { "\ \BOthers{.}" }
+FUNCTION {et.al.string.cite} { "\ \protect \BOthers {.}" }
 
-FUNCTION {et.al.string.period} { "\ \BOthersPeriod{.}" }
+FUNCTION {et.al.string} { "\ \BOthers {.}" }
+
+FUNCTION {et.al.string.period} { "\ \BOthersPeriod {.}" }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -2532,8 +2482,8 @@ FUNCTION {make.title.cite.label}
     % as book title, and insert this formatting.
     %
   is.atype
-    { "\APACciteatitle{" }
-    { "\APACcitebtitle{" }
+    { "\APACciteatitle {" }
+    { "\APACcitebtitle {" }
   if$
     %
   title empty$
@@ -2623,14 +2573,18 @@ FUNCTION {make.definitive.year.supplement}
     %
   add.to.year  #0  =
     { "" }
-    { "{\protect"
+    { "{\protect "
       year empty$
-        { "\BCntND" * }
+        { "\BCntND " * }
         { year "\bibnodate" =
-            { "\BCntND" * }
+          year "l" change.case$ "no date" = or
+          year "l" change.case$ "n.d."    = or
+            { "\BCntND " * }
             { year "\BIP" =
-                { "\BCntIP" * }
-                { "\BCnt" * }
+              year "l" change.case$ "in press"    =  or
+              year "l" change.case$ "forthcoming" =  or
+                { "\BCntIP " * }
+                { "\BCnt " * }
               if$
             }
           if$
@@ -2645,11 +2599,15 @@ FUNCTION {make.definitive.year.supplement}
 
 FUNCTION {protect.year}
 { year empty$
-    { "{\protect\bibnodate{}}" }
+    { "{\protect \bibnodate {}}" }
     { year "\bibnodate" =
-        { "{\protect\bibnodate{}}" }
+      year "l" change.case$ "no date" = or
+      year "l" change.case$ "n.d."    = or
+        { "{\protect \bibnodate {}}" }
         { year "\BIP" =
-            { "{\protect\BIP{}}" }
+          year "l" change.case$ "in press"    =  or
+          year "l" change.case$ "forthcoming" =  or
+            { "{\protect \BIP {}}" }
             { year }
           if$
         }
@@ -2661,21 +2619,19 @@ FUNCTION {protect.year}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FUNCTION {make.definitive.year.label}
-{ "{\protect\APACyear{"
+{ "{\protect \APACyear {"
   originalyear empty$
     { protect.year }
     { originalyear "\bibnodate" =    % date of original publication unknown
+      originalyear "l" change.case$ "no date" = or
+      originalyear "l" change.case$ "n.d."    = or
         { translator empty$
             { protect.year }
-            { year empty$
-                { "{\protect\BTRANSL{}~\protect\bibnodate{}}" }  % trans. n.d.
-                { "{\protect\BTRANSL{}}~"   protect.year *    }  % trans. 1931
-              if$
-            }
+            { "{\protect \BTRANSL {}}~" protect.year * }
           if$
         }
         { year empty$
-            { originalyear "/{\protect\bibnodate{}}"   * }  % 1923/n.d.
+            { originalyear "/{\protect \bibnodate {}}"   * }  % 1923/n.d.
             { originalyear year =
                 { protect.year }
                 { originalyear  "/"  *  protect.year * }    % 1923/1961
@@ -2690,7 +2646,7 @@ FUNCTION {make.definitive.year.label}
     %
     % Add "a", "b", etc. when necessary.
     %
-  "{\protect\APACexlab{" "}}"
+  "{\protect \APACexlab {" "}}"
   make.definitive.year.supplement enclose.check
 }
 
@@ -2702,13 +2658,13 @@ FUNCTION {make.cite.labels}
     % Write a few lines for testing purposes.
     %
   test
-    { "\bibitem[]{} \fullciteA{" cite$ * "}" *  write$ newline$
-      "\bibitem[]{} \citeA{"     cite$ * "}" *  write$ newline$
+    { "\bibitem [] {} \fullciteA {" cite$ * "}" *  write$ newline$
+      "\bibitem [] {} \citeA {"     cite$ * "}" *  write$ newline$
     }
     'skip$
   if$
     %
-  "\bibitem[\protect\citeauthoryear{%" write$ newline$
+  "\bibitem [\protect \citeauthoryear {%" write$ newline$
     %
     % When key or firstkey is available, this takes precedence.
     %
@@ -2762,14 +2718,14 @@ FUNCTION {make.cite.labels}
   make.definitive.year.label  write$
   "}]{%"                      write$ newline$
   cite$                       write$
-  "}%"                        write$ newline$
+  "} "                        write$ newline$
   % author.year.sort.label      write$ newline$ % for testing purposes
   % year.label                  write$ newline$ % for testing purposes
     %
     % If the item is used in a meta-analysis, indicate this with
     % a star.
     %
-  "\APACinsertmetastar{%"     write$ newline$
+  "\APACinsertmetastar {%"    write$ newline$
   cite$                       write$
   "}%"                        write$ newline$
 }
@@ -2809,7 +2765,7 @@ FUNCTION {trans.postfix}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-FUNCTION {format.author.names}
+FUNCTION {authors.editors.reflist.apa5}
 { 'field  :=
   'dot    :=
     %
@@ -2824,6 +2780,11 @@ FUNCTION {format.author.names}
     }
     'skip$
   if$
+    %
+    % Enclose authors in APACrefauthors environment to allow crude style
+    % options in \LaTeX.
+  "\begin{APACrefauthors}%"
+  write$ newline$
     %
     % It is kind of explicit in the APA manual that if "et al." would
     % refer to exactly one author (the 7th), then this author should
@@ -2985,27 +2946,123 @@ FUNCTION {format.author.names}
       if$
     }
   if$
+    %
+    % End APACrefauthors environment.
+  "\end{APACrefauthors}%"
+  write$ newline$
 }
 
+FUNCTION {authors.reflist.apa6}
+{ 'field  :=
+  'dot    :=
+  field  num.names$  'numnames :=
+  numnames  #7  >
+    { #7        'format.num.names := }
+    { numnames  'format.num.names := }
+  if$
+  "\begin{APACrefauthors}%"
+  write$ newline$
+  #1  'nameptr :=
+  field  nameptr  format.author.name
+  numnames  #1  =
+    { dot
+        { add.period$ }
+        'skip$
+      if$
+      add.name.index
+    }
+    { add.name.index
+      numnames  #2  =
+        { comma.between.two write$
+          #2  'nameptr :=
+          field  nameptr  format.author.name  's :=
+          s "others" =
+            { "`others' not consistent with 6th ed. of the APA Manual"
+              warning$
+              dot
+                { et.al.string.period }
+                { et.al.string }
+              if$
+              write$ newline$
+            }
+            { and.before.last write$
+              dot
+                { s add.period$ }
+                { s }
+              if$
+              add.name.index
+            }
+          if$
+        }
+        { %% for nameptr := 2  to  format.num.names - 1  do
+          #2  'nameptr  :=
+            { nameptr  format.num.names  < }
+            { comma.between.names write$
+              field  nameptr  format.author.name
+              add.name.index
+              nameptr  #1  +  'nameptr :=
+            }
+          while$
+          field  numnames  format.author.name  's :=
+          format.num.names  numnames  =
+            { comma.before.last write$
+              s "others" =
+                { "`others' not consistent with 6th ed. of the APA "
+                  "Manual" *
+                  warning$
+                  dot
+                    { et.al.string.period }
+                    { et.al.string }
+                  if$
+                  write$
+                }
+                { and.before.last  write$
+                  dot
+                    { s add.period$ }
+                    { s }
+                  if$
+                  add.name.index
+                }
+              if$
+            }
+            { dots.before.last write$
+              s
+              add.name.index
+            }
+          if$
+        }
+      if$
+    }
+  if$
+  "\end{APACrefauthors}%"
+  write$ newline$
+}
+
+FUNCTION {format.author.names}
+{ 'field  :=
+  'dot    :=
+  dot
+    { dot  field  authors.reflist.apa6 }
+    { dot  field  authors.editors.reflist.apa5 }
+  if$
+}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FUNCTION {format.authors}
-{ #1 author format.author.names
-  "%" write$
-}
+{ #1 author format.author.names }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FUNCTION {format.editors.as.authors}
 { #0  editor  format.author.names
-  "\ " editor.postfix * add.period$ write$
+  "\ " editor.postfix * add.period$ write$ newline$
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 FUNCTION {format.ed.trans.as.authors}
 { #0  editor  format.author.names
-  "\ " editor.trans.postfix * add.period$ write$
+  "\ " editor.trans.postfix * add.period$ write$ newline$
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -3290,10 +3347,7 @@ FUNCTION {format.in.editors.trans}
 
 FUNCTION {format.year.check}
 { "\APACrefYear{"
-  year empty$
-    { "\bibnodate{}" * }
-    { year * }
-  if$
+  protect.year *
     %
     % Add "a", "b", etc. when necessary.
     %
@@ -3305,10 +3359,7 @@ FUNCTION {format.year.check}
 
 FUNCTION {format.year.month.day.check}
 { "\APACrefYearMonthDay{"
-  year empty$
-    { "\bibnodate{}" * }
-    { year * }
-  if$
+  protect.year *
     %
     % Add "a", "b", etc. when necessary.
     %
@@ -3329,24 +3380,16 @@ FUNCTION {format.year.month.day.check}
   "}" *
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % title of article in journal or book
-    % no finishing period
-    % field must be on top of stack
-    %  (so englishtitle can be handled also)
-    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FUNCTION {format.atitle.no.dot}
-{ "\BBOQ{}" swap$
-  "\BBCQ{}" swap$
+{ "{\BBOQ}" swap$
+  "{\BBCQ}" swap$
   duplicate$ empty$
     'skip$
     { duplicate$
       % Two arguments: Title twice: (1) don't change case; (2) change case
-      "\APACrefatitle{" swap$ * "}{" * swap$
+      "\APACrefatitle {" swap$ * "} {" * swap$
       "t" change.case$
       * "}" *
     }
@@ -3354,21 +3397,14 @@ FUNCTION {format.atitle.no.dot}
   enclose.check
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % title of article in journal or book
-    % with finishing period
-    % field must be on top of stack
-    %  (so englishtitle can be handled also)
-    %
 FUNCTION {format.atitle.dot}
-{ "\BBOQ{}" swap$
-  "\BBCQ{}" swap$
+{ "{\BBOQ}" swap$
+  "{\BBCQ}" swap$
   duplicate$ empty$
     'skip$
     { duplicate$
       % Two arguments: Title twice: (1) don't change case; (2) change case
-      "\APACrefatitle{" swap$ * "}{" * swap$
+      "\APACrefatitle {" swap$ * "} {" * swap$
       "t" change.case$
       * "}" * add.period$
     }
@@ -3376,14 +3412,6 @@ FUNCTION {format.atitle.dot}
   enclose.check
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % title of article in journal or book
-    % field must be on top of stack
-    % second element on stack must be connected:
-    %   if that is empty, then atitle.dot
-    %   else atitle.no.dot, connect, and add period
-    %
 FUNCTION {format.atitle.connect}
 { swap$
   duplicate$ empty$
@@ -3398,37 +3426,28 @@ FUNCTION {format.atitle.connect}
   if$
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % title of book or so, without period
-    % call with
-    %     field format.btitle.no.dot
-    %
 FUNCTION {format.btitle.no.dot}
 { duplicate$ empty$
-    'skip$
+    { pop$
+      ""
+    }
     { duplicate$
       % Two arguments: Title twice: (1) don't change case; (2) change case
-      "\APACrefbtitle{" swap$ * "}{" * swap$
+      "\APACrefbtitle {" swap$ * "} {" * swap$
       "t" change.case$
       * "}" *
     }
   if$
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % title of book or so, with period
-    % call with
-    %     field format.btitle.dot
-    %
 FUNCTION {format.btitle.dot}
 { duplicate$ empty$
-    'skip$
+    { pop$
+      ""
+    }
     { add.period$ format.btitle.no.dot }
   if$
 }
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
     % title of book and similar
@@ -3478,7 +3497,7 @@ FUNCTION {format.aetitle.check}
 { englishtitle empty$
     { "" }
     { % Two arguments: Title twice: (1) don't change case; (2) change case
-      "\APACrefaetitle{" englishtitle * "}{" *
+      "\APACrefaetitle {" englishtitle * "} {" *
                          englishtitle "t" change.case$ * "}" *
     }
   if$
@@ -3492,7 +3511,7 @@ FUNCTION {format.betitle.check}
 { englishtitle empty$
     { "" }
     { % Two arguments: Title twice: (1) don't change case; (2) change case
-      "\APACrefbetitle{" englishtitle * "}{" *
+      "\APACrefbetitle {" englishtitle * "} {" *
                          englishtitle "t" change.case$ * "}" *
     }
   if$
@@ -3771,26 +3790,12 @@ FUNCTION {format.address.publisher}
   swap$   "" connect.check  "}"  *
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % format address and publisher of book etc.
-    %
-    % New York: Wiley
-    %      or
-    % Wiley      (if address empty)
-    %      or
-    % New York   (if publisher empty)
-    %
-    % warning if no publisher or no address
-    %
 FUNCTION {format.address.publisher.check}
-{ "publisher" publisher warning.if.empty
-  "address"   address   warning.if.empty
-  publisher empty$
+{ publisher empty$
   address   empty$
   and
     'skip$
-    { % Clear the stack
+    {
       duplicate$ empty$
         'skip$
         { output.new.block }
@@ -3857,7 +3862,7 @@ FUNCTION {format.howpublished}
         'pop$
         { output.dot.new.block }
       if$
-      "\APAChowpublished{" howpublished * "}" *
+      "\APAChowpublished {" howpublished * "}" *
     }
   if$
 }
@@ -3872,35 +3877,34 @@ FUNCTION {format.howpublished}
 FUNCTION {output.howpublished}
 { howpublished empty$
     'skip$
-    { "\APAChowpublished{" howpublished * "}" *
+    { "\APAChowpublished {" howpublished * "}" *
       output.dot.new.block
     }
   if$
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % begin and end of url environment
-    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FUNCTION {begin.end.url.env}
-{ " \begin{APACrefURL} "
-    % For "Retrieved <date>, from"
+{ "\begin{APACrefURL} "
   lastchecked empty$
-    'skip$
+    { urldate empty$
+        'skip$
+        { "[{" * urldate * "}]" * }
+      if$
+    }
     { "[{" * lastchecked * "}]" * }
   if$
   " \end{APACrefURL} "
 }
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % begin and end of message environment
-    %
+FUNCTION {begin.end.doi.env}
+{ "\begin{APACrefDOI} "
+  " \end{APACrefDOI} "
+}
+
 FUNCTION {begin.end.msg.env}
-{ " \begin{APACrefURLmsg} "
+{ "\begin{APACrefURLmsg} "
   " \end{APACrefURLmsg} "
 }
 
@@ -3924,6 +3928,22 @@ FUNCTION {format.url}
   if$
     % The url string.
   "\url{" url * "}" *
+    % Enclose in begin and end environment
+  enclose.check
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %
+    % format doi given that it is not empty,
+    % for various entry types
+    % call with
+    %   format.doi
+    %
+FUNCTION {format.doi}
+{ % First format begin and end of the enclosing environment.
+  begin.end.doi.env
+    % The doi string.
+  "\doi{" doi * "}" *
     % Enclose in begin and end environment
   enclose.check
 }
@@ -3979,19 +3999,19 @@ FUNCTION {format.orig.book.note}
   originaleditor empty$
     'skip$
     { originaleditor num.names$ #1 >
-        { "\APACorigEDS{" * originaleditor format.editor.names * "}" * }
-        { "\APACorigED{"  * originaleditor format.editor.names * "}" * }
+        { "\APACorigEDS {" * originaleditor format.editor.names * "}" * }
+        { "\APACorigED {"  * originaleditor format.editor.names * "}" * }
       if$
     }
   if$
     %
   "}{" *
-  originalbooktitle format.btitle.no.dot "" connect.check "}{" *
-  originaledition   format.edition.check "" connect.check "}{" *
-  originalvolume    format.bvolume.check "" connect.check "}{" *
-  originalpages     format.bpages.check  "" connect.check "}{" *
-  originaladdress   "" connect.check "}{" *
-  originalpublisher "" connect.check "}{" *
+  originalbooktitle format.btitle.no.dot "" connect.check "} {" *
+  originaledition   format.edition.check "" connect.check "} {" *
+  originalvolume    format.bvolume.check "" connect.check "} {" *
+  originalpages     format.bpages.check  "" connect.check "} {" *
+  originaladdress   "" connect.check "} {" *
+  originalpublisher "" connect.check "} {" *
   note              "" connect.check "}"  *
 }
 
@@ -4007,6 +4027,8 @@ FUNCTION {format.orig.note}
             { originalyear empty$
                 'skip$
                 { originalyear "\bibnodate" =
+                  originalyear "l" change.case$ "no date" = or
+                  originalyear "l" change.case$ "n.d."    = or
                     'skip$
                     { output.new.block
                       format.orig.year.note
@@ -4032,19 +4054,28 @@ FUNCTION {format.orig.note}
 }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %
-    % article in periodical: journal, magazine, newspaper, ...
+    % finish current entry
+    % by writing what's left on the stack and starting a new line
     %
-    % call with
-    %   formatted.pages  formatted.date   periodical
-    %
+FUNCTION {fin.entry}
+{ doi empty$
+    { output.end.block }
+    { output.new.block
+      format.doi
+      output.end.block
+    }
+  if$
+  "\PrintBackRefs{\CurrentBib}" write$ newline$
+  test
+    { "\vspace{\baselineskip}" write$ newline$ }
+    'skip$
+  if$
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 FUNCTION {periodical}
-{   %
-    % author or editor, year, title, englishtitle, type
-    %
+{
   author empty$
         %
         % no author: possibly special issue with editors as authors
@@ -4204,7 +4235,7 @@ FUNCTION {book}
     }
   if$
       %
-      % format address and publisher, check if address and publisher present
+      % format address and publisher
       %
   format.address.publisher.check
       %
@@ -4232,35 +4263,15 @@ FUNCTION {book}
   format.orig.note
   fin.entry
 }
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    %
-    % (translated) article or chapter in edited book
-    %
 FUNCTION {incollection}
 { author empty$
-        %
-        % no author: title serves as author.
-        % title formatted as article title (APA manual not consistent in this,
-        % compare statement on p. 119: ``treat as book title'' and
-        % example 8, p. 121: no underlining => article title)
-        %
     { editor.ne.trans
         { format.atitle.type.trans.check }
         { format.atitle.type.check }
       if$
       output.new.block
-        %
-        % format month and day as well when available
-        % esp. for ``collections'' that are not books,
-        % such as parts of internet documents
-        %
       format.year.month.day.check   add.period$
     }
-        %
-        % format author and year, and check if year is present
-        % format article title and check if title or type present
-        %
     { format.authors                start.new.block
       format.year.month.day.check   output.dot.new.block
       editor.ne.trans
@@ -4269,29 +4280,26 @@ FUNCTION {incollection}
       if$
     }
   if$
-      %
-      % format "In " editor " (Ed. \& Trans.), "
-      % booktitle, volume, edition, pages
-      %
-  output.new.block
-  format.in.editors.trans
-  format.bvol.edition.pages
-  booktitle  format.btitle.connect * add.period$
-      %
-      % format address and publisher, check if publisher present
-      %
+  editor     empty$
+  translator empty$ and
+  edition    empty$ and
+  volume     empty$ and
+  pages      empty$ and
+  chapter    empty$ and
+  booktitle  empty$ and
+    'skip$
+    {
+      output.new.block
+      format.in.editors.trans
+      format.bvol.edition.pages
+      booktitle  format.btitle.connect * add.period$
+    }
+  if$
   format.address.publisher.check
-      %
-      % if not empty, insert howpublished.
-      % (used if article is retrieved from the internet)
-      %
   format.howpublished  add.period$
-      %
-      % format url
-      %
   url empty$
     'skip$
-    { % Clear the stack
+    {
       duplicate$ empty$
         'skip$
         { output.new.block }
@@ -4299,10 +4307,6 @@ FUNCTION {incollection}
       format.url
     }
   if$
-      %
-      % format original publication (of reprint/translation)
-      % and optional note
-      %
   format.orig.note
   fin.entry
 }
@@ -4351,7 +4355,7 @@ FUNCTION {format.tr.title.number}
         { "" }
         { % Now, we're in the regular situation with at least a
           % number, a type, a volume, or an edition.
-          "\APACbVolEdTR{" format.bvol.edition.check * "}{" *
+          "\APACbVolEdTR {" format.bvol.edition.check * "}{" *
           format.tr.number *  "}" *
         }
       if$
@@ -4522,15 +4526,15 @@ FUNCTION {intechreport}
       %
       % volume, edition, report type and number, pages
       %
-  "\APACbVolEdTRpgs{" format.bvol.edition.check * "}{" *
+  "\APACbVolEdTRpgs {" format.bvol.edition.check * "} {" *
   format.tr.number *
-  "}{" * pages format.bpages.check *
+  "} {" * pages format.bpages.check *
   "}" *
       %
   booktitle format.btitle.connect *
   add.period$
       %
-      % format address and publisher, check if publisher present
+      % format address and publisher
       %
   format.address.institution.check
     %
@@ -4581,7 +4585,7 @@ FUNCTION {lecture}
         { "symposium and howpublished missing in " cite$ * warning$
           ""
         }
-        { "\APAChowpublished{" howpublished * "}" * }
+        { "\APAChowpublished {" howpublished * "}" * }
       if$
       address connect.with.comma.check
     }
@@ -4685,11 +4689,9 @@ FUNCTION {thesis}
         % pop default published thesis, top is default unpublished thesis
         %
     { pop$
-      type empty$
-        school empty$
-          originalyear empty$
-          and
-        and
+      type         empty$
+      school       empty$ and
+      originalyear empty$ and
         { pop$
           ""
         }
