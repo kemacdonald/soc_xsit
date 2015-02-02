@@ -1,0 +1,404 @@
+---
+title: "Soc-Xsit Reliablity"
+author: "Kyle MacDonald"
+date: "January 17, 2015"
+output: html_document
+---
+
+### Script to analyze Soc-Xsit reliablity experiment
+
+```{r clear workspace}
+rm(list=ls())
+```
+
+Load libraries.
+
+```{r load libraries, message=FALSE, warning=FALSE}
+source("/Users/kmacdonald/Documents/programming/rscripts/useful.R")
+library(reshape2)
+library(plyr)
+library(dplyr)
+library(bootstrap)
+library(lme4)
+library(ggplot2)
+library(directlabels)
+```
+
+Set directory and read in data.
+
+```{r set wd, echo=FALSE}
+setwd("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/adult-live/")
+
+# pilot 1
+#df_reliability <- read.csv("soc_xsit_live_reliability_100v0.csv")
+
+# pilot 2
+#df_reliability_v1 <- read.csv("soc_xsit_reliabiliy_parametric.csv")
+
+
+# full experiment
+df_reliability <- read.csv("soc_xsit_reliabiliy_parametric_full.csv")
+
+# create clean reliablity variable
+df_reliability$prop_cond_clean <- revalue(df_reliability$condition,
+                                   c("0%_reliable" = "0%",
+                                     "25%_reliable" = "25%",
+                                     "50%_reliable" = "50%",
+                                     "75%_reliable" = "75%",
+                                     "100%_reliable" = "100%"))
+
+# change order of condition factor
+df_reliability$prop_cond_clean <- factor(df_reliability$prop_cond_clean, 
+                                         levels = c("0%", "25%", 
+                                           "50%", "75%", "100%"))
+```
+
+#### Get the number of subjects in each experiment and condition.
+
+```{r get number of subs, echo=FALSE}
+df_reliability %>%
+      group_by(prop_cond_clean) %>%
+      summarise(n_subs = n_distinct(subids))
+```
+
+#### Filters and exclusionary criteria
+
+```{r preliminary cleaning and variable creation}
+# remove trials with 0 RT
+df_reliability <- filter(df_reliability, rt > 0)
+
+# clean RTs
+df_reliability <- df_reliability %>%
+    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) | 
+                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                    0,1))
+
+# Create continuous variable for reliability
+df_reliability$reliability[df_reliability$prop_cond_clean=="0% Reliable"] <- .00
+df_reliability$reliability[df_reliability$prop_cond_clean=="25 Reliable"] <- .25
+df_reliability$reliability[df_reliability$prop_cond_clean=="50% Reliable"] <- .50
+df_reliability$reliability[df_reliability$prop_cond_clean=="75% Reliable"] <- .75
+df_reliability$reliability[df_reliability$prop_cond_clean=="100% Reliable"] <- 1.00
+```
+
+Set up filters. First for exposure trials:
+
+```{r filters exposure trials}
+# all expsoure trials
+df_expo_all <- df_reliability %>% 
+    filter(trial_category == "exposure",
+           include_good_rt == 1)
+
+# exposures trials in the familiarization block
+df_expo_fam <- df_reliability %>%
+    filter(trial_category == "exposure" & 
+               block == "familiarization",
+           include_good_rt == 1)
+
+# exposure trials in the test block
+df_expo_test <- df_reliability %>% 
+    filter(trial_category == "exposure" & 
+               block == "test",
+           include_good_rt == 1)
+```
+
+Test trials:
+
+```{r filters test trials}
+# all test trials
+df_test_all <- df_reliability %>% 
+    filter(trial_category == "test",
+           include_good_rt == 1)
+
+# test trials in the familiarization block
+df_test_fam <- df_reliability %>%
+    filter(trial_category == "test" & 
+               block == "familiarization",
+           include_good_rt == 1)
+
+# test trials in the test block
+df_test_test <- df_reliability %>% 
+    filter(trial_category == "test" & 
+               block == "test",
+           include_good_rt == 1)
+```
+
+Here we add whether participant chose the target of eye gaze on exposure trials in the test block.
+
+```{r chose gaze target on exposure trials test block}
+df_correct_expo_test <- df_expo_test %>%
+    select(subids, gaze_target, chosen, 
+           correct_exposure = correct, itemNum) 
+
+df_test_test <- merge(df_test_test, df_correct_expo_test, 
+                          by=c("subids", "itemNum"))
+```
+
+Now we can add a filter that excludes those test trials on which the participant did not choose the target of eye gaze on exposure trials. 
+
+```{r eye gaze trial filter}
+df_test_test_filt <- filter(df_test_test, correct_exposure == T)
+```
+
+#### Analyze Familiarization Block
+
+RT on exposure trials.
+
+```{r rt exposure trials fam block}
+ms_rt_expo_fam <- df_expo_fam %>%
+    group_by(prop_cond_clean) %>%
+    summarise(rt_exposure = mean(rt),
+              ci_low = ci.low(rt),
+              ci_high = ci.high(rt))
+
+ggplot(ms_rt_expo_fam, 
+       aes(x=prop_cond_clean, y=rt_exposure)) +
+    geom_pointrange(aes(ymin=rt_exposure - ci_low,
+                        ymax=rt_exposure + ci_high), 
+                    width = .1, size = 0.8) + 
+    scale_y_continuous(limits=c(500,4500)) +
+    ylab("Response Time (ms)") +
+    xlab("Level of Reliability") +
+    theme(text = element_text(size=16),
+          axis.text.x  = element_text(angle=0, vjust=0.5, size=12))
+```
+
+Accuracy on test trials in familiarization block
+
+```{r acc test trials familiarization block}
+ms_test_fam <- df_test_fam %>%
+      group_by(prop_cond_clean, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ggplot(ms_test_fam, 
+       aes(x=prop_cond_clean, y=accuracy, 
+           group=trialType, colour=trialType)) +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), 
+                    width = .1, size=0.7) +
+    geom_hline(yintercept=0.5, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) + 
+    geom_smooth(method='lm') +
+    ggtitle("Accuracy on Test Trials in Familiarization Block")
+
+# model 
+m1_test_fam <- glmer(correct ~ trialType * prop_cond_clean +
+                              (trialType | subids),
+            data = df_test_fam, nAGQ = 0,
+            family = binomial)
+summary(m1_test_fam)
+
+# # reliablity as continuous 
+m2_test_fam <- glmer(correct ~ trialType * reliability +
+                              (trialType | subids),
+            data = df_test_fam, 
+            family = binomial)
+summary(m2_test_fam)
+```
+
+Look at accuracy on familiarization test trials over time.
+
+```{r acc test trials fam block over time}
+ms_test_fam_trials <- df_test_fam %>%
+      group_by(prop_cond_clean, trialType, itemNum) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ggplot(ms_test_fam_trials, 
+       aes(x=itemNum, y=accuracy, color = trialType)) +
+    geom_line() +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), 
+                    width = .1, size=0.7) +
+    facet_wrap(~prop_cond_clean) +    
+    geom_hline(yintercept=0.5, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) + 
+    ggtitle("Accuracy on Test Trials during Familiarization Trials")
+```
+
+#### Analyze performance on test block
+
+Anayze RT on exposure trials in the test block.
+
+```{r rt exposure trials test block}
+ms_rt_expo_test <- df_expo_test %>%
+    group_by(prop_cond_clean, trialType) %>%
+    summarise(rt_exposure = mean(rt),
+              ci_low = ci.low(rt),
+              ci_high = ci.high(rt))
+
+ggplot(ms_rt_expo_test, 
+       aes(x=prop_cond_clean, y=rt_exposure, color = trialType)) +
+    geom_pointrange(aes(ymin=rt_exposure - ci_low,
+                        ymax=rt_exposure + ci_high), 
+                    width = .1, size = 0.8) + 
+    scale_y_continuous(limits=c(500,4000)) +
+    ylab("Response Time (ms)") +
+    xlab("Condition") +
+    theme(text = element_text(size=14))
+```
+
+Accuracy on familiarization trials in test block
+
+```{r acc fam trials in test block}
+ms_expo_test <- df_test_test %>%
+      group_by(prop_cond_clean) %>%
+      summarise(accuracy = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure))
+
+ggplot(ms_expo_test, 
+       aes(x=prop_cond_clean, y=accuracy)) +
+    geom_line(size=0.7) +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), width=.1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) +
+    xlab("Level of Reliablity") + 
+    ylab("Prop. Chose Target of Gaze") +
+    labs(colour = "Trial Type") +
+    theme(text = element_text(size=16))
+```
+
+Accuracy on exposure trials in test block for each subject. 
+
+```{r acc fam trial in test block ind subs}
+ss_expo_test <- df_test_test %>%
+      group_by(prop_cond_clean, subids) %>%
+      summarise(accuracy = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure))
+
+qplot(accuracy, data = ss_expo_test, facets = ~ prop_cond_clean)
+```
+
+Accuracy on test trials in the test block
+
+```{r acc on test trials test block}
+ms_test_test <- df_test_test %>%
+      group_by(prop_cond_clean, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+```
+
+Now plot.
+
+```{r acc test expt 3 cogsci plot}
+ggplot(data=ms_test_test, 
+       aes(x=prop_cond_clean, y=accuracy, group=trialType,
+           color=trialType, label = trialType)) + 
+    geom_pointrange(aes(ymin=accuracy - ci_low, 
+                        ymax=accuracy + ci_high), 
+                    width = .05, size=0.6) +
+    geom_smooth(method='lm', se=F) +
+    geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) +
+    scale_colour_manual(values=c("#1f78b4", "red")) +
+    xlab("Level of Reliability") + 
+    ylab("Prop. Choosing Repeated Referent") +
+    labs(color = "Trial Type") +
+    guides(color=FALSE) +
+    geom_dl(method=list("last.qp",cex=1,hjust=-.15)) +
+    theme(text = element_text(size=14), 
+          axis.title.y=element_text(vjust=1),
+          axis.title.x=element_text(vjust=-0.3),
+          legend.justification=c(1,1),
+          legend.position = c(1,1)) 
+
+# save
+ggsave("acc-test-expt3.pdf",dpi=600,title="Experiment 3 Accuracy",
+       path = "/Users/kmacdonald/Documents/Projects/SOC_XSIT/cogsci-2015/plots_figs",
+       width=6, height=4)
+```
+
+Now look at accuracy over test trials in the test block
+
+```{r acc test across trials}
+ms_test_trials <- df_test_test %>%
+      group_by(prop_cond_clean, trialType, itemNum) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ggplot(ms_test_trials, 
+       aes(x=itemNum, y=accuracy, 
+           colour=prop_cond_clean,
+           linetype=trialType)) +
+    geom_line(size = 0.8) +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), 
+                    width=.1, size = 0.7) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) +
+    xlab("Trial Number") + 
+    ylab("Proportion Correct") +
+    labs(colour = "Condition", linetype = "Trial Type") +
+    theme(text = element_text(size=16))
+```
+
+Plot accuracy on test trials in test block, filtering out trials on which participant did not choose target of gaze. 
+
+```{r acc test trials test block eye gaze filter}
+ms_test_test_filt <- df_test_test_filt %>%
+      group_by(prop_cond_clean, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ggplot(ms_test_test_filt, 
+       aes(x=prop_cond_clean, y=accuracy, 
+           group=trialType, colour=trialType)) +
+    geom_point(size=2.5) +
+    geom_line(size=0.7) +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), width=.1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) +
+    scale_colour_manual(values=c("firebrick1", "dodgerblue")) +
+    xlab("Level of Reliablity") + 
+    ylab("Prop. Choosing Repeated Referent") +
+    labs(colour = "Trial Type") +
+    theme(text = element_text(size=16))
+```
+
+Look at individual subs accuracy
+
+```{r ind subs accuracy}
+ss_test <- df_test_test %>%
+    group_by(subids, trialType, prop_cond_clean) %>%
+    summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+qplot(accuracy, geom="bar", facets=trialType~prop_cond_clean, 
+      main = c("Histogram Acc Test"), data=ss_test)
+```
+
+Boxplot accuracy on test
+
+```{r acc test boxplot}
+qplot(prop_cond_clean, accuracy, data=ss_test, geom=c("boxplot", "jitter"), 
+   fill=prop_cond_clean) + facet_grid(~trialType)
+```
+
+Model test performance
+
+```{r models}
+# reliablity as factor
+m1 <- glmer(correct ~ trialType + prop_cond_clean +
+                              (trialType | subids),
+            data = df_test_test, nAGQ = 0,
+            family = binomial)
+summary(m1)
+
+# # reliablity as continuous 
+m2 <- glmer(correct ~ trialType * reliability +
+                              (trialType | subids),
+            data = df_test_test, 
+            family = binomial)
+summary(m2)
+```

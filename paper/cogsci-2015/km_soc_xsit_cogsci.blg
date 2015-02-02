@@ -1,0 +1,60 @@
+This is BibTeX, Version 0.99d (TeX Live 2013)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: km_soc_xsit_cogsci.aux
+The style file: apacite.bst
+Reallocated glb_str_ptr (elt_size=4) to 20 items from 10.
+Reallocated global_strs (elt_size=20001) to 20 items from 10.
+Reallocated glb_str_end (elt_size=4) to 20 items from 10.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 9000 items from 6000.
+Database file #1: soc-xsit.bib
+apacite.bst [2009/03/01 v4.05 APA bibliography style]
+Warning--No address in bloom2002children
+Warning--No address in clark2009first
+Warning--No publisher in vul2009one
+Warning--No address in vul2009one
+Warning--No journal in yurovsky2014algorithmic
+You've used 17 entries,
+            6361 wiz_defined-function locations,
+            1282 strings with 12353 characters,
+and the built_in function-call counts, 32080 in all, are:
+= -- 3933
+> -- 279
+< -- 1543
++ -- 1680
+- -- 34
+* -- 2098
+:= -- 5954
+add.period$ -- 70
+call.type$ -- 17
+change.case$ -- 86
+chr.to.int$ -- 0
+cite$ -- 39
+duplicate$ -- 887
+empty$ -- 1251
+format.name$ -- 470
+if$ -- 6020
+int.to.chr$ -- 0
+int.to.str$ -- 34
+missing$ -- 0
+newline$ -- 412
+num.names$ -- 136
+pop$ -- 519
+preamble$ -- 1
+purify$ -- 68
+quote$ -- 0
+skip$ -- 2000
+stack$ -- 0
+substring$ -- 1869
+swap$ -- 513
+text.length$ -- 41
+text.prefix$ -- 0
+top$ -- 1
+type$ -- 1424
+warning$ -- 5
+while$ -- 171
+width$ -- 0
+write$ -- 525
+(There were 5 warnings)

@@ -1,0 +1,336 @@
+<html>
+    <head>
+        <title>Word Learning</title>
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+        <script src="mmturkey.js"></script>
+        <link type="text/css" href ="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" rel="stylesheet" />
+        <link rel="stylesheet" href="style.css" />
+
+    </head>
+
+             
+    <body>
+    	<!--PROGRESS BAR-->
+    	<div id="main">
+    		<p id="text1" style="display:none">Progress:</p>
+    		<div id="progressbar" style="display:none"></div>
+    		<p id="text_fam" style="display:none">After the video finishes, click Continue button to proceed.</p>
+    		<p id="text_test" style="display:none">Click the picture that goes with this word. </br> (If you are not sure, take your best guess.)</p>
+    	</div>
+        
+        <!--INSTRUCTIONS SLIDE-->
+        <div class="slide" id="instructions">
+            <img src="images/stanford.png" alt="Stanford University">
+                <p id='logo-text'>Stanford Language and Cognition Lab</p>
+                <p class="block-text">In this experiment, you will meet a woman named Taylor, who will look at some objects and talk about them. Your task is to figure out which word goes with each object. </p>
+        
+        
+        <p class='block-text'><b>Please ensure that your volume is loud enough that you will be able to hear the words.</b></p>
+    
+                        <!--CHANGE BACK TO INSTRUCTIONS2 -->
+
+                <button type="button" onClick="this.blur(); 
+                showSlide('instructions2')">My volume is turned up and I am 
+                ready to begin</button>
+        <br>
+                <p class="block-text" id="legal">By answering the following
+                 questions, you are participating in a study being 
+                 performed by cognitive scientists in the Stanford Department of
+                 Psychology. If you have questions about this research, please 
+                 contact us at <a href="mailto:languagecoglab@gmail.com">
+                 languagecoglab@gmail.com</a>.
+                
+                You must be at least 18 years old to participate. Your 
+                participation in this research is voluntary. You may decline to 
+                answer any or all of the following questions. You may decline 
+                further participation, at any time, without adverse 
+                consequences. Your anonymity is assured; the researchers who 
+                have requested your participation will not receive any personal 
+                information about you.
+                <br><br>
+                We have recently been made aware that your public <a href="http://www.amazon.com">Amazon.com</a> profile can be accessed via your worker ID if you do not choose to opt out. If you would like to opt out of this feature, you may follow instructions available here:
+                <br>
+                <a href="http://www.amazon.com/gp/help/customer/display.html?nodeId=16465241">http://www.amazon.com/gp/help/customer/display.html?nodeId=16465241</a>
+                
+                </p>
+
+        </div>
+        
+    <!--INSTRUCTIONS 2 SLIDE-->
+    <div class="slide" id="instructions2">
+                <p class="block-text">First, you will see four examples in 
+                English to familiarize you with the task.<br><br>
+                On each trial, you will see pictures of common objects and 
+                hear Taylor say an English word. <br><br>
+
+                Please click on the object that you think each word 
+                goes with.<br> <b>Note: there will be a short delay between
+                when you hear the word and when your response will be accepted.</b><br><br>
+
+                Click the Continue button to begin.</p>
+                
+                <center><button type="button" onClick="this.blur(); 
+                experiment.next()">Continue</button></center>
+        </div>
+
+    <!--INSTRUCTIONS 3 SLIDE-->
+    <div class="slide" id="instructions3">
+              <p class="block-text">You have finished the examples. 
+              You will now begin learning the new language. <br><br>
+              On each trial, you will see pictures of unfamiliar objects and 
+              hear a word in the new language. To advance each trial, please either click on the object that you think each word goes with, or click the Continue button. <br><br>
+              Click the Continue button to begin.</p>
+
+              <center><button type="button" onClick="this.blur(); 
+              experiment.next()">Continue</button></center>
+          </div>
+
+<!--FAMILIARIZATION EXPOSURE SLIDE-->
+<div class="slide" id="fam">
+            
+    <div id="main">
+          
+        
+<!--PICS 1-2 and continue button -->
+      <table>
+        <colgroup>
+          <col style="width: 33%" />
+          <col style="width: 33%" />
+          <col style="width: 33%" />
+        </colgroup>
+
+        <!--ROW 1-->
+        <tr>
+          <td height="100">
+          </td>
+
+          <td height="100">
+          </td>
+
+          <td height="100">
+          </td>
+        </tr>
+        <!--ROW 2-->
+        <tr>
+          <td align="center">
+          </td>
+          <td align="center">
+          	<div id="video_player_fam">
+		            <video id="video1_fam" width="275" height="200">
+		             <source src="stimuli/videos/down-left-4sec.mov" type="video/mp4">
+		             <source src="stimuli/videos/down-left-4sec.ogg" type="video/ogg">
+		             Your browser does not support the video tag.
+		       </video>
+          	</div>
+          </td>
+          <td align="center">
+          </td>
+        </tr>
+	<!--ROW 3-->        
+        <tr>
+          <td align="center">
+              <div class="xsit_pic_fam" id="pic1_fam">
+                    <img src="stimuli/images/Novel6.jpg" 
+                    width="175" border="5px solid white">
+              </div>
+          </td>
+
+          <td align="center">
+          	<center><button type="button" onClick="this.blur()">Continue</button></center>
+          </td>
+
+          <td align="center">
+              <div class="xsit_pic_fam" id="pic2_fam">
+                    <img src="stimuli/images/Novel13.jpg" 
+                    width="175" border="5px solid white">
+              </div>
+          </td>
+
+        </tr>
+
+      </table>
+  </div>  
+</div>	
+
+<!--FAMILIARIZATION TEST SLIDE-->
+<div class="slide" id="famTest">
+            
+    <div id="main">
+          
+        
+<!--PICS 1-2 and continue button -->
+      <table>
+        <colgroup>
+          <col style="width: 33%" />
+          <col style="width: 33%" />
+          <col style="width: 33%" />
+        </colgroup>
+
+        <!--ROW 1-->
+        <tr>
+          <td height="100">
+          </td>
+
+          <td height="100">
+          </td>
+
+          <td height="100">
+          </td>
+        </tr>
+        <!--ROW 2-->
+        <tr>
+          <td align="center">
+          </td>
+          <td align="center">
+          	<div id="video_player_fam">
+		            <video id="video1_fam_test" width="275" height="200">
+		             <source src="stimuli/videos/down-left-4sec.mov" type="video/mp4">
+		             <source src="stimuli/videos/down-left-4sec.ogg" type="video/ogg">
+		             Your browser does not support the video tag.
+		       </video>
+          	</div>
+          </td>
+          <td align="center">
+          </td>
+        </tr>
+	<!--ROW 3-->        
+        <tr>
+          <td align="center">
+              <div class="xsit_pic_fam_test" id="pic1_fam">
+                    <img src="stimuli/images/Novel6.jpg" 
+                    width="175" border="5px solid white">
+              </div>
+          </td>
+
+          <td align="center">
+          	
+          </td>
+
+          <td align="center">
+              <div class="xsit_pic_fam_test" id="pic2_fam">
+                    <img src="stimuli/images/Novel13.jpg" 
+                    width="175" border="5px solid white">
+              </div>
+          </td>
+
+        </tr>
+
+      </table>
+  </div>  
+</div>
+
+
+<!--TEST SLIDE-->
+<div class="slide" id="test">
+            
+    <div id="main">
+          
+        
+<!--PICS 1-2 and continue button -->
+      <table>
+        <colgroup>
+          <col style="width: 33%" />
+          <col style="width: 33%" />
+          <col style="width: 33%" />
+        </colgroup>
+
+        <!--ROW 1-->
+        <tr>
+          <td align="center">
+              <div class="xsit_pic_test" id="pic1_test">
+                    <img src="stimuli/images/Novel6.jpg" 
+                    width="175" border="5px solid white">
+              </div>
+          </td>
+
+          <td align="center">
+          </td>
+
+          <td align="center">
+              <div class="xsit_pic_test" id="pic2_test">
+                    <img src="stimuli/images/Novel13.jpg" 
+                    width="175" border="5px solid white">
+              </div>
+          </td>
+        </tr>
+        <!--ROW 2-->
+        <tr>
+          <td align="center">
+          </td>
+          <td align="center">
+          	<div id="video_player_test">
+		            <video id="video1_test" width="275" height="200">
+		             <source src="stimuli/videos/down-left-4sec.mov" type="video/mp4">
+		             <source src="stimuli/videos/down-left-4sec.ogg" type="video/ogg">
+		             Your browser does not support the video tag.
+		       </video>
+          	</div>
+          </td>
+          <td align="center">
+          </td>
+        </tr>
+	<!--ROW 3-->        
+        <tr>
+          <td align="center">
+              <div class="xsit_pic_test" id="pic3_test">
+                    <img src="stimuli/images/Novel6.jpg" 
+                    width="175" border="5px solid white">
+              </div>
+          </td>
+
+          <td align="center">
+          </td>
+
+          <td align="center">
+              <div class="xsit_pic_test" id="pic4_test">
+                    <img src="stimuli/images/Novel13.jpg" 
+                    width="175" border="5px solid white">
+              </div>
+          </td>
+
+        </tr>
+
+      </table>
+  </div>  
+</div>	
+
+      <audio id="sound_player">
+        	<source src="stimuli/sounds/squirrel.mp3" type="audio/mp3">
+      </audio>   
+
+
+
+    
+    <div class="slide" id="blankSlide"> </div>
+        
+        <div class="slide" id="finished">
+            You're finished - thanks for participating! Submitting to 
+            Mechanical Turk...
+        </div>
+
+
+    <!--Q&A Slide-->
+    <div class="slide" id="qanda">
+      <center>
+                <p class="block-text">Please answer these questions to complete 
+                this HIT</p>
+          <br>
+          <p>What do you think this experiment is about?</p>
+          <textarea id="about" rows="7" cols="70" resize="none">
+          </textarea><br>
+          <br>
+          <br>
+          <p>Do you have any comments? Is anything broken?</p>
+          <textarea id="broken" rows="7" cols="70" resize="none">
+          </textarea><br>
+          <br>
+                
+               <button type="button" onClick="this.blur(); experiment.end()">
+               Finish</button></center>
+        </div>
+        
+        <script src="soc_xsit_reliability_parametric.js"></script>
+    </body>
+</html>

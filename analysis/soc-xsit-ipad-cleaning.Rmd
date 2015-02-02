@@ -1,0 +1,372 @@
+---
+title: "iPad-data-cleaning"
+author: "Kyle MacDonald"
+date: "August 4, 2014"
+output: html_document
+---
+
+Script to munge ipad data for soc-xsit project
+
+Load libraries for data manipulation
+
+```{r load_libraries, warning=FALSE, message=FALSE}
+library(plyr)
+library(dplyr)
+library(directlabels)
+library(stringr)
+```
+
+Set paths for loading and saving data.
+
+```{r set paths}
+path_v1 <- "/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/processing-2/"
+path_v2 <- "/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/processing-2/subids-expt/"
+path_debug <- "/Users/kmacdonald/Documents/Projects/SOC_XSIT/raw_data/child/debug/"
+write_path <- "/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/child/"
+```
+
+Read in demographic csv file
+
+```{r read in data}
+demo <- read.csv(paste(path_v1, "soc-xsit-demo-data.csv", sep=""))
+
+# calculate ages 
+demo$birthday = as.Date(demo$birthday, format = "%m/%d/%y")
+demo$run_date = as.Date(demo$run_date, format = "%m/%d/%y")
+demo$age = (demo$run_date - demo$birthday)/365
+demo$age = signif(as.numeric(as.character(demo$age)), 3) # num with 3 digits
+
+# create age groups
+demo <- demo %>%
+    mutate(age_bin = ifelse(age >= 2 & age < 3, 2, 
+                            ifelse(age >= 3 & age < 4, 3, 
+                                   ifelse(age >= 4 & age < 5, 4, 
+                                          ifelse(age >= 5 & age < 6, 5,
+                                                 ifelse(age >= 6 & age < 7, 6, NA))))))
+```
+
+#### Process data - Version 1
+
+Read in the data, which are stored in separate .txt files for each participant.
+
+```{r munging}
+# Create empty arrays for binding 
+all.data <- as.data.frame(matrix(ncol = 0, nrow = 0))
+
+#grab all file names from data dir. 
+#These are all of the kids for whom we have ipad data
+all_results <- list.files(path = path_v1, pattern = 'results_*', all.files = FALSE)
+
+#function to munge the data
+#takes in a list of filenames (.txt of each kid's data), 
+#strips html escape characters, and grabs the relevant info for each trial
+#returns data frame with all the data
+bing_clean <- function(filename) {
+        x <- readLines(paste(path_v1, filename,sep=""),warn=FALSE)
+        x <- unlist(strsplit(x,'<li>'))
+        
+        #grab condition 
+        condition <- x[3]
+
+        if (grepl(pattern="Social", condition)) {
+                condition <- str_extract(pattern="Social", condition)
+        } else {
+                condition <- str_extract(pattern="No-social", condition)
+        }
+                
+        # grab trial information 
+        x <- x[11:150]
+        
+        #strip html characters
+        x <- gsub('\\"',"", x)
+        x <- gsub("\\\\\"","",x)
+        x <- gsub("</li>","",x)
+        x <- gsub("</ul>\\},\\{<ul>","",x)
+        x[length(x)] <- gsub("</ul>\\}]","",x[length(x)])
+        x <- gsub("^.*?: ","",x)
+        
+        #grab date 
+        date <- str_sub(filename,20,36)
+        date <- gsub('_','',date)
+        date <- gsub('\\.','',date)
+        #grab id
+        id <- str_sub(filename,0,2)
+        id <- gsub('-','',id)
+        #bind to data frame
+        x <- as.data.frame(matrix(x,14,10,byrow=TRUE), stringsAsFactors=F)
+        x$V11 <- date
+        x$V12 <- id
+        x$V13 <- condition
+        return(x) ## need this to get the data frame!
+}
+
+#apply munging function to each kid's data file
+all.data <- ldply(.data = all_results, .fun = bing_clean)
+
+#add variable names to columns
+names(all.data) <- c("itemNum","trialType","samePos","chosen","chosen_idx",
+              "kept","kept_idx","rt","faceVid","faceIdx", "date", "subid", "condition")
+ 
+```
+
+Tag the different trial types:  
+        * example 
+        * exposure
+        * test   
+        
+Arrange the data file with sensible column order.
+
+```{r tag-trial-types}
+all.data <- all.data %>% 
+    group_by(date) %>%
+    mutate(trial = c(1:14),
+           trial_cat = ifelse(trial %in% c(1:2),"example",
+                              ifelse(trial %in% c(3,5,7,9,11,13),"exposure",
+                                     ifelse(trial %in% c(4,6,8,10,12,14),"test",NA)))) %>%
+    arrange(date, trial)
+```
+
+Clean up the data: 
+* figure out if child answered correctly on that trial
+* relabel variables and change variable types for analysis 
+
+```{r data-cleaning}
+#find whether child's choice was correct 
+#for exposure trials, we check the index of eye gaze against child's choice
+#for test trials, we check the kept image against the child's choice 
+all.data <- all.data %>% 
+    group_by(subid) %>%
+    mutate(correct = ifelse(trial_cat == "example", 
+                            chosen[1] == "flower" | chosen[2] == "truck",
+                            ifelse(trial_cat == "exposure", chosen_idx == faceIdx,
+                                   ifelse(trial_cat == "test" , chosen == kept, NA))))
+
+#relabel variables and variable types for analysis
+all.data$rt <- as.integer(all.data$rt)
+all.data$condition <- as.factor(all.data$condition)
+```
+
+Add demographic data for each child (age and gender).
+
+```{r add-demographics, warning=FALSE}
+all.data <- join(all.data, demo, by = "subid")
+
+#reorder columns to put id and demo variables first
+all.data <- all.data[c("subid","birthday","gender","age","age_bin","date", "condition", 
+                       "trial","itemNum","trialType","samePos","chosen","chosen_idx","kept",
+                       "kept_idx","rt","faceVid","faceIdx", "trial_cat", 
+                       "correct", "include", "version_expt", "condition_expt")]
+```
+
+Fix trial type labels -> not tracked correctly during experiment because we randomly generated 
+the index that selected from the trial type array.
+
+```{r relabel trial types}
+exposure.trials <- all.data %>%
+                filter(trial_cat == "exposure") %>%
+                mutate(trial_type_redo = ifelse(chosen == kept,1,2)) %>%
+                select(subid, itemNum, trial_type_redo, chosen_exposure = chosen, 
+                       kept_exposure = kept, correct_exposure = correct)
+
+test.trials <- all.data %>% filter(trial_cat == "test") 
+
+test.trials <- join(test.trials,exposure.trials, by=c("subid","itemNum"))
+
+test.trials$trial_type_redo <- factor(test.trials$trial_type_redo, 
+                                      labels = c('Same','Switch'))
+```
+
+
+#### Process version 2 data
+
+Script to munge ipad data for soc-xsit project. This is version 2, which handles data output from the second version of the experiment, which stores Subject IDs are in the data and not the filename.
+
+Read in data
+
+```{r read in version 2 data}
+all.data.2 <- as.data.frame(matrix(ncol = 0, nrow = 0))
+
+#grab all file names from data dir. 
+#These are all of the kids for whom we have ipad data
+all_results_2 <- list.files(path = path_v2, pattern = 'results_*', all.files = FALSE)
+
+# debugging
+# all_results_debug <- list.files(path = path_debug, pattern = 'results_*', all.files = FALSE)
+
+#function to munge the data
+#takes in a list of filenames (.txt of each kid's data), 
+#strips html escape characters, and grabs the relevant info for each trial
+#returns data frame with all the data
+bing_clean_2 <- function(filename) {
+        x <- readLines(paste(path_v2, filename,sep=""),warn=FALSE)
+        x <- unlist(strsplit(x,'<li>'))
+        
+        #grab id
+        regexp <- "[[:digit:]]+" # extract just numbers
+        id <- x[3]
+        id <- str_extract(id, regexp)
+        id <- as.numeric(id)
+        
+        #grab condition 
+        condition <- x[4]
+
+        if (grepl(pattern="Social", condition)) {
+                condition <- str_extract(pattern="Social", condition)
+        } else {
+                condition <- str_extract(pattern="No-social", condition)
+        }
+                
+        # grab trial information 
+        x <- x[12:151]
+        
+        #strip html characters
+        x <- gsub('\\"',"", x)
+        x <- gsub("\\\\\"","",x)
+        x <- gsub("</li>","",x)
+        x <- gsub("</ul>\\},\\{<ul>","",x)
+        x[length(x)] <- gsub("</ul>\\}]","",x[length(x)])
+        x <- gsub("^.*?: ","",x)
+        
+        #grab date 
+        date <- str_sub(filename,20,36)
+        date <- gsub('_','',date)
+        date <- gsub('\\.','',date)
+        
+        #bind to data frame
+        x <- as.data.frame(matrix(x,14,10,byrow=TRUE), stringsAsFactors=F)
+        x$V11 <- date
+        x$V12 <- id
+        x$V13 <- condition
+        return(x) ## need this to get the data frame!
+}
+
+#apply munging function to each kid's data file
+all.data.2 <- ldply(.data = all_results_2, .fun = bing_clean_2)
+
+#add variable names to columns
+names(all.data.2) <- c("itemNum","trialType","samePos","chosen","chosen_idx",
+              "kept","kept_idx","rt","faceVid","faceIdx", "date", "subid", "condition")
+```
+
+Tag the different trial types:  
+        * example 
+        * exposure
+        * test   
+        
+Arrange the data file with sensible column order.
+
+```{r tag-trial-types version 2}
+all.data.2 <- all.data.2 %>% 
+    group_by(date) %>%
+    mutate(trial = c(1:14),
+           trial_cat = ifelse(trial %in% c(1:2),"example",
+                              ifelse(trial %in% c(3,5,7,9,11,13),"exposure",
+                                     ifelse(trial %in% c(4,6,8,10,12,14),"test",NA)))) %>%
+    arrange(date, trial)
+```
+
+Clean up the data: Step 1
+* revalue face vid on exposure trials because the tracking was off in the experiment. faceVid_expo tracks the correct video that was shown during exposure.
+
+Note: subid 39's face vids were tracked correctly. So we filter these data out and process differently.
+
+```{r revalue face vids}
+all.data.39 <- filter(all.data.2, subid == 39) # sub 39
+all.data.not39 <- filter(all.data.2, subid != 39) # all other subs
+
+# get face vids from test trials
+face_vids_exposure <- all.data.not39 %>%
+    filter(trial_cat == "test") %>%
+    mutate(faceVid_expo = faceVid) %>%
+    mutate(faceVid_expo_idx = ifelse(faceVid_expo == "LDkidslonger", 0, 1)) %>%
+    select(subid, itemNum, faceVid_expo, faceVid_expo_idx)
+
+# process sub 39
+face_vids_exposure_39 <- all.data.39 %>%
+    filter(trial_cat == "exposure") %>%
+    mutate(faceVid_expo = faceVid) %>%
+    mutate(faceVid_expo_idx = ifelse(faceVid_expo == "LDkidslonger", 0, 1)) %>%
+    select(subid, itemNum, faceVid_expo, faceVid_expo_idx)
+
+# join the two face vid exposure tracking data frames 
+face_vids_exposure <- rbind(face_vids_exposure, face_vids_exposure_39)
+
+# join the correct face vid exposure tracking with the rest of the trial information
+all.data.2 <- merge(all.data.2, face_vids_exposure, by=c("subid", "itemNum"))
+```
+
+Clean up data 2: Step 2
+* figure out if child answered correctly on that trial
+* relabel variables and change variable types for analysis
+
+```{r version 2 data-cleaning and correct computation}
+#find whether child's choice was correct 
+#for exposure trials, we check the index of eye gaze against child's choice
+#for test trials, we check the kept image against the child's choice 
+all.data.2 <- all.data.2 %>% 
+    group_by(subid) %>%
+    mutate(correct = ifelse(trial_cat == "example", 
+                            chosen[1] == "flower" | chosen[2] == "truck",
+                            ifelse(trial_cat == "exposure", chosen_idx == faceVid_expo_idx,
+                                   ifelse(trial_cat == "test", chosen == kept, NA))))
+
+#relabel variables and variable types for analysis
+all.data.2$rt <- as.integer(all.data.2$rt)
+all.data.2$condition <- as.factor(all.data.2$condition)
+```
+
+Add demographic data for each child (age and gender).
+
+```{r version 2 add-demographics, warning=FALSE}
+all.data.2 <- join(all.data.2, demo, by = "subid")
+
+#reorder columns to put id and demo variables first
+all.data.2 <- all.data.2[c("subid","birthday","gender","age","age_bin", "condition", 
+                   "trial","itemNum","trialType","samePos","chosen","chosen_idx","kept",
+                   "kept_idx","rt","faceVid","faceIdx", "faceVid_expo", "faceVid_expo_idx",
+                   "trial_cat", "correct", "include", "version_expt", "condition_expt")]
+```
+
+Fix trial type labels -> not tracked correctly during experiment because we randomly generated 
+the index that selected from the trial type array.
+
+```{r relabel trial types v2}
+exposure.trials.2 <- all.data.2 %>%
+    filter(trial_cat == "exposure") %>%
+    mutate(trial_type_redo = ifelse(chosen == kept,1,2)) %>%
+    select(subid, itemNum, trial_type_redo, chosen_exposure = chosen, 
+           kept_exposure = kept, correct_exposure = correct)
+
+test.trials.2 <- all.data.2 %>% filter(trial_cat == "test") 
+
+test.trials.2 <- join(test.trials.2, exposure.trials.2, by=c("subid","itemNum"))
+
+test.trials.2$trial_type_redo <- factor(test.trials.2$trial_type_redo, 
+                                        labels = c('Same','Switch'))
+```
+
+Merge version 1 and version 2 into final tidy data file.
+
+```{r merge version 1 and 2}
+# to rbind we have to add variables to all.data 1 and test.trials, setting them to missing
+all.data$faceVid_expo <- NA
+all.data$faceVid_expo_idx <- NA
+all.data$date <- NULL
+test.trials$date <- NULL
+test.trials$faceVid_expo <- NA
+test.trials$faceVid_expo_idx <- NA
+
+# now we can rbind
+d.final.all <- rbind(all.data, all.data.2) # all data
+d.final.test <- rbind(test.trials, test.trials.2) # just test trials
+```
+
+#### Save tidy data files. 
+
+```{r save files}
+write.csv(d.final.all, file= paste(write_path, "soc-xsit-ipad-alldata-n70.csv", 
+                                   sep=""), row.names=F)
+
+write.csv(d.final.test, file = paste(write_path, "soc-xsit-ipad-testdata-n70.csv", 
+                                     sep=""), row.names=F)
+```
