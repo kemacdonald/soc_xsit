@@ -27,14 +27,12 @@ library(directlabels)
 Set directory and read in data.
 
 ```{r set wd, echo=FALSE}
-setwd("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/adult-live/")
+setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/SOC_XSIT/data/processed_data/adult-live")
 
 # pilot 1
 #df_reliability <- read.csv("soc_xsit_live_reliability_100v0.csv")
-
 # pilot 2
 #df_reliability_v1 <- read.csv("soc_xsit_reliabiliy_parametric.csv")
-
 
 # full experiment
 df_reliability <- read.csv("soc_xsit_reliabiliy_parametric_full.csv")
@@ -74,11 +72,11 @@ df_reliability <- df_reliability %>%
                                     0,1))
 
 # Create continuous variable for reliability
-df_reliability$reliability[df_reliability$prop_cond_clean=="0% Reliable"] <- .00
-df_reliability$reliability[df_reliability$prop_cond_clean=="25 Reliable"] <- .25
-df_reliability$reliability[df_reliability$prop_cond_clean=="50% Reliable"] <- .50
-df_reliability$reliability[df_reliability$prop_cond_clean=="75% Reliable"] <- .75
-df_reliability$reliability[df_reliability$prop_cond_clean=="100% Reliable"] <- 1.00
+df_reliability$reliability[df_reliability$prop_cond_clean=="0%"] <- .00
+df_reliability$reliability[df_reliability$prop_cond_clean=="25%"] <- .25
+df_reliability$reliability[df_reliability$prop_cond_clean=="50%"] <- .50
+df_reliability$reliability[df_reliability$prop_cond_clean=="75%"] <- .75
+df_reliability$reliability[df_reliability$prop_cond_clean=="100%"] <- 1.00
 ```
 
 Set up filters. First for exposure trials:
@@ -182,20 +180,6 @@ ggplot(ms_test_fam,
     scale_y_continuous(limits=c(0,1)) + 
     geom_smooth(method='lm') +
     ggtitle("Accuracy on Test Trials in Familiarization Block")
-
-# model 
-m1_test_fam <- glmer(correct ~ trialType * prop_cond_clean +
-                              (trialType | subids),
-            data = df_test_fam, nAGQ = 0,
-            family = binomial)
-summary(m1_test_fam)
-
-# # reliablity as continuous 
-m2_test_fam <- glmer(correct ~ trialType * reliability +
-                              (trialType | subids),
-            data = df_test_fam, 
-            family = binomial)
-summary(m2_test_fam)
 ```
 
 Look at accuracy on familiarization test trials over time.
@@ -388,17 +372,34 @@ qplot(prop_cond_clean, accuracy, data=ss_test, geom=c("boxplot", "jitter"),
 Model test performance
 
 ```{r models}
-# reliablity as factor
-m1 <- glmer(correct ~ trialType + prop_cond_clean +
-                              (trialType | subids),
+# reliablity as factor, linear interaction
+m1 <- glmer(correct ~ trialType * prop_cond_clean +
+                (trialType | subids) + 
+                (1 | subids),
             data = df_test_test, nAGQ = 0,
             family = binomial)
 summary(m1)
 
-# # reliablity as continuous 
+# reliablity as continuous 
 m2 <- glmer(correct ~ trialType * reliability +
-                              (trialType | subids),
+                (trialType | subids) +
+                (1 | subids),
             data = df_test_test, 
             family = binomial)
 summary(m2)
+
+# using poly to test for non-linear interaction
+m3 <- glmer(correct ~ poly(reliability, 2) + trialType +
+                (trialType | subids),
+             data = df_test_test, nACQ=0,
+            family = binomial)
+summary(m3)
+
+# predict test performance from selecting target of gaze 
+# on exposure trials
+m4 <- glmer(correct ~ correct_exposure * trialType +
+                (trialType | subids),
+             data = df_test_test, nACQ=0,
+            family = binomial)
+summary(m4)
 ```
