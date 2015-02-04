@@ -7,6 +7,20 @@ library(plotrix)
 library(reshape2)
 library(plyr)
 library(car)
+library(dplyr)
+library(directlabels)
+
+# for labeling facets in ggplot
+mf_labeller <- function(var, value){
+    value <- as.character(value)
+    if (var=="numPic") { 
+        value[value==2] <- "2-Referents"
+        value[value==4] <- "4-Referents"
+        value[value==6] <- "6-Referents"
+        value[value==8] <- "8-Referents"
+    }
+    return(value)
+}
 
 ## add some style elements for ggplot2
 theme_set(theme_bw())

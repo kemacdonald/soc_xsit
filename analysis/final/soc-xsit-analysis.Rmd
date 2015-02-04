@@ -1,0 +1,942 @@
+---
+title: "Soc-Xsit Analysis and Vizualizations"
+author: "Kyle MacDonald"
+date: "January 17, 2015"
+output: html_document
+---
+
+### Script to analyze Soc-Xsit experiments
+
+Clear workspace and set working directory 
+
+```{r clear workspace, echo=FALSE}
+rm(list=ls())
+source("useful.R")
+```
+
+Read in data from all 3 Experiments:
+
+* Large scale experiment manipulating attention and memory demands
+* Replication of Experiment 1 with more ecologically valid stimulus set
+* Parametric manipulation of cue reliablity
+
+```{r read data}
+# experiment 1
+df_expt1 <- read.csv("../../data/soc_xsit_expt1_master_clean.csv")
+# experiment 2 
+df_expt2 <- read.csv("../../data/soc_xsit_live_expt2.csv")
+# experiment 3
+df_expt3 <- read.csv("../../data/soc_xsit_reliability_expt3.csv")
+```
+
+## Experiment 1
+
+### Get the number of subjects in each condition.  
+
+```{r describe data}
+df_expt1 %>%
+    group_by(condition, intervalNum, numPicN) %>%
+    summarise(n_subs = n_distinct(subids))
+```
+
+### Do some minor data cleaning and create variables
+
+Flag trials on which subs chose the target of eye gaze.
+
+```{r expt1 target of gaze}
+df_expo_expt1 <- df_expt1 %>%
+    filter(exposureTrial == 1) %>%
+    mutate(correct_exposure = ifelse(numPic == 6, 
+                                     chosenIdx == faceIdx6,
+                                     chosenIdx == faceIdx)) %>%
+    select(subids, itemNum, correct_exposure)
+```
+
+Get test trials and merge with exposure trial information. 
+
+```{r expt 1 test trials w/exposure}
+df_test_expt1 <- df_expt1 %>% filter(testTrial == 1)
+df_test_expt1 <- join(df_expo_expt1, df_test_expt1, type = "full")
+```
+
+Flag subs in the social condition who performed worse than chance on exposure trials.
+
+```{r expt 1 flag subs <25% correct on exposure}
+df_test_expt1 <- df_test_expt1 %>%
+    filter(condition == "Social") %>%
+    group_by(subids, numPic) %>%
+    summarise(mean_acc_exp = mean(correct_exposure)) %>%
+    mutate(include_expo = ifelse(numPic == 2 & mean_acc_exp > 0.5, 1, 
+                                 ifelse(numPic == 4 & mean_acc_exp > 0.25, 1,
+                                        ifelse(numPic == 6 & mean_acc_exp > 0.17, 1, 
+                                               ifelse(numPic == 8 & mean_acc_exp > 0.125, 1, 
+                                                      0))))) %>%
+    join(df_test_expt1, by = "subids", type = "full")
+```
+
+Flag test trials with really slow or fast RTs (+/- 2SD).
+
+```{r expt1 rt cleaning}
+df_test_expt1 <- df_test_expt1 %>%
+    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                    0, 1))
+```
+
+Flag eposure trials with really slow or fast RTs (+/- 2SD).
+
+```{r expt1 exposure trials}
+df_expo_expt1_analysis <- df_expt1 %>% 
+    filter(exposureTrial == 1, rt > 0) %>%
+    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                    0, 1)) %>%
+    filter(include_good_rt == 1)
+```
+
+### Set up filters 
+
+Get test trials for analysis. Here we have 2 filters:
+
+* Remove fast/slow RTs
+* Remove fast/slow RTs & subjects who performed below 
+chance selecting gaze target on exposure trials
+
+```{r expt1 test trials}
+# just RT filter
+df_test_expt1 <- df_test_expt1 %>% 
+    filter(include_good_rt == 1)
+
+# subject and trial level filter
+df_test_expt1_filt <- df_test_expt1 %>% 
+    filter(include_good_rt == 1, include_expo == 1 | condition == "No-Social") %>%
+    filter(correct_exposure == T | condition == "No-Social")
+```
+
+Get the number of subjects filtered out
+
+```{r expt1 nsubs filtered}
+df_n <- df_test_expt1 %>%
+    summarise(n_subs = n_distinct(subids))
+
+df_n_filt <- df_test_expt1_filt %>%
+    summarise(n_subs_filt = n_distinct(subids)) %>%
+    select(n_subs_filt)
+
+df_n <- cbind(df_n, df_n_filt)
+
+df_n[1]-df_n[2]
+```
+
+### Accuracy on exposure trials in social condition
+
+Get means and CIs for each combination of number of referents and interval
+
+```{r expt1 accuracy on exposure trials}
+ms_expo_expt1 <-  df_test_expt1 %>%
+    filter(condition == "Social") %>%
+    group_by(numPic, intervalNum) %>%
+    summarise(accuracy_exposure = mean(correct_exposure),
+              ci_low = ci.low(correct_exposure),
+              ci_high = ci.high(correct_exposure))
+```
+
+Now plot those means.
+
+```{r expt 1 accuracy on exposure trials plot, echo=F}
+ggplot(data=ms_expo_expt1, 
+       aes(x=intervalNum, y=accuracy_exposure)) + 
+    geom_pointrange(aes(ymin=accuracy_exposure - ci_low, 
+                        ymax=accuracy_exposure + ci_high), 
+                    width = .05, size=0.6) +
+    geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
+    scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
+    scale_y_continuous(limits=c(0,1)) +
+    scale_colour_manual(values=c("#1f78b4", "red")) +
+    facet_grid( ~ numPic, labeller = mf_labeller) + 
+    xlab("Intervening Trials") + 
+    ylab("Prop. Choosing Repeated Referent") +
+    labs(colour = "Condition") +
+    labs(linetype = "Trial Type") +
+    guides(linetype=FALSE) +
+    theme(text = element_text(size=14), 
+          axis.title.y=element_text(vjust=1),
+          axis.title.x=element_text(vjust=-0.3),
+          legend.justification=c(0,0),
+          legend.position = c(0,0)) 
+```
+
+### RT on exposure trials 
+
+Next we compare reaction times across social/no-social at different 
+levels of attention and memory demands.
+
+```{r expt1 rt on exposure trials}
+ms_expo_rt_expt1 <-  df_expo_expt1_analysis %>%
+    group_by(numPic, intervalNum, condition) %>%
+    summarise(rt = mean(rt),
+              ci_low = ci.low(rt),
+              ci_high = ci.high(rt))
+```
+
+Now we plot mean reaction times for each condition.
+
+```{r expt1 rt on exposure trials plot, echo=F}
+ggplot(data=ms_expo_rt_expt1, 
+       aes(x=intervalNum, y=rt, color = condition)) + 
+    geom_pointrange(aes(ymin=rt - ci_low, 
+                        ymax=rt + ci_high), width = .05, size=0.6) +
+    scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
+    geom_smooth(method="lm", se =F) +
+    scale_y_continuous(limits=c(0,5000)) +
+    scale_colour_manual(values=c("#1f78b4", "red")) +
+    facet_grid( ~ numPic, labeller = mf_labeller) + 
+    xlab("Intervening Trials") + 
+    ylab("Prop. Choosing Repeated Referent") +
+    labs(colour = "Condition") +
+    labs(linetype = "Trial Type") +
+    guides(linetype=FALSE) +
+    theme(text = element_text(size=14), 
+          axis.title.y=element_text(vjust=1),
+          axis.title.x=element_text(vjust=-0.3),
+          legend.justification=c(0,1),
+          legend.position = c(0,1)) 
+```
+
+### Accuracy on test trials 
+
+First we aggregate for both unfiltered and filtered data. 
+
+```{r expt1 acc test}
+ms_test_expt1 <- df_test_expt1  %>%
+    group_by(condition, intervalNum, numPic, trialType) %>%
+    summarise(accuracy = mean(correct),
+              ci_low = ci.low(correct),
+              ci_high = ci.high(correct),
+              exclusionary_criteria = "none")
+
+ms_test_filt_expt1 <- df_test_expt1_filt  %>%
+    group_by(condition, intervalNum, numPic, trialType) %>%
+    summarise(accuracy = mean(correct),
+              ci_low = ci.low(correct),
+              ci_high = ci.high(correct),
+              exclusionary_criteria = "Subject and Trial level")
+
+ms_test_all_expt1 <- rbind(ms_test_expt1, ms_test_filt_expt1)
+```
+
+Now we plot the both the filtered and unfiltered means.
+
+```{r expt1 acc test plot, echo=F}
+ggplot(data=ms_test_all_expt1, 
+       aes(x=intervalNum, y=accuracy, 
+           colour = condition)) + 
+    geom_pointrange(aes(ymin=accuracy - ci_low, 
+                        ymax=accuracy + ci_high), width = .05, size=0.6) +
+    geom_line(aes(linetype = trialType), size=0.4) +
+    geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
+    scale_x_continuous(limits=c(-.9,11), breaks=c(0, 1, 3, 7)) +
+    scale_y_continuous(limits=c(0,1)) +
+    scale_colour_manual(values=c("#1f78b4", "red")) +
+    facet_grid(exclusionary_criteria ~ numPic, labeller = mf_labeller) + 
+    xlab("Intervening Trials") + 
+    ylab("Prop. Choosing Repeated Referent") +
+    labs(colour = "Condition") +
+    labs(linetype = "Trial Type") +
+    guides(linetype=FALSE) +
+    theme(text = element_text(size=14), 
+          axis.title.y=element_text(vjust=1),
+          axis.title.x=element_text(vjust=-0.3),
+          legend.justification=c(0,0),
+          legend.position = c(0,0)) 
+```
+
+### LMERs
+
+#### Predicting RT on exposure trials.
+
+```{r expt1 lmer rt}
+m1_rt_expt1 <- lmer(rt ~ condition * log2(intervalNum + 1) * log2(numPicN) + 
+                  (1|subids), data=df_expo_expt1_analysis)
+summary(m1_rt_expt1)
+```
+
+#### Predict accuracy on test trials.
+
+```{r expt1 lmer acc test}
+# 2-way model
+m1_2way_expt1 <- glmer(correct ~ (trialType + condition + 
+                                      log2(intervalNum + 1) + log2(numPicN))^2 + 
+                           (trialType | subids), 
+                       data=df_test_expt1_filt, family=binomial, nAGQ=0)
+summary(m1_2way_expt1)
+
+# 3-way model
+m1_3way_expt1 <- glmer(correct ~ (trialType + condition + 
+                                      log2(intervalNum + 1) + log2(numPicN))^3 + 
+                           (trialType | subids), 
+                       data=df_test_expt1_filt, family=binomial, nAGQ=0)
+summary(m1_3way_expt1)
+
+# 4-way model
+m1_4way_expt1 <- glmer(correct ~ (trialType + condition + 
+                                      log2(intervalNum + 1) + log2(numPicN))^4 + 
+                           (trialType | subids), 
+                       data=df_test_expt1_filt, family=binomial, nAGQ=0)
+summary(m1_4way_expt1)
+
+# model comparison
+anova( m1_2way_expt1, m1_3way_expt1, m1_4way_expt1)
+```
+
+3-way model is best based on model comparison.
+
+#### Compare the 3-way model for filtered and unfiltered data.
+
+```{r expt1 lmer filter comparison}
+# 2-way model unfiltered
+m1_2way_expt1_unfilt <- glmer(correct ~ (trialType + condition + 
+                                      log2(intervalNum + 1) + log2(numPicN))^2 + 
+                           (trialType | subids), 
+                       data=df_test_expt1, family=binomial, nAGQ=0)
+summary(m1_2way_expt1_unfilt)
+
+# 3-way model unfiltered
+m1_3way_expt1_unfilt <- glmer(correct ~ (trialType + condition + 
+                                      log2(intervalNum + 1) + log2(numPicN))^3 + 
+                           (trialType | subids), 
+                       data=df_test_expt1, family=binomial, nAGQ=0)
+summary(m1_3way_expt1_unfilt)
+```
+
+
+## Experiment 2: Replication with ecologically valid stimulus set
+
+In Experiment 2, we chose a subset of the referent/interval conditions: 
+numPic = 4, and interval = 0 and 3.
+
+Get the number of subjects in each condition.
+
+```{r expt2 nsubs}
+df_expt2 %>% 
+    group_by(condition, interval) %>%
+    summarise(n_subs = n_distinct(subids))
+```
+
+### Minor data cleaning, variable creation, and filters
+
+Create variable to track experiment block.
+
+```{r expt2 block variable}
+df_expt2 <- df_expt2 %>%
+    mutate(block = ifelse(itemNum <= 7, "first","second"))
+```
+
+Flag trials with extremely slow or fast RTs (+/- 2SD).
+
+```{r expt2 clean RTs}
+df_expt2 <- df_expt2 %>%
+    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                    0,1))
+```
+
+### Flag social vs. no-social trials
+
+Create a variable to track the condition for each trial.
+
+```{r expt2 flag trial type}
+df_expt2 <- df_expt2 %>%
+      mutate(condition_trial = ifelse(condition == "No-socialFirst" 
+                                      & itemNum <= 7, "no-social", 
+                                      ifelse(condition == "SocialFirst" 
+                                             & itemNum <= 7, "social", 
+                                             ifelse(condition == "No-socialFirst" 
+                                                    & itemNum >= 8, "social",
+                                                    ifelse(condition == "SocialFirst" 
+                                                           & itemNum >= 8, 
+                                                           "no-social", NA)))))
+```
+
+### Flag subs who got <25% of exposure trials correct. 
+
+```{r expt2 flag subs <25% correct on exposure}
+ss_exposure <- df_expt2 %>%
+      filter(trial_cat == "exposure" & condition_trial == "social") %>%
+      group_by(subids) %>%
+      summarise(mean_acc_exp = mean(correct))
+
+# Merge mean acc with the rest of the dataset.
+df_expt2 <- merge(df_expt2, ss_exposure, by = "subids")
+```
+
+### Flag test trials on which subject chose target of gaze on exposure 
+
+```{r expt2 flag test trials chose gaze target}
+df_expt2 <- df_expt2 %>%
+    filter(trial_cat == "exposure") %>%
+    mutate(correct_exposure = faceIdx == chosenIdx,
+             rt_exposure = rt) %>%
+    select(subids, itemNum, correct_exposure, rt_exposure) %>%
+    merge(df_expt2, by = c("subids", "itemNum"))
+```
+
+### Set up filters
+
+Exposure trials.
+
+```{r expt2 expo filters}
+# just RT filter
+df_expo_expt2 <- filter(df_expt2,
+                      include_good_rt == 1,
+                      condition_trial == "social",
+                      trial_cat == "exposure")
+
+# RT, subject level and trial level filter 
+df_expo_expt2_filt <- filter(df_expt2,
+                           trial_cat == "exposure",
+                           condition_trial == "social" & mean_acc_exp > 0.25,
+                           include_good_rt == 1)
+
+# filter that gets both social/no-social trials
+df_expo_expt2_analysis <- df_expt2 %>%
+    filter(trial_cat == "exposure",
+           mean_acc_exp > 0.25,
+           correct_exposure = T | condition_trial == "no-social",
+           include_good_rt == 1)
+```
+
+Get the number of subjects filtered out by the subject level filter.
+
+```{r expt2 nsubs filtered}
+df_n_expt2 <- df_expo_expt2 %>% 
+    summarise(n_subs = n_distinct(subids))
+
+df_n_expt2_filt <- df_expo_expt2_filt %>%
+    summarise(n_subs_filt = n_distinct(subids)) %>%
+    select(n_subs_filt)
+
+nsubs_expt2 <- cbind(df_n_expt2, df_n_expt2_filt)
+
+nsubs_expt2[1] - nsubs_expt2[2]
+```
+
+Test trial filters.
+
+```{r expt2 test filters}
+# just RT filter
+df_test_expt2 <- df_expt2 %>%
+    filter(trial_cat == "test",
+           include_good_rt == 1)
+
+# RT, subject level and trial level filter 
+df_test_expt2_filt <- df_expt2 %>%
+    filter(trial_cat == "test",
+           mean_acc_exp > 0.25 ,
+           include_good_rt == 1,
+           correct_exposure == T | condition_trial == "no-social")
+```
+
+### Analyze Exposure Trials
+
+Accuracy, selecting target of gaze.
+
+```{r expt2 acc expo}
+# unfiltered
+ms_expo_expt2 <- df_expo_expt2 %>%
+    group_by(intervalNum) %>%
+    summarise(accuracy_exposure = mean(correct),
+              ci_low = ci.low(correct),
+              ci_high = ci.high(correct)) %>%
+    mutate(filter = "Unfiltered")
+
+# filtered
+ms_expo_expt2_filt <- df_expo_expt2_filt %>%
+    group_by(intervalNum) %>%
+    summarise(accuracy_exposure = mean(correct),
+              ci_low = ci.low(correct),
+              ci_high = ci.high(correct)) %>%
+    mutate(filter = "Filtered")
+
+ms_expo_all_expt2 <- rbind(ms_expo_expt2, ms_expo_expt2_filt)
+```
+
+Now plot mean correct for exposure trials for each interval.
+
+```{r expt2 acc expo plot, echo=F}
+ggplot(data=ms_expo_all_expt2, 
+       aes(x=intervalNum, y=accuracy_exposure)) + 
+    geom_pointrange(aes(ymin=accuracy_exposure - ci_low, 
+                        ymax=accuracy_exposure + ci_high), 
+                    width = .05, size=0.6) +
+    geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+    scale_x_continuous(limits=c(-.9,4), breaks=c(0,3)) +
+    scale_y_continuous(limits=c(0,1)) +
+    scale_colour_manual(values=c("#1f78b4", "red")) +
+    xlab("Intervening Trials") + 
+    ylab("Prop. Choosing Repeated Referent") +
+    labs(colour = "Condition") +
+    labs(linetype = "Trial Type") +
+    guides(linetype=FALSE) +
+    facet_grid(~filter) +
+    theme(text = element_text(size=14), 
+          axis.title.y=element_text(vjust=1),
+          axis.title.x=element_text(vjust=-0.3),
+          legend.justification=c(0,0),
+          legend.position = c(0,0)) 
+```
+
+RT on exposure trials.
+
+```{r expt2 rt expo}
+ms_rt_expo_expt2 <- df_expo_expt2_analysis %>%
+    group_by(condition_trial, intervalNum) %>%
+    summarise(rt_exposure = mean(rt),
+              ci_low = ci.low(rt),
+              ci_high = ci.high(rt))
+```
+
+Plot RT differences
+
+```{r expt2 rt expo plot, echo=F}
+ggplot(data=ms_rt_expo_expt2, 
+       aes(x=intervalNum, y=rt_exposure, color = condition_trial)) + 
+    geom_pointrange(aes(ymin=rt_exposure - ci_low, 
+                        ymax=rt_exposure + ci_high), width = .05, size=0.6) +
+    scale_x_continuous(limits=c(-.9,4), breaks=c(0,3)) +
+    geom_smooth(method="lm", se=F) +
+    scale_y_continuous(limits=c(0,5000)) +
+    scale_colour_manual(values=c("#1f78b4", "red")) +
+    xlab("Intervening Trials") + 
+    ylab("RT") +
+    labs(colour = "Condition") +
+    labs(linetype = "Trial Type") +
+    guides(linetype=FALSE) +
+    theme(text = element_text(size=14), 
+          axis.title.y=element_text(vjust=1),
+          axis.title.x=element_text(vjust=-0.3),
+          legend.justification=c(1,1),
+          legend.position = c(1,1)) 
+```
+
+## Analyze test trials
+
+Get means and CIs for each condition.
+
+```{r expt2 acc test aggregate}
+# unfiltered
+ms_test_expt2 <- df_test_expt2 %>%
+    group_by(trialType, condition_trial, intervalNum) %>%
+    summarise(accuracy = mean(correct),
+              ci_low = ci.low(correct),
+              ci_high = ci.high(correct)) %>%
+    mutate(filter = "Unfiltered")
+
+# filtered (subject level)
+ms_test_expt2_filt <- df_test_expt2_filt %>%
+    group_by(trialType, condition_trial, intervalNum) %>%
+    summarise(accuracy = mean(correct),
+              ci_low = ci.low(correct),
+              ci_high = ci.high(correct)) %>%
+    mutate(filter = "Filtered")
+
+ms_test_all_expt2 <- rbind(ms_test_expt2, ms_test_expt2_filt)
+```
+
+Now plot accuracy for test trials.
+
+```{r expt2 acc test plot, echo=F}
+ggplot(data=ms_test_all_expt2, 
+       aes(x=intervalNum, y=accuracy, 
+           colour = condition_trial)) + 
+    geom_pointrange(aes(ymin=accuracy - ci_low, 
+                        ymax=accuracy + ci_high), 
+                    width = .05, size=0.6) +
+    geom_line(aes(linetype = trialType), size=0.4) +
+    geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+    scale_x_continuous(limits=c(-.9,4), breaks=c(0, 3)) +
+    scale_y_continuous(limits=c(0,1)) +
+    scale_colour_manual(values=c("#1f78b4", "red")) +
+    facet_grid(~filter) + 
+    xlab("Intervening Trials") + 
+    ylab("Prop. Choosing Repeated Referent") +
+    labs(colour = "Condition") +
+    labs(linetype = "Trial Type") +
+    guides(linetype=FALSE) +
+    theme(text = element_text(size=14), 
+          axis.title.y=element_text(vjust=1),
+          axis.title.x=element_text(vjust=-0.3),
+          legend.justification=c(0,0),
+          legend.position = c(0,0))
+
+```
+
+### LMERs 
+
+Predicting RT on exposure trials.
+
+```{r expt2 lmer rt}
+m1_rt_expt2 <- lmer(rt ~ condition_trial * log2(intervalNum + 1) * log2(numPicN) + 
+                  (1|subids), data=df_expo_expt2_analysis)
+summary(m1_rt_expt2)
+```
+
+Comparing models with different levels of complexity.
+
+```{r expt 2 lmers model comparison}
+# filtered 2-way
+m1_expt2_2way_filt <- glmer(correct ~ (trialType + condition_trial + intervalNum)^2 + 
+                             (trialType | subids), nAGQ=0,
+                         data = df_test_expt2_filt,
+                         family=binomial)
+summary(m1_expt2_2way_filt)
+
+# filtered 3-way
+m1_expt2_3_way_filt <- glmer(correct ~ (trialType + condition_trial + intervalNum)^3 + 
+                             (trialType | subids), nAGQ=0,
+                         data = df_test_expt2_filt,
+                         family=binomial)
+summary(m1_expt2_3_way_filt)
+
+anova(m1_expt2_2way_filt, m1_expt2_3_way_filt)
+```
+
+3-way is no better than the 2-way.
+
+### LMERs comparing filtered vs. unfiltered data.
+
+```{r expt2 lmers filters}
+# unfilt 2-way
+m1_expt2_unfilt <- glmer(correct ~ (trialType + condition_trial + intervalNum)^2 + 
+                             (trialType | subids), nAGQ=0,
+                         data = df_test_expt2,
+                         family=binomial)
+summary(m1_expt2_unfilt)
+
+# filtered 2-way
+m1_expt2_filt <- glmer(correct ~ (trialType + condition_trial + intervalNum)^2 + 
+                             (trialType | subids), nAGQ=0,
+                         data = df_test_expt2_filt,
+                         family=binomial)
+summary(m1_expt2_filt)
+```
+
+Model is no different when we use the filtered data.
+
+## Experiment 3: Parametric reliability manipulation
+
+Minor data cleaning and variable creation.
+
+```{r expt3 data cleaning}
+# create clean reliablity variable
+df_expt3$prop_cond_clean <- revalue(df_expt3$condition,
+                                    c("0%_reliable" = "0%",
+                                      "25%_reliable" = "25%",
+                                      "50%_reliable" = "50%",
+                                      "75%_reliable" = "75%",
+                                      "100%_reliable" = "100%"))
+
+# change order of condition factor for plotting
+df_expt3$prop_cond_clean <- factor(df_expt3$prop_cond_clean, 
+                                   levels = c("0%", "25%", 
+                                              "50%", "75%", "100%"))
+
+# Create continuous variable for reliability
+df_expt3$reliability[df_expt3$prop_cond_clean=="0%"] <- .00
+df_expt3$reliability[df_expt3$prop_cond_clean=="25%"] <- .25
+df_expt3$reliability[df_expt3$prop_cond_clean=="50%"] <- .50
+df_expt3$reliability[df_expt3$prop_cond_clean=="75%"] <- .75
+df_expt3$reliability[df_expt3$prop_cond_clean=="100%"] <- 1.00
+```
+
+### Clean up RTs.
+
+```{r expt3 clean RTs}
+# remove trials with 0 RT
+df_expt3 <- filter(df_expt3, rt > 0)
+
+# clean RTs
+df_expt3 <- df_expt3 %>%
+    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) | 
+                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                    0,1))
+```
+
+### Get the number of subjects in each experiment and condition.
+
+```{r expt3 get number of subs}
+df_expt3 %>%
+      group_by(prop_cond_clean) %>%
+      summarise(n_subs = n_distinct(subids))
+```
+
+### Set up filters
+
+Exposure trials:
+
+```{r expt3 filters exposure trials}
+# all expsoure trials
+df_expo_all_expt3 <- df_expt3 %>% 
+    filter(trial_category == "exposure",
+           include_good_rt == 1)
+
+# exposures trials in the familiarization block
+df_expo_fam_expt3 <- df_expt3 %>%
+    filter(trial_category == "exposure" & 
+               block == "familiarization",
+           include_good_rt == 1)
+
+# exposure trials in the test block
+df_expo_test_expt3 <- df_expt3 %>% 
+    filter(trial_category == "exposure" & 
+               block == "test",
+           include_good_rt == 1)
+```
+
+Test trials:
+
+```{r expt3 filters test trials}
+# all test trials
+df_test_all_expt3 <- df_expt3 %>% 
+    filter(trial_category == "test",
+           include_good_rt == 1)
+
+# test trials in the familiarization block
+df_test_fam_expt3 <- df_expt3 %>%
+    filter(trial_category == "test" & 
+               block == "familiarization",
+           include_good_rt == 1)
+
+# test trials in the test block
+df_test_test_expt3 <- df_expt3 %>% 
+    filter(trial_category == "test" & 
+               block == "test",
+           include_good_rt == 1)
+```
+
+Flag whether participant chose the target of eye gaze on exposure trials in the test block.
+
+```{r expt3 chose gaze target on exposure trials test block}
+df_correct_expo_test <- df_expo_test_expt3 %>%
+    select(subids, gaze_target, chosen, 
+           correct_exposure = correct, itemNum) 
+
+df_test_test <- merge(df_test_test_expt3, df_correct_expo_test, 
+                          by=c("subids", "itemNum"))
+```
+
+### Analyze Familiarization Block
+
+RT on exposure trials.
+
+```{r expt3 rt exposure trials fam block}
+ms_rt_expo_fam <- df_expo_fam_expt3 %>%
+    group_by(prop_cond_clean) %>%
+    summarise(rt_exposure = mean(rt),
+              ci_low = ci.low(rt),
+              ci_high = ci.high(rt))
+
+ggplot(ms_rt_expo_fam, 
+       aes(x=prop_cond_clean, y=rt_exposure)) +
+    geom_pointrange(aes(ymin=rt_exposure - ci_low,
+                        ymax=rt_exposure + ci_high), 
+                    width = .1, size = 0.8) + 
+    scale_y_continuous(limits=c(500,4500)) +
+    ylab("Response Time (ms)") +
+    xlab("Level of Reliability") +
+    theme(text = element_text(size=16),
+          axis.text.x  = element_text(angle=0, vjust=0.5, size=12))
+```
+
+Accuracy on test trials in familiarization block
+
+```{r expt3 acc test trials familiarization block}
+ms_test_fam <- df_test_fam_expt3 %>%
+      group_by(prop_cond_clean, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ggplot(ms_test_fam, 
+       aes(x=prop_cond_clean, y=accuracy, 
+           group=trialType, colour=trialType)) +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), 
+                    width = .1, size=0.7) +
+    geom_hline(yintercept=0.5, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) + 
+    geom_smooth(method='lm') +
+    ggtitle("Accuracy on Test Trials in Familiarization Block")
+```
+
+#### Analyze performance on test block
+
+Anayze RT on exposure trials in the test block.
+
+```{r expt3 rt exposure trials test block}
+ms_rt_expo_test <- df_expo_test_expt3 %>%
+    group_by(prop_cond_clean, trialType) %>%
+    summarise(rt_exposure = mean(rt),
+              ci_low = ci.low(rt),
+              ci_high = ci.high(rt))
+
+ggplot(ms_rt_expo_test, 
+       aes(x=prop_cond_clean, y=rt_exposure, color = trialType)) +
+    geom_pointrange(aes(ymin=rt_exposure - ci_low,
+                        ymax=rt_exposure + ci_high), 
+                    width = .1, size = 0.8) + 
+    scale_y_continuous(limits=c(500,4000)) +
+    ylab("Response Time (ms)") +
+    xlab("Condition") +
+    theme(text = element_text(size=14))
+```
+
+Accuracy on familiarization trials in test block
+
+```{r expt3 acc fam trials in test block}
+ms_expo_test <- df_test_test %>%
+      group_by(prop_cond_clean) %>%
+      summarise(accuracy = mean(correct_exposure),
+                ci_low = ci.low(correct_exposure),
+                ci_high = ci.high(correct_exposure))
+
+ggplot(ms_expo_test, 
+       aes(x=prop_cond_clean, y=accuracy)) +
+    geom_line(size=0.7) +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), width=.1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) +
+    xlab("Level of Reliablity") + 
+    ylab("Prop. Chose Target of Gaze") +
+    labs(colour = "Trial Type") +
+    theme(text = element_text(size=16))
+```
+
+Accuracy on test trials in the test block
+
+```{r expt3 acc on test trials test block}
+ms_test_test <- df_test_test %>%
+      group_by(prop_cond_clean, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+```
+
+Now plot.
+
+```{r expt3 acc test expt 3 cogsci plot, echo=F}
+ggplot(data=ms_test_test, 
+       aes(x=prop_cond_clean, y=accuracy, group=trialType,
+           color=trialType, label = trialType)) + 
+    geom_pointrange(aes(ymin=accuracy - ci_low, 
+                        ymax=accuracy + ci_high), 
+                    width = .05, size=0.6) +
+    geom_smooth(method='lm', se=F) +
+    geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) +
+    scale_colour_manual(values=c("#1f78b4", "red")) +
+    xlab("Level of Reliability") + 
+    ylab("Prop. Choosing Repeated Referent") +
+    labs(color = "Trial Type") +
+    guides(color=FALSE) +
+    geom_dl(method=list("last.qp",cex=1,hjust=-.15)) +
+    theme(text = element_text(size=14), 
+          axis.title.y=element_text(vjust=1),
+          axis.title.x=element_text(vjust=-0.3),
+          legend.justification=c(1,1),
+          legend.position = c(1,1)) 
+```
+
+### LMERs
+
+Accuracy on test trials
+
+```{r expt3 lmers}
+# reliablity as factor, linear interaction
+m1_expt3 <- glmer(correct ~ trialType * prop_cond_clean +
+                (trialType | subids),
+            data = df_test_test, nAGQ = 0,
+            family = binomial)
+summary(m1_expt3)
+
+m1.b_expt3 <- glmer(correct ~ trialType + prop_cond_clean +
+                (trialType | subids),
+            data = df_test_test, 
+            family = binomial)
+summary(m1.b_expt3)
+```
+
+Reliablity as continuous 
+
+```{r expt3 lmer rel as continuous}
+m2_expt3 <- glmer(correct ~ trialType * reliability +
+                (trialType | subids),
+            data = df_test_test, 
+            family = binomial)
+summary(m2_expt3)
+
+m2.noslope_expt3 <- glmer(correct ~ trialType * reliability +
+                (1 | subids),
+            data = df_test_test, 
+            family = binomial)
+summary(m2.noslope_expt3)
+
+# aggreate subject level then model
+mss_expt3 <- df_test_test %>% 
+    group_by(subids, trialType, reliability) %>%
+    summarize(correct = mean(correct))
+
+# now model
+m2.lm_expt3 <- lm(correct ~ trialType * reliability,
+            data = mss_expt3)
+summary(m2.lm_expt3)
+```
+
+Predict test performance from selecting target of gaze on exposure trials
+
+```{r expt3 model with accuracy on exposure as predictor}
+df_test_test <- df_test_test %>%
+    group_by(subids) %>% 
+    mutate(total_exposure_correct = sum(correct_exposure)) 
+
+# now model
+m4_expt3 <- glmer(correct ~ total_exposure_correct * trialType +
+                (trialType | subids),
+             data = df_test_test,
+            family = binomial)
+summary(m4_expt3)
+```
+
+Now we plot the new analysis: accuracy on test trials as a funciton of 
+accuracy on exposure trials (selecting the gaze target).
+
+```{r expt3 acc test by acc exposure plot, echo=F}
+ms_acc_exp_test_expt3 <- df_test_test %>%
+    group_by(trialType, total_exposure_correct, subids, add=FALSE) %>%
+    summarise(correct = mean(correct)) %>%
+    group_by(trialType, total_exposure_correct, add=FALSE) %>%
+    summarise(cih = ci.high(correct), 
+              cil= ci.low(correct),
+              correct = mean(correct))
+# now plot
+ggplot(data=ms_acc_exp_test_expt3, 
+       aes(x=total_exposure_correct, y=correct, group=trialType,
+           color=trialType, label = trialType)) + 
+    geom_pointrange(aes(ymin=correct - cil, 
+                        ymax=correct + cih), 
+                    width = .05, size=0.6) +
+    geom_smooth(method='lm', se=F) +
+    geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+    scale_x_continuous(limits=c(0,9)) +
+    scale_y_continuous(limits=c(0,1)) +
+    scale_colour_manual(values=c("#1f78b4", "red")) +
+    xlab("Number Correct on Exposure") + 
+    ylab("Prop. Choosing Repeated Referent") +
+    labs(color = "Trial Type") +
+    guides(color=FALSE) +
+    geom_dl(method=list("last.qp",cex=1,hjust=-.15)) +
+    theme(text = element_text(size=14), 
+          axis.title.y=element_text(vjust=1),
+          axis.title.x=element_text(vjust=-0.3))
+```

@@ -1,0 +1,157 @@
+---
+title: "soc-xsit-live-replication"
+author: "Kyle MacDonald"
+date: "January 15, 2015"
+output: html_document
+---
+
+This script analyzes the replication 3-delay experiment to see if the social boost
+on same trials is reliable.
+
+Clear workspace
+
+```{r clear workspace}
+rm(list=ls())
+```
+
+Load libraries.
+
+```{r load libraries, message=FALSE, warning=FALSE}
+source("/Users/kmacdonald/Documents/programming/rscripts/useful.R")
+library(reshape2)
+library(plyr)
+library(dplyr)
+library(bootstrap)
+library(lme4)
+library(ggplot2)
+```
+
+Read in the tidy data files for the zero delay and the three delay experiments
+
+```{r read in data}
+setwd("/Users/kmacdonald/Documents/Projects/SOC_XSIT/processed_data/adult-live/")
+
+# read in data
+df_live <- read.csv("soc_xsit_live_replication.csv")
+```
+
+#### Get the number of subjects in condition.
+
+```{r get number of subs, echo=FALSE}
+df_live %>%
+      group_by(condition) %>%
+      summarise(n_subs = n_distinct(subids))
+```
+
+#### Filters and exclusionary criteria
+
+Flag trials with extremely slow or fast RTs (+/- 2SD).
+
+```{r all data clean RTs}
+df_live <- df_live %>%
+    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                    0,1))
+```
+
+Flag subs who got <25% of exposure trials correct. This can be used for exclusionary criteria in later analyses. 
+
+```{r within subs flag subs <25% correct on exposure}
+# get mean acc on exposure trials for each subject
+ss_exposure <- df_live %>%
+      filter(trial_cat == "exposure" & condition == "Social") %>%
+      group_by(subids) %>%
+      summarise(mean_acc_exp = mean(correct))
+
+# merge mean acc with the rest of the dataset
+df_live <- merge(df_live, ss_exposure, by = "subids")
+```
+
+Flag test trials where subject chose target of eye gaze.
+
+```{r chose target of eye gaze?}
+df_test <- df_live %>%
+      filter(trial_cat == "test")
+
+# flag blocks first half vs. second half
+df_test <- df_test %>%
+    mutate(block = ifelse(itemNum <= 7, "first","second"))
+
+# extract exposure trials and create a correct on exposure column 
+df_expo <- df_live %>%
+      filter(trial_cat == "exposure") %>%
+      mutate(correct_exposure = faceIdx == chosenIdx) %>%
+      select(subids, itemNum, correct_exposure)
+
+# join with test trials
+df_test <- merge(df_test, df_expo)
+df_test <- arrange(df_test, subids, itemNum)
+```
+
+## Accuracy on test trials
+
+Set up filters
+
+```{r filters}
+# RT filter
+df_test <- filter(df_test,
+                      trial_cat == "test",
+                      include_good_rt == 1)
+```
+
+Compute means
+
+```{r compute means}
+# overall means
+ms_test <- df_test %>%
+      group_by(condition, trialType) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+# means by block
+ms_test_blocks <- df_test %>%
+      group_by(block, trialType, condition) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+```
+
+Now plot means
+
+```{r plot means}
+acc_test_plot <- ggplot(ms_test, 
+                        aes(x=trialType, y=accuracy, 
+                            colour=condition,
+                            group=condition)) +
+    geom_line() +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), width = .1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1))  +
+    ggtitle("Accuracy on Same/Switch Trials")
+
+# now plot by block
+acc_test_plot_blocks <- ggplot(ms_test_blocks, 
+                               aes(x=condition, y=accuracy, 
+                                   colour=trialType,
+                                   group=trialType)) +
+    geom_line()  +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), width = .1) +
+    geom_hline(yintercept=0.25, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) + 
+    facet_grid(.~block) +
+    ggtitle("Accuracy on Same/Switch Trials: By Block")
+```
+
+Model the data to see if same boost is reliable.
+
+```{r model}
+m1 <- glmer(correct ~ trialType * condition + (trialType | subids),
+            data = df_test, 
+            family = binomial)
+summary(m1)
+```
+
+
