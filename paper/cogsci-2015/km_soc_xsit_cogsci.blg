@@ -1,4 +1,4 @@
-This is BibTeX, Version 0.99d (TeX Live 2014/MacPorts 2014_3)
+This is BibTeX, Version 0.99d (TeX Live 2013)
 Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
 The top-level auxiliary file: km_soc_xsit_cogsci.aux
 The style file: apacite.bst
@@ -15,43 +15,43 @@ apacite.bst [2012/02/25 v6.01 APA bibliography style]
 Warning--No journal in yurovsky2014algorithmic
 You've used 16 entries,
             6735 wiz_defined-function locations,
-            1335 strings with 12858 characters,
-and the built_in function-call counts, 30777 in all, are:
-= -- 3826
-> -- 260
-< -- 1467
-+ -- 1597
+            1335 strings with 12837 characters,
+and the built_in function-call counts, 30597 in all, are:
+= -- 3806
+> -- 256
+< -- 1459
++ -- 1580
 - -- 32
-* -- 1973
-:= -- 5671
+* -- 1961
+:= -- 5647
 add.period$ -- 64
 call.type$ -- 16
 change.case$ -- 272
 chr.to.int$ -- 0
 cite$ -- 33
-duplicate$ -- 832
-empty$ -- 1189
-format.name$ -- 446
-if$ -- 5794
+duplicate$ -- 820
+empty$ -- 1185
+format.name$ -- 437
+if$ -- 5764
 int.to.chr$ -- 0
 int.to.str$ -- 32
 missing$ -- 0
-newline$ -- 404
+newline$ -- 402
 num.names$ -- 128
-pop$ -- 459
+pop$ -- 456
 preamble$ -- 1
 purify$ -- 64
 quote$ -- 0
-skip$ -- 1989
+skip$ -- 1982
 stack$ -- 0
-substring$ -- 1767
-swap$ -- 474
+substring$ -- 1749
+swap$ -- 470
 text.length$ -- 32
 text.prefix$ -- 0
 top$ -- 1
 type$ -- 1280
 warning$ -- 1
-while$ -- 162
+while$ -- 160
 width$ -- 0
-write$ -- 511
+write$ -- 507
 (There was 1 warning)

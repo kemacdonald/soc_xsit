@@ -70,37 +70,6 @@ Clark, E\BPBI V.%
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
-Griffiths%
-, Lieder%
-, Goodman%
-\BCBL {}\ \BBA {} Griffiths%
-}{%
-Griffiths%
-\ \protect \BOthers {.}}{%
-{\protect \APACyear {2014}}%
-}]{%
-griffiths2014rational}
-\APACinsertmetastar {%
-griffiths2014rational}%
-\begin{APACrefauthors}%
-Griffiths, T\BPBI L.%
-, Lieder, F.%
-, Goodman, N\BPBI D.%
-\BCBL {}\ \BBA {} Griffiths, T.%
-\end{APACrefauthors}%
-\unskip\
-\newblock
-\APACrefYearMonthDay{2014}{}{}.
-\newblock
-{\BBOQ}\APACrefatitle {Rational use of cognitive resources: Levels of analysis
-  between the computational and the algorithmic} {Rational use of cognitive
-  resources: Levels of analysis between the computational and the
-  algorithmic}.{\BBCQ}
-\newblock
-\APACjournalVolNumPages{Topics in Cognitive Science. forthcoming}{}{}{}.
-\PrintBackRefs{\CurrentBib}
-
-\bibitem [\protect \citeauthoryear {%
 Kanwisher%
 , Woods%
 , Iacoboni%
@@ -156,6 +125,35 @@ Koenig, M\BPBI A.%
   statements}.{\BBCQ}
 \newblock
 \APACjournalVolNumPages{Psychological Science}{15}{10}{694--698}.
+\PrintBackRefs{\CurrentBib}
+
+\bibitem [\protect \citeauthoryear {%
+Lieder%
+, Goodman%
+\BCBL {}\ \BBA {} Griffiths%
+}{%
+Lieder%
+\ \protect \BOthers {.}}{%
+{\protect \APACyear {2014}}%
+}]{%
+griffiths2014rational}
+\APACinsertmetastar {%
+griffiths2014rational}%
+\begin{APACrefauthors}%
+Lieder, F.%
+, Goodman, N\BPBI D.%
+\BCBL {}\ \BBA {} Griffiths, T.%
+\end{APACrefauthors}%
+\unskip\
+\newblock
+\APACrefYearMonthDay{2014}{}{}.
+\newblock
+{\BBOQ}\APACrefatitle {Rational use of cognitive resources: Levels of analysis
+  between the computational and the algorithmic} {Rational use of cognitive
+  resources: Levels of analysis between the computational and the
+  algorithmic}.{\BBCQ}
+\newblock
+\APACjournalVolNumPages{Topics in Cognitive Science. forthcoming}{}{}{}.
 \PrintBackRefs{\CurrentBib}
 
 \bibitem [\protect \citeauthoryear {%
@@ -421,9 +419,9 @@ Yurovsky, D.%
 \newblock
 \APACrefYearMonthDay{under review}{}{}.
 \newblock
-{\BBOQ}\APACrefatitle {Algorithmic-Level Constraints on Cross-Situational Word
-  Learning} {Algorithmic-level constraints on cross-situational word
-  learning}.{\BBCQ}
+{\BBOQ}\APACrefatitle {An integrative account of constraints on
+  cross-situational learning} {An integrative account of constraints on
+  cross-situational learning}.{\BBCQ}
 \newblock
 
 \PrintBackRefs{\CurrentBib}

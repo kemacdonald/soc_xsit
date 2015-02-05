@@ -34,7 +34,7 @@ df_expt3 <- read.csv("../../data/soc_xsit_reliability_expt3.csv")
 ### Get the number of subjects in each condition.  
 
 ```{r describe data}
-df_expt1 %>%
+nsubs <- df_expt1 %>%
     group_by(condition, intervalNum, numPicN) %>%
     summarise(n_subs = n_distinct(subids))
 ```
@@ -117,15 +117,15 @@ Get the number of subjects filtered out
 
 ```{r expt1 nsubs filtered}
 df_n <- df_test_expt1 %>%
+    group_by(condition) %>%
     summarise(n_subs = n_distinct(subids))
 
 df_n_filt <- df_test_expt1_filt %>%
+    group_by(condition) %>%
     summarise(n_subs_filt = n_distinct(subids)) %>%
     select(n_subs_filt)
 
 df_n <- cbind(df_n, df_n_filt)
-
-df_n[1]-df_n[2]
 ```
 
 ### Accuracy on exposure trials in social condition
@@ -307,6 +307,8 @@ m1_3way_expt1_unfilt <- glmer(correct ~ (trialType + condition +
                            (trialType | subids), 
                        data=df_test_expt1, family=binomial, nAGQ=0)
 summary(m1_3way_expt1_unfilt)
+
+anova(m1_2way_expt1_unfilt, m1_3way_expt1_unfilt)
 ```
 
 
@@ -409,10 +411,12 @@ df_expo_expt2_analysis <- df_expt2 %>%
 Get the number of subjects filtered out by the subject level filter.
 
 ```{r expt2 nsubs filtered}
-df_n_expt2 <- df_expo_expt2 %>% 
+df_n_expt2 <- df_expo_expt2 %>%
+    group_by(condition) %>%
     summarise(n_subs = n_distinct(subids))
 
 df_n_expt2_filt <- df_expo_expt2_filt %>%
+    group_by(condition) %>%
     summarise(n_subs_filt = n_distinct(subids)) %>%
     select(n_subs_filt)
 
