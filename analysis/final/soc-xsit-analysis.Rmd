@@ -5,13 +5,12 @@ date: "January 17, 2015"
 output: html_document
 ---
 
-### Script to analyze Soc-Xsit experiments
-
 Clear workspace and set working directory 
 
-```{r clear workspace, echo=FALSE}
+```{r clear workspace, echo=F, warning=F}
 rm(list=ls())
 source("useful.R")
+library(pander)
 ```
 
 Read in data from all 3 Experiments:
@@ -20,7 +19,7 @@ Read in data from all 3 Experiments:
 * Replication of Experiment 1 with more ecologically valid stimulus set
 * Parametric manipulation of cue reliablity
 
-```{r read data}
+```{r read data, echo=F, warning=F}
 # experiment 1
 df_expt1 <- read.csv("../../data/soc_xsit_expt1_master_clean.csv")
 # experiment 2 
@@ -33,10 +32,12 @@ df_expt3 <- read.csv("../../data/soc_xsit_reliability_expt3.csv")
 
 ### Get the number of subjects in each condition.  
 
-```{r describe data}
+```{r describe data, tidy=TRUE}
 nsubs <- df_expt1 %>%
     group_by(condition, intervalNum, numPicN) %>%
     summarise(n_subs = n_distinct(subids))
+
+pandoc.table(nsubs, style="rmarkdown")
 ```
 
 ### Do some minor data cleaning and create variables
@@ -83,7 +84,7 @@ df_test_expt1 <- df_test_expt1 %>%
                                     0, 1))
 ```
 
-Flag eposure trials with really slow or fast RTs (+/- 2SD).
+Flag exposure trials with really slow or fast RTs (+/- 2SD).
 
 ```{r expt1 exposure trials}
 df_expo_expt1_analysis <- df_expt1 %>% 
@@ -126,6 +127,8 @@ df_n_filt <- df_test_expt1_filt %>%
     select(n_subs_filt)
 
 df_n <- cbind(df_n, df_n_filt)
+
+df_n
 ```
 
 ### Accuracy on exposure trials in social condition
@@ -258,7 +261,6 @@ ggplot(data=ms_test_all_expt1,
 ```{r expt1 lmer rt}
 m1_rt_expt1 <- lmer(rt ~ condition * log2(intervalNum + 1) * log2(numPicN) + 
                   (1|subids), data=df_expo_expt1_analysis)
-summary(m1_rt_expt1)
 ```
 
 #### Predict accuracy on test trials.
@@ -269,24 +271,25 @@ m1_2way_expt1 <- glmer(correct ~ (trialType + condition +
                                       log2(intervalNum + 1) + log2(numPicN))^2 + 
                            (trialType | subids), 
                        data=df_test_expt1_filt, family=binomial, nAGQ=0)
-summary(m1_2way_expt1)
 
 # 3-way model
 m1_3way_expt1 <- glmer(correct ~ (trialType + condition + 
                                       log2(intervalNum + 1) + log2(numPicN))^3 + 
                            (trialType | subids), 
                        data=df_test_expt1_filt, family=binomial, nAGQ=0)
-summary(m1_3way_expt1)
+
 
 # 4-way model
 m1_4way_expt1 <- glmer(correct ~ (trialType + condition + 
                                       log2(intervalNum + 1) + log2(numPicN))^4 + 
                            (trialType | subids), 
                        data=df_test_expt1_filt, family=binomial, nAGQ=0)
-summary(m1_4way_expt1)
+
 
 # model comparison
-anova( m1_2way_expt1, m1_3way_expt1, m1_4way_expt1)
+model_comp <- anova( m1_2way_expt1, m1_3way_expt1, m1_4way_expt1)
+
+pandoc.table(model_comp, style="rmarkdown")
 ```
 
 3-way model is best based on model comparison.
@@ -299,16 +302,12 @@ m1_2way_expt1_unfilt <- glmer(correct ~ (trialType + condition +
                                       log2(intervalNum + 1) + log2(numPicN))^2 + 
                            (trialType | subids), 
                        data=df_test_expt1, family=binomial, nAGQ=0)
-summary(m1_2way_expt1_unfilt)
 
 # 3-way model unfiltered
 m1_3way_expt1_unfilt <- glmer(correct ~ (trialType + condition + 
                                       log2(intervalNum + 1) + log2(numPicN))^3 + 
                            (trialType | subids), 
                        data=df_test_expt1, family=binomial, nAGQ=0)
-summary(m1_3way_expt1_unfilt)
-
-anova(m1_2way_expt1_unfilt, m1_3way_expt1_unfilt)
 ```
 
 
@@ -582,7 +581,6 @@ Predicting RT on exposure trials.
 ```{r expt2 lmer rt}
 m1_rt_expt2 <- lmer(rt ~ condition_trial * log2(intervalNum + 1) * log2(numPicN) + 
                   (1|subids), data=df_expo_expt2_analysis)
-summary(m1_rt_expt2)
 ```
 
 Comparing models with different levels of complexity.
@@ -593,16 +591,16 @@ m1_expt2_2way_filt <- glmer(correct ~ (trialType + condition_trial + intervalNum
                              (trialType | subids), nAGQ=0,
                          data = df_test_expt2_filt,
                          family=binomial)
-summary(m1_expt2_2way_filt)
 
 # filtered 3-way
 m1_expt2_3_way_filt <- glmer(correct ~ (trialType + condition_trial + intervalNum)^3 + 
                              (trialType | subids), nAGQ=0,
                          data = df_test_expt2_filt,
                          family=binomial)
-summary(m1_expt2_3_way_filt)
 
-anova(m1_expt2_2way_filt, m1_expt2_3_way_filt)
+model_comp_expt2 <- anova(m1_expt2_2way_filt, m1_expt2_3_way_filt)
+
+pandoc.table(model_comp_expt2, style="rmarkdown")
 ```
 
 3-way is no better than the 2-way.
@@ -615,17 +613,15 @@ m1_expt2_unfilt <- glmer(correct ~ (trialType + condition_trial + intervalNum)^2
                              (trialType | subids), nAGQ=0,
                          data = df_test_expt2,
                          family=binomial)
-summary(m1_expt2_unfilt)
 
 # filtered 2-way
 m1_expt2_filt <- glmer(correct ~ (trialType + condition_trial + intervalNum)^2 + 
                              (trialType | subids), nAGQ=0,
                          data = df_test_expt2_filt,
                          family=binomial)
-summary(m1_expt2_filt)
 ```
 
-Model is no different when we use the filtered data.
+Model output is no different when we use the filtered data.
 
 ## Experiment 3: Parametric reliability manipulation
 
@@ -854,7 +850,16 @@ ggplot(data=ms_test_test,
 
 ### LMERs
 
-Accuracy on test trials
+Accuracy on exposure trials in test block
+
+```{r expt3 lmer acc expo test block}
+m1_expo_expt3 <- glmer(correct ~ reliability +
+                (1 | subids),
+            data = df_expo_test_expt3, nAGQ = 0,
+            family = binomial)
+```
+
+Accuracy on test trials in test block.
 
 ```{r expt3 lmers}
 # reliablity as factor, linear interaction
@@ -862,13 +867,11 @@ m1_expt3 <- glmer(correct ~ trialType * prop_cond_clean +
                 (trialType | subids),
             data = df_test_test, nAGQ = 0,
             family = binomial)
-summary(m1_expt3)
 
 m1.b_expt3 <- glmer(correct ~ trialType + prop_cond_clean +
                 (trialType | subids),
             data = df_test_test, 
             family = binomial)
-summary(m1.b_expt3)
 ```
 
 Reliablity as continuous 
@@ -878,13 +881,11 @@ m2_expt3 <- glmer(correct ~ trialType * reliability +
                 (trialType | subids),
             data = df_test_test, 
             family = binomial)
-summary(m2_expt3)
 
 m2.noslope_expt3 <- glmer(correct ~ trialType * reliability +
                 (1 | subids),
             data = df_test_test, 
             family = binomial)
-summary(m2.noslope_expt3)
 
 # aggreate subject level then model
 mss_expt3 <- df_test_test %>% 
@@ -894,7 +895,6 @@ mss_expt3 <- df_test_test %>%
 # now model
 m2.lm_expt3 <- lm(correct ~ trialType * reliability,
             data = mss_expt3)
-summary(m2.lm_expt3)
 ```
 
 Predict test performance from selecting target of gaze on exposure trials
@@ -909,7 +909,6 @@ m4_expt3 <- glmer(correct ~ total_exposure_correct * trialType +
                 (trialType | subids),
              data = df_test_test,
             family = binomial)
-summary(m4_expt3)
 ```
 
 Now we plot the new analysis: accuracy on test trials as a funciton of 
