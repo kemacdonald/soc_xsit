@@ -9,6 +9,7 @@ Clear workspace and set working directory
 
 ```{r clear workspace, echo=F, warning=F}
 rm(list=ls())
+setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/SOC_XSIT_GIT/analysis/final")
 source("useful.R")
 library(pander)
 ```
@@ -25,7 +26,7 @@ df_expt1 <- read.csv("../../data/soc_xsit_expt1_master_clean.csv")
 # experiment 2 
 df_expt2 <- read.csv("../../data/soc_xsit_live_expt2.csv")
 # experiment 3
-df_expt3 <- read.csv("../../data/soc_xsit_reliability_expt3.csv")
+df_expt3 <- read.csv("../../data/soc_xsit_reliabiliy_parametric_replication.csv")
 ```
 
 ## Experiment 1
@@ -177,7 +178,7 @@ levels of attention and memory demands.
 ```{r expt1 rt on exposure trials}
 ms_expo_rt_expt1 <-  df_expo_expt1_analysis %>%
     group_by(numPic, intervalNum, condition) %>%
-    summarise(rt = mean(rt),
+    summarise(mean_rt = mean(rt),
               ci_low = ci.low(rt),
               ci_high = ci.high(rt))
 ```
@@ -185,25 +186,36 @@ ms_expo_rt_expt1 <-  df_expo_expt1_analysis %>%
 Now we plot mean reaction times for each condition.
 
 ```{r expt1 rt on exposure trials plot, echo=F}
-ggplot(data=ms_expo_rt_expt1, 
-       aes(x=intervalNum, y=rt, color = condition)) + 
-    geom_pointrange(aes(ymin=rt - ci_low, 
-                        ymax=rt + ci_high), width = .05, size=0.6) +
+# change factor labels 
+ms_expo_rt_expt1$condition <- revalue(ms_expo_rt_expt1$condition,
+                            c("No-Social" = "No-Gaze","Social" = "Gaze"))
+
+exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1, 
+                                aes(x=intervalNum, y=mean_rt, color = condition)) + 
+    geom_pointrange(aes(ymin=mean_rt - ci_low, 
+                        ymax=mean_rt + ci_high), width = .05, size=1) +
     scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
     geom_smooth(method="lm", se =F) +
     scale_y_continuous(limits=c(0,5000)) +
     scale_colour_manual(values=c("#1f78b4", "red")) +
     facet_grid( ~ numPic, labeller = mf_labeller) + 
     xlab("Intervening Trials") + 
-    ylab("Prop. Choosing Repeated Referent") +
+    ylab("Study\nTime") +
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
     guides(linetype=FALSE) +
-    theme(text = element_text(size=14), 
-          axis.title.y=element_text(vjust=1),
-          axis.title.x=element_text(vjust=-0.3),
-          legend.justification=c(0,1),
-          legend.position = c(0,1)) 
+    theme(axis.title.x = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+          legend.position=c(0.1,0.85),
+          legend.text = element_text(size=16),
+          legend.title = element_text(size=16, face="bold"),
+          strip.text = element_text(size=16))
+
+# save output
+setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
+ggsave("exp1-rt-exposure.pdf", exp1_rt_exposure_plot, width=9, height=5)
 ```
 
 ### Accuracy on test trials 
@@ -231,27 +243,38 @@ ms_test_all_expt1 <- rbind(ms_test_expt1, ms_test_filt_expt1)
 Now we plot the both the filtered and unfiltered means.
 
 ```{r expt1 acc test plot, echo=F}
-ggplot(data=ms_test_all_expt1, 
+# revalue social/no-social --> gaze/no-gaze
+ms_test_filt_expt1$condition <- revalue(ms_test_filt_expt1$condition,
+                            c("No-Social" = "No-Gaze","Social" = "Gaze"))
+
+expt1.acc.test <- ggplot(data=ms_test_filt_expt1, 
        aes(x=intervalNum, y=accuracy, 
            colour = condition)) + 
     geom_pointrange(aes(ymin=accuracy - ci_low, 
-                        ymax=accuracy + ci_high), width = .05, size=0.6) +
+                        ymax=accuracy + ci_high), width = .05, size=1) +
     geom_line(aes(linetype = trialType), size=0.4) +
     geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
     scale_x_continuous(limits=c(-.9,11), breaks=c(0, 1, 3, 7)) +
     scale_y_continuous(limits=c(0,1)) +
     scale_colour_manual(values=c("#1f78b4", "red")) +
-    facet_grid(exclusionary_criteria ~ numPic, labeller = mf_labeller) + 
+    facet_grid(. ~ numPic, labeller = mf_labeller) + 
     xlab("Intervening Trials") + 
-    ylab("Prop. Choosing Repeated Referent") +
+    ylab("Proportion\nCorrect") +
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
     guides(linetype=FALSE) +
-    theme(text = element_text(size=14), 
-          axis.title.y=element_text(vjust=1),
-          axis.title.x=element_text(vjust=-0.3),
-          legend.justification=c(0,0),
-          legend.position = c(0,0)) 
+    theme(axis.title.x = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+          legend.position=c(0.1,0.2),
+          legend.text = element_text(size=16),
+          legend.title = element_text(size=16, face="bold"),
+          strip.text = element_text(size=16))
+
+# save output
+setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
+ggsave("exp1-acc-test.pdf", expt1.acc.test, width=9, height=5)
 ```
 
 ### LMERs
@@ -421,7 +444,7 @@ df_n_expt2_filt <- df_expo_expt2_filt %>%
 
 nsubs_expt2 <- cbind(df_n_expt2, df_n_expt2_filt)
 
-nsubs_expt2[1] - nsubs_expt2[2]
+nsubs_expt2
 ```
 
 Test trial filters.
@@ -502,24 +525,35 @@ ms_rt_expo_expt2 <- df_expo_expt2_analysis %>%
 Plot RT differences
 
 ```{r expt2 rt expo plot, echo=F}
-ggplot(data=ms_rt_expo_expt2, 
-       aes(x=intervalNum, y=rt_exposure, color = condition_trial)) + 
+# revalue social/no-social --> gaze/no-gaze
+ms_rt_expo_expt2$condition <- revalue(ms_rt_expo_expt2$condition,
+                            c("no-social" = "No-Gaze", "social" = "Gaze"))
+
+expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2, 
+       aes(x=intervalNum, y=rt_exposure, color = condition)) + 
     geom_pointrange(aes(ymin=rt_exposure - ci_low, 
-                        ymax=rt_exposure + ci_high), width = .05, size=0.6) +
+                        ymax=rt_exposure + ci_high), width = .05, size=0.8) +
     scale_x_continuous(limits=c(-.9,4), breaks=c(0,3)) +
     geom_smooth(method="lm", se=F) +
     scale_y_continuous(limits=c(0,5000)) +
-    scale_colour_manual(values=c("#1f78b4", "red")) +
+    scale_colour_manual(values=c("red", "#1f78b4")) +
     xlab("Intervening Trials") + 
-    ylab("RT") +
+    ylab("Study\nTime") +
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
     guides(linetype=FALSE) +
-    theme(text = element_text(size=14), 
-          axis.title.y=element_text(vjust=1),
-          axis.title.x=element_text(vjust=-0.3),
-          legend.justification=c(1,1),
-          legend.position = c(1,1)) 
+    theme(axis.title.x = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+          legend.position=c(0.8,0.8),
+          legend.text = element_text(size=16),
+          legend.title = element_text(size=16, face="bold"),
+          strip.text = element_text(size=16))
+
+# save output
+setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
+ggsave("exp2-rt-expo.pdf", expt2.rt.expo, width=6, height=5)
 ```
 
 ## Analyze test trials
@@ -549,29 +583,38 @@ ms_test_all_expt2 <- rbind(ms_test_expt2, ms_test_expt2_filt)
 Now plot accuracy for test trials.
 
 ```{r expt2 acc test plot, echo=F}
-ggplot(data=ms_test_all_expt2, 
+# revalue social/no-social --> gaze/no-gaze
+ms_test_expt2_filt$condition_trial <- revalue(ms_test_expt2_filt$condition_trial,
+                            c("no-social" = "No-Gaze", "social" = "Gaze"))
+
+expt2.acc.test <- ggplot(data=ms_test_expt2_filt, 
        aes(x=intervalNum, y=accuracy, 
            colour = condition_trial)) + 
     geom_pointrange(aes(ymin=accuracy - ci_low, 
                         ymax=accuracy + ci_high), 
-                    width = .05, size=0.6) +
-    geom_line(aes(linetype = trialType), size=0.4) +
+                    width = .05, size=0.8) +
+    geom_line(aes(linetype = trialType), size=0.6) +
     geom_hline(aes(yintercept=1/4), linetype = "dashed") +
     scale_x_continuous(limits=c(-.9,4), breaks=c(0, 3)) +
     scale_y_continuous(limits=c(0,1)) +
-    scale_colour_manual(values=c("#1f78b4", "red")) +
-    facet_grid(~filter) + 
+    scale_colour_manual(values=c("red", "#1f78b4")) +
     xlab("Intervening Trials") + 
-    ylab("Prop. Choosing Repeated Referent") +
+    ylab("Proportion\nCorrect") +
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
     guides(linetype=FALSE) +
-    theme(text = element_text(size=14), 
-          axis.title.y=element_text(vjust=1),
-          axis.title.x=element_text(vjust=-0.3),
-          legend.justification=c(0,0),
-          legend.position = c(0,0))
+    theme(axis.title.x = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+          legend.position=c(0.85,0.88),
+          legend.text = element_text(size=16),
+          legend.title = element_text(size=16, face="bold"),
+          strip.text = element_text(size=16))
 
+# save output
+setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
+ggsave("exp2-acc-test.pdf", expt2.acc.test, width=7, height=5)
 ```
 
 ### LMERs 
@@ -769,6 +812,29 @@ ggplot(ms_test_fam,
     ggtitle("Accuracy on Test Trials in Familiarization Block")
 ```
 
+Split this by first and second half. 
+
+```{r expt3 acc test trials familiarization block}
+ms_test_fam <- df_test_fam_expt3 %>%
+    mutate(second_half = itemNum > 3) %>%
+      group_by(prop_cond_clean, trialType, second_half) %>%
+      summarise(accuracy = mean(correct),
+                ci_low = ci.low(correct),
+                ci_high = ci.high(correct))
+
+ggplot(ms_test_fam, 
+       aes(x=prop_cond_clean, y=accuracy, 
+           group=trialType, colour=trialType)) +
+    geom_pointrange(aes(ymin=accuracy - ci_low,
+                        ymax=accuracy + ci_high), 
+                    width = .1, size=0.7) +
+    geom_hline(yintercept=0.5, linetype = "dashed") +
+    scale_y_continuous(limits=c(0,1)) + 
+    geom_smooth(method='lm') +
+    facet_grid(.~second_half) + 
+    ggtitle("Accuracy on Test Trials in Familiarization Block")
+```
+
 #### Analyze performance on test block
 
 Anayze RT on exposure trials in the test block.
@@ -799,18 +865,30 @@ ms_expo_test <- df_test_test %>%
       summarise(accuracy = mean(correct_exposure),
                 ci_low = ci.low(correct_exposure),
                 ci_high = ci.high(correct_exposure))
+```
 
-ggplot(ms_expo_test, 
-       aes(x=prop_cond_clean, y=accuracy)) +
-    geom_line(size=0.7) +
+Now plot chose target of gaze
+
+```{r chose gaze target plot}
+expt3_chose_gazetar_plot <- ggplot(ms_expo_test, 
+                                   aes(x=prop_cond_clean, y=accuracy, group=1)) +
+    geom_smooth(method="lm", se=F, color="black") +
     geom_pointrange(aes(ymin=accuracy - ci_low,
-                        ymax=accuracy + ci_high), width=.1) +
+                        ymax=accuracy + ci_high), width=.1, size=0.5) +
     geom_hline(yintercept=0.25, linetype = "dashed") +
     scale_y_continuous(limits=c(0,1)) +
     xlab("Level of Reliablity") + 
-    ylab("Prop. Chose Target of Gaze") +
-    labs(colour = "Trial Type") +
-    theme(text = element_text(size=16))
+    ylab("Prop. Chose \n Target of Gaze") + 
+    theme(axis.title.x = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+          legend.position=c(0.85,0.85),
+          legend.text = element_text(size=13),
+          legend.title = element_text(size=13, face="bold"))
+
+# save plot
+ggsave("exp3-acc-exposure.pdf", expt3_chose_gazetar_plot, width=5.5, height=3.5)
 ```
 
 Accuracy on test trials in the test block
@@ -826,26 +904,96 @@ ms_test_test <- df_test_test %>%
 Now plot.
 
 ```{r expt3 acc test expt 3 cogsci plot, echo=F}
-ggplot(data=ms_test_test, 
+expt3_acc_test <- ggplot(data=ms_test_test, 
        aes(x=prop_cond_clean, y=accuracy, group=trialType,
            color=trialType, label = trialType)) + 
     geom_pointrange(aes(ymin=accuracy - ci_low, 
                         ymax=accuracy + ci_high), 
-                    width = .05, size=0.6) +
+                    width = .05, size=0.7) +
     geom_smooth(method='lm', se=F) +
     geom_hline(aes(yintercept=1/4), linetype = "dashed") +
     scale_y_continuous(limits=c(0,1)) +
     scale_colour_manual(values=c("#1f78b4", "red")) +
     xlab("Level of Reliability") + 
-    ylab("Prop. Choosing Repeated Referent") +
+    ylab("Prop. Chose \nRepeated Referent") +
     labs(color = "Trial Type") +
     guides(color=FALSE) +
     geom_dl(method=list("last.qp",cex=1,hjust=-.15)) +
-    theme(text = element_text(size=14), 
-          axis.title.y=element_text(vjust=1),
-          axis.title.x=element_text(vjust=-0.3),
-          legend.justification=c(1,1),
-          legend.position = c(1,1)) 
+    theme(axis.title.x = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+          legend.position=c(0.85,0.85),
+          legend.text = element_text(size=13),
+          legend.title = element_text(size=13, face="bold"))
+
+# save output
+ggsave("exp3-acc-test.pdf", expt3_acc_test, width=7.8, height=4.5)
+```
+
+Analyze subject reported reliablity
+
+```{r subjective reliablity analysis}
+df_test_test$rel_subj <- as.numeric(as.character(df_test_test$rel_subj))
+
+ms_test_subj_rel <- df_test_test %>%
+      group_by(prop_cond_clean) %>%
+      summarise(accuracy = mean(rel_subj,na.rm=TRUE),
+                ci_low = ci.low(rel_subj),
+                ci_high = ci.high(rel_subj))
+
+qplot(x=prop_cond_clean, y=accuracy, data=ms_test_subj_rel) + 
+    ylim(c(0,1))
+
+qplot(rel_subj, facets=.~prop_cond_clean, data=df_test_test, binwidth=.1)
+```
+
+Reported reliability vs. number correct on exposure - individual consistency.
+
+```{r subjective reliablity analysis}
+df_test_test <- df_test_test %>%
+    group_by(subids) %>% 
+    mutate(total_exposure_correct = sum(correct_exposure)) 
+
+ms_test_subj_rel <- df_test_test %>%
+    group_by(subids, prop_cond_clean, add=FALSE) %>%
+    summarise(total_exposure_correct = total_exposure_correct[1], 
+              subj = rel_subj[1])
+
+qplot(total_exposure_correct, subj, col = prop_cond_clean, 
+      data=ms_test_subj_rel) + geom_smooth(method="lm", se=FALSE)
+```
+
+Reported reliability vs. number correct on exposure - means.
+
+```{r subjective reliablity analysis}
+ms_test_subj_rel <- df_test_test %>%
+    group_by(prop_cond_clean, total_exposure_correct, add=FALSE) %>%
+    summarise(subj = mean(rel_subj, na.rm=TRUE), 
+              cih = ci.high(rel_subj),
+              cil = ci.low(rel_subj))
+```
+
+Now plot
+
+```{r expt3 subj rel plot}
+expt3_subj_rel_plot <- qplot(total_exposure_correct, subj, col = prop_cond_clean, 
+      ymin = subj - cil, ymax = subj + cih,
+      geom="pointrange",
+      position=position_dodge(width=.1),
+      data=ms_test_subj_rel, ylab="Subjective\nReliability", 
+      xlab="Num Trials Chose Gaze Target") + 
+    geom_smooth(method="lm", se=FALSE) +
+    scale_color_discrete(name="Reliability Level") +
+    theme(axis.title.x = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+          legend.text = element_text(size=13),
+          legend.title = element_text(size=13, face="bold"))
+
+# save output
+ggsave("expt3-subj-rel-chose-gaze-target.pdf", expt3_subj_rel_plot, width=7, height=4)
 ```
 
 ### LMERs
@@ -897,7 +1045,7 @@ m2.lm_expt3 <- lm(correct ~ trialType * reliability,
             data = mss_expt3)
 ```
 
-Predict test performance from selecting target of gaze on exposure trials
+#### Predict test performance from selecting target of gaze on exposure trials
 
 ```{r expt3 model with accuracy on exposure as predictor}
 df_test_test <- df_test_test %>%
@@ -922,8 +1070,11 @@ ms_acc_exp_test_expt3 <- df_test_test %>%
     summarise(cih = ci.high(correct), 
               cil= ci.low(correct),
               correct = mean(correct))
-# now plot
-ggplot(data=ms_acc_exp_test_expt3, 
+```
+Now plot
+
+```{r expt3 chose gazetar analysis}
+expt3_acc_test_chose_gazetar <- ggplot(data=ms_acc_exp_test_expt3, 
        aes(x=total_exposure_correct, y=correct, group=trialType,
            color=trialType, label = trialType)) + 
     geom_pointrange(aes(ymin=correct - cil, 
@@ -935,11 +1086,16 @@ ggplot(data=ms_acc_exp_test_expt3,
     scale_y_continuous(limits=c(0,1)) +
     scale_colour_manual(values=c("#1f78b4", "red")) +
     xlab("Number Correct on Exposure") + 
-    ylab("Prop. Choosing Repeated Referent") +
+    ylab("Prop. Chose\nRepeated Referent") +
     labs(color = "Trial Type") +
     guides(color=FALSE) +
     geom_dl(method=list("last.qp",cex=1,hjust=-.15)) +
-    theme(text = element_text(size=14), 
-          axis.title.y=element_text(vjust=1),
-          axis.title.x=element_text(vjust=-0.3))
+    theme(axis.title.x = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+          legend.text = element_text(size=13),
+          legend.title = element_text(size=13, face="bold"))
+
+ggsave("expt3-acc-test-chosegazetar.pdf", expt3_acc_test_chose_gazetar, width=7.5, height=4)
 ```

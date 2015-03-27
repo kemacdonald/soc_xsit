@@ -4,23 +4,23 @@
 rm(list=ls())
 
 ## Load libraries 
-source("/Users/kmacdonald/Documents/programming/rscripts/useful.R")
+source("useful.R")
 library(rjson)
 library(plyr)
 library(dplyr)
 library(stringr)
 
 ## set file paths for reading and writing data
-read_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC_XSIT", "soc_xsit_expts", "soc_xsit_reliability/")
-write_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC_XSIT", "processed_data", "adult-live/")
+read_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC-XSIT", "expts", "soc_xsit_reliability", "data/")
+write_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC-XSIT", "SOC_XSIT_GIT", "data/")
 
 ## gets all .results files at one time
 all_results <- list.files(path = read_path, pattern = '*.results', all.files = FALSE)
 
 ## for selecting one out of multiple result files 
-all_results <- all_results[4] 
+all_results <- all_results[5] 
 
-## creates empty data frame
+## creates empty data frame for storing data
 all.data <- data.frame()
 
 ## number of trials in experiment
@@ -60,6 +60,7 @@ for(f in 1:length(all_results)) {
       long.data$trialType[c] <- d[[j]]$trialType
       long.data$samePos[c] <- d[[j]]$samePos
       long.data$chosen[c] <- d[[j]]$chosen
+      long.data$correct[c] <- d[[j]]$correct
       long.data$chosenIdx[c] <- d[[j]]$chosen_idx
       long.data$gaze_target[c] <- d[[j]]$gaze_target
       long.data$trial_category[c] <- d[[j]]$trial_category
@@ -68,6 +69,7 @@ for(f in 1:length(all_results)) {
       long.data$rt[c] <- d[[j]]$rt
       long.data$face[c] <- d[[j]]$face
       long.data$faceIdx[c] <- d[[j]]$faceIdx
+      long.data$rel_subj[c] <- data$Answer.reliability[i]
      
       c <- c + 1
     }
@@ -193,13 +195,13 @@ keep.data$numPicN <- as.numeric(keep.data$numPic)
 
 
 # flag correct on all trial categories (example, exposure, test)
-keep.data <- keep.data  %>% 
-    group_by(subid) %>%
-    mutate(correct = ifelse(trial_category == "example", chosen[1] == "squirrel" | 
-                                chosen[2] == "tomato",
-                            ifelse(trial_category == "exposure", chosen == gaze_target,
-                                   ifelse(trial_category == "test" , chosen == kept, NA)
-                            )))
+# keep.data <- keep.data  %>% 
+#     group_by(subid) %>%
+#     mutate(correct = ifelse(trial_category == "example", chosen[1] == "squirrel" | 
+#                                 chosen[2] == "tomato",
+#                             ifelse(trial_category == "exposure", chosen == gaze_target,
+#                                    ifelse(trial_category == "test" , chosen == kept, NA)
+#                             )))
 
 # create block variable
 keep.data$block <- ifelse(keep.data$itemNum <= 7, "familiarization", "test")
@@ -210,5 +212,5 @@ keep.data <- anonymize.sids(keep.data, "subid")
 
 ##### SAVE OUTPUT  #####
 
-write.csv(keep.data, paste(write_path, "soc_xsit_reliabiliy_parametric__no_choice.csv", sep=""),
+write.csv(keep.data, paste(write_path, "soc_xsit_reliabiliy_parametric_replication.csv", sep=""),
           row.names=FALSE)

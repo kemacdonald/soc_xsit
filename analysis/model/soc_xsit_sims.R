@@ -1,17 +1,9 @@
 rm(list=ls())
 ## load model ##
-source("/Users/kmacdonald/Documents/Projects/SOC_XSIT/soc_xsit_r_scripts/soc_xsit_model.R")
+source("soc_xsit_model.R")
 
 ## load packages ##
-library(bootstrap)
-library(lme4)
 library(ggplot2)
-library(arm)
-library(directlabels)
-library(stringr)
-library(plyr)
-library(reshape2)
-options(device="quartz")
 
 ######## SIMULATION 0 - model proofing ##########
 
@@ -29,8 +21,8 @@ compute.probs2(gamma=1, lambda=1, sigma=0, numPic=4, int=0)
 # actually 1/2 for switch - seems counter intuitive but makes sense: 
 # 1/3 chance of getting the one you chose + a random chance the rest of the time
 
-compute.probs2(gamma=1, lambda=1, sigma=.5, numPic=4, int=0)
-compute.probs2(gamma=1, lambda=1, sigma=1, numPic=4, int=0)
+compute.probs2(gamma=1, lambda=1, sigma=.5, numPic=4, int=0) # parallel accum
+compute.probs2(gamma=1, lambda=1, sigma=1, numPic=4, int=0) # single hyp tracker
 
 ######## SIMULATION 1 - sigma + interval ##########
 ## Set parameter values
@@ -40,7 +32,9 @@ sigma <- c(0.25, 0.50, 0.75, 1) # amount of intention given to initial hypothesi
 int <- c(0, 1, 3, 7)            # number of intervening words
 numPic <- 4                     # number of pics
 
-## generate probabilites for different parameter values (sigma, number of pics, delay)
+## generate probabilites for different parameter values 
+## (sigma, number of pics, delay)
+
 probs <- data.frame()
 for (i in 1:length(int)){
   for (j in 1:length(sigma)) {
@@ -51,7 +45,6 @@ for (i in 1:length(int)){
   }
 }
 
-quartz(width=6,height=4,title = "Simulation 1: Sigma + Interval")
 ggplot(data=probs, aes(x=int, y=p)) +
     geom_line(aes(colour=cond)) +
     geom_point(aes(colour=cond)) +
@@ -81,7 +74,6 @@ for (i in 1:length(int)){
   }
 }
 
-quartz(width=10,height=8,title = "Simulation 2: Sigma + Interval + Gamma")
 qplot(int, p, colour=cond, facets=gamma~sigma,
       geom="line", data=probs) + ylim(c(0,1))
 
@@ -89,12 +81,12 @@ qplot(int, p, colour=cond, facets=gamma~sigma,
 ######## SIMULATION 3 - social cues are a boost to gamma ##########
 
 ## Set parameter values
-gamma <- 1.5         # strength of initial encoding
-lambda <- .15                # rate of memory decay 
-sigma <- .56                 # amount of intention given to initial hypothesis 
+gamma <- 1.5                # strength of initial encoding
+lambda <- .15               # rate of memory decay 
+sigma <- .56                # amount of intention given to initial hypothesis 
 int <-  c(0, 1, 3, 7)       # number of intervening words
 numPic <- 4                 # number of pics
-social_boost = .25         # boost to strength of initial encoding
+social_boost = .25          # boost to strength of initial encoding
 
 ## generate probabilites for different parameter values (sigma, number of pics, delay)
 probs <- data.frame()
@@ -121,9 +113,10 @@ for (i in 1:length(int)){
   }
 }
 
-quartz()
 qplot(int, p, colour=cond, lty=trial.type,
-      geom=c("line","point"), data=probs) + ylim(c(0,1)) + theme_bw()
+      geom=c("line","point"), data=probs) + 
+    ylim(c(0,1)) + 
+    theme_bw()
 
 ######## SIMULATION 4 - social cues are a boost to sigma ##########
 
@@ -156,9 +149,10 @@ for (i in 1:length(int)){
   }
 }
 
-quartz()
 qplot(int, p, colour=cond, lty=trial.type, facets=gamma~sigma,
-      geom="line", data=probs) + ylim(c(0,1)) + theme_bw()
+      geom="line", data=probs) + 
+    ylim(c(0,1)) + 
+    theme_bw()
 
 
 ######## SIMULATION 5 - manipulate lambda + social boost ##########

@@ -36,3 +36,30 @@ compute.probs2 <- function(gamma=1.5,  # strength of initial encoding
   return(c(p_same, p_switch))
 }
 
+## KM: model trying to capture the selective influence of
+## social cues on switch trial strength
+
+compute.probs3 <- function(gamma=1.5,  # strength of initial encoding
+                           lambda=.15, # rate of memory decay 
+                           sigma=.5,   # amount of attention given to initial hypothesis 
+                           numPic=4,   # number of intervening words
+                           int=0)      # number of pics
+{
+    
+    same_trial_strength <- gamma * sigma * (int+1)^-lambda
+    
+    ## need two different switch trial strength functions,
+    ## one for social and one for no-social 
+    
+    if(context == "social")
+    
+    switch_trial_strength <- gamma * ((1-(sigma)) / (numPic-1))*(int+1)^-lambda
+    
+    # probability correct on same/switch trials
+    # note that if p is > 1, take 1 instead (to keep this expression bound 0,1)
+    p_same = min(c(same_trial_strength + (1 - same_trial_strength)/numPic,1))
+    p_switch = min(c(switch_trial_strength + (1 - switch_trial_strength)/numPic,1))
+    
+    return(c(p_same, p_switch))
+}
+
