@@ -197,21 +197,25 @@ exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1,
     scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
     geom_smooth(method="lm", se =F) +
     scale_y_continuous(limits=c(0,5000)) +
-    scale_colour_manual(values=c("#1f78b4", "red")) +
+    scale_colour_manual(values=c("#969696", "black")) +
     facet_grid( ~ numPic, labeller = mf_labeller) + 
     xlab("Intervening Trials") + 
     ylab("Study\nTime") +
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
     guides(linetype=FALSE) +
-    theme(axis.title.x = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0.5,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+    theme(axis.title.x = element_text(colour="black",size=20,
+                                      angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=20,
+                                      angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=18,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=18,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
           legend.position=c(0.1,0.85),
           legend.text = element_text(size=16),
           legend.title = element_text(size=16, face="bold"),
-          strip.text = element_text(size=16))
+          strip.text = element_text(size=16)) 
 
 # save output
 setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
@@ -254,19 +258,22 @@ expt1.acc.test <- ggplot(data=ms_test_filt_expt1,
                         ymax=accuracy + ci_high), width = .05, size=1) +
     geom_line(aes(linetype = trialType), size=0.4) +
     geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
-    scale_x_continuous(limits=c(-.9,11), breaks=c(0, 1, 3, 7)) +
+    scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
     scale_y_continuous(limits=c(0,1)) +
-    scale_colour_manual(values=c("#1f78b4", "red")) +
+    scale_colour_grey(start = 0.3, end = 0.6) +
     facet_grid(. ~ numPic, labeller = mf_labeller) + 
     xlab("Intervening Trials") + 
-    ylab("Proportion\nCorrect") +
+    ylab("Proportion Correct") +
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
     guides(linetype=FALSE) +
-    theme(axis.title.x = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0.5,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+    theme(axis.title.x = element_text(colour="black",size=20,
+                                      angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=18,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=18,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=20,face="plain"),
           legend.position=c(0.1,0.2),
           legend.text = element_text(size=16),
           legend.title = element_text(size=16, face="bold"),
@@ -542,10 +549,14 @@ expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2,
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
     guides(linetype=FALSE) +
-    theme(axis.title.x = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0.5,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+    theme(axis.title.x = element_text(colour="black",size=20,
+                                      angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=20,
+                                      angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=18,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=18,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
           legend.position=c(0.8,0.8),
           legend.text = element_text(size=16),
           legend.title = element_text(size=16, face="bold"),
@@ -592,21 +603,25 @@ expt2.acc.test <- ggplot(data=ms_test_expt2_filt,
            colour = condition_trial)) + 
     geom_pointrange(aes(ymin=accuracy - ci_low, 
                         ymax=accuracy + ci_high), 
-                    width = .05, size=0.8) +
+                    width = .05, size=1) +
     geom_line(aes(linetype = trialType), size=0.6) +
     geom_hline(aes(yintercept=1/4), linetype = "dashed") +
     scale_x_continuous(limits=c(-.9,4), breaks=c(0, 3)) +
     scale_y_continuous(limits=c(0,1)) +
-    scale_colour_manual(values=c("red", "#1f78b4")) +
+    scale_colour_grey(start=0.6, end=0.3) +
     xlab("Intervening Trials") + 
-    ylab("Proportion\nCorrect") +
+    ylab("Proportion Correct") +
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
     guides(linetype=FALSE) +
-    theme(axis.title.x = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=20,angle=0,hjust=0.5,vjust=0.5,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=18,angle=0,hjust=0.5,vjust=0,face="plain"),
+    theme(axis.title.x = element_text(colour="black",size=20,
+                                      angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=20,
+                                      angle=90,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=18,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=18,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
           legend.position=c(0.85,0.88),
           legend.text = element_text(size=16),
           legend.title = element_text(size=16, face="bold"),
@@ -919,10 +934,14 @@ expt3_acc_test <- ggplot(data=ms_test_test,
     labs(color = "Trial Type") +
     guides(color=FALSE) +
     geom_dl(method=list("last.qp",cex=1,hjust=-.15)) +
-    theme(axis.title.x = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0.5,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+    theme(axis.title.x = element_text(colour="black",size=16,
+                                      angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=16,
+                                      angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=12,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=12,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
           legend.position=c(0.85,0.85),
           legend.text = element_text(size=13),
           legend.title = element_text(size=13, face="bold"))
@@ -985,10 +1004,14 @@ expt3_subj_rel_plot <- qplot(total_exposure_correct, subj, col = prop_cond_clean
       xlab="Num Trials Chose Gaze Target") + 
     geom_smooth(method="lm", se=FALSE) +
     scale_color_discrete(name="Reliability Level") +
-    theme(axis.title.x = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0.5,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+    theme(axis.title.x = element_text(colour="black",size=16,
+                                      angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=16,
+                                      angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=12,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=12,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
           legend.text = element_text(size=13),
           legend.title = element_text(size=13, face="bold"))
 
@@ -1079,23 +1102,28 @@ expt3_acc_test_chose_gazetar <- ggplot(data=ms_acc_exp_test_expt3,
            color=trialType, label = trialType)) + 
     geom_pointrange(aes(ymin=correct - cil, 
                         ymax=correct + cih), 
-                    width = .05, size=0.6) +
+                    width = .05, size=1) +
     geom_smooth(method='lm', se=F) +
     geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-    scale_x_continuous(limits=c(0,9)) +
+    scale_x_continuous(limits=c(0,9), breaks=c(0:8)) +
     scale_y_continuous(limits=c(0,1)) +
-    scale_colour_manual(values=c("#1f78b4", "red")) +
+    scale_colour_grey(start=0.3, end=0.6) +
     xlab("Number Correct on Exposure") + 
-    ylab("Prop. Chose\nRepeated Referent") +
+    ylab("Proportion Correct") +
     labs(color = "Trial Type") +
     guides(color=FALSE) +
-    geom_dl(method=list("last.qp",cex=1,hjust=-.15)) +
-    theme(axis.title.x = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0.5,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+    geom_dl(method=list("last.qp",cex=1,hjust=-.5)) +
+    theme(axis.title.x = element_text(colour="black",size=18,
+                                      angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=18,
+                                      angle=90,hjust=0.5,vjust=0.8,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=12,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=12,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
           legend.text = element_text(size=13),
-          legend.title = element_text(size=13, face="bold"))
+          legend.title = element_text(size=13, face="bold")) 
+    
 
-ggsave("expt3-acc-test-chosegazetar.pdf", expt3_acc_test_chose_gazetar, width=7.5, height=4)
+ggsave("expt3-acc-test-chosegazetar.pdf", expt3_acc_test_chose_gazetar, width=7.5, height=5)
 ```

@@ -106,12 +106,12 @@ all.data <- long.data
 
 ##### CLEAN DATASET #####
 
-## computes day/time of each hit for excluding multiples
-# all.data$day.and.time <- chron(dates = all.data$submit.date,
-#                                times = all.data$submit.time,
-#                                format=c("mon d y","h:m:s"))
+# computes day/time of each hit for excluding multiples
+all.data$day.and.time <- chron(dates = all.data$submit.date,
+                               times = all.data$submit.time,
+                               format=c("mon d y","h:m:s"))
 
-# all.data <- all.data[with(all.data,order(subid,day.and.time)),]
+all.data <- all.data[with(all.data,order(subid,day.and.time)),]
 
 # drop subs who have more than 36 trials
 drop.subs <- ddply(all.data,.(subid), function(x) {nrow(x) > 34}) 
