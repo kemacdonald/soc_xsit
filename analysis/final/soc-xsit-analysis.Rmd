@@ -9,7 +9,7 @@ Clear workspace and set working directory
 
 ```{r clear workspace, echo=F, warning=F}
 rm(list=ls())
-setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/SOC_XSIT_GIT/analysis/final")
+setwd("../..//analysis/final")
 source("useful.R")
 library(pander)
 ```
@@ -217,6 +217,8 @@ exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1,
           legend.title = element_text(size=16, face="bold"),
           strip.text = element_text(size=16)) 
 
+exp1_rt_exposure_plot
+
 # save output
 setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
 ggsave("exp1-rt-exposure.pdf", exp1_rt_exposure_plot, width=9, height=5)
@@ -278,6 +280,8 @@ expt1.acc.test <- ggplot(data=ms_test_filt_expt1,
           legend.text = element_text(size=16),
           legend.title = element_text(size=16, face="bold"),
           strip.text = element_text(size=16))
+
+expt1.acc.test
 
 # save output
 setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
@@ -562,6 +566,8 @@ expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2,
           legend.title = element_text(size=16, face="bold"),
           strip.text = element_text(size=16))
 
+expt2.rt.expo
+
 # save output
 setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
 ggsave("exp2-rt-expo.pdf", expt2.rt.expo, width=6, height=5)
@@ -626,6 +632,8 @@ expt2.acc.test <- ggplot(data=ms_test_expt2_filt,
           legend.text = element_text(size=16),
           legend.title = element_text(size=16, face="bold"),
           strip.text = element_text(size=16))
+
+expt2.acc.test
 
 # save output
 setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
@@ -829,7 +837,7 @@ ggplot(ms_test_fam,
 
 Split this by first and second half. 
 
-```{r expt3 acc test trials familiarization block}
+```{r expt3 acc test trials familiarization block split}
 ms_test_fam <- df_test_fam_expt3 %>%
     mutate(second_half = itemNum > 3) %>%
       group_by(prop_cond_clean, trialType, second_half) %>%
@@ -894,13 +902,19 @@ expt3_chose_gazetar_plot <- ggplot(ms_expo_test,
     scale_y_continuous(limits=c(0,1)) +
     xlab("Level of Reliablity") + 
     ylab("Prop. Chose \n Target of Gaze") + 
-    theme(axis.title.x = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=16,angle=0,hjust=0.5,vjust=0.5,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=12,angle=0,hjust=0.5,vjust=0,face="plain"),
+    theme(axis.title.x = element_text(colour="black",size=16,
+                                      angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.title.y = element_text(colour="black",size=16,
+                                      angle=0,hjust=0.5,vjust=0.5,face="plain"),
+          axis.text.x = element_text(colour="grey20",size=12,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
+          axis.text.y = element_text(colour="grey20",size=12,
+                                     angle=0,hjust=0.5,vjust=0,face="plain"),
           legend.position=c(0.85,0.85),
           legend.text = element_text(size=13),
           legend.title = element_text(size=13, face="bold"))
+
+expt3_chose_gazetar_plot
 
 # save plot
 ggsave("exp3-acc-exposure.pdf", expt3_chose_gazetar_plot, width=5.5, height=3.5)
@@ -946,13 +960,15 @@ expt3_acc_test <- ggplot(data=ms_test_test,
           legend.text = element_text(size=13),
           legend.title = element_text(size=13, face="bold"))
 
+expt3_acc_test
+
 # save output
 ggsave("exp3-acc-test.pdf", expt3_acc_test, width=7.8, height=4.5)
 ```
 
 Analyze subject reported reliablity
 
-```{r subjective reliablity analysis}
+```{r subjective reliablity analysis 1}
 df_test_test$rel_subj <- as.numeric(as.character(df_test_test$rel_subj))
 
 ms_test_subj_rel <- df_test_test %>%
@@ -969,7 +985,7 @@ qplot(rel_subj, facets=.~prop_cond_clean, data=df_test_test, binwidth=.1)
 
 Reported reliability vs. number correct on exposure - individual consistency.
 
-```{r subjective reliablity analysis}
+```{r subjective reliablity analysis 2}
 df_test_test <- df_test_test %>%
     group_by(subids) %>% 
     mutate(total_exposure_correct = sum(correct_exposure)) 
@@ -1014,6 +1030,8 @@ expt3_subj_rel_plot <- qplot(total_exposure_correct, subj, col = prop_cond_clean
                                      angle=0,hjust=0.5,vjust=0,face="plain"),
           legend.text = element_text(size=13),
           legend.title = element_text(size=13, face="bold"))
+
+expt3_subj_rel_plot 
 
 # save output
 ggsave("expt3-subj-rel-chose-gaze-target.pdf", expt3_subj_rel_plot, width=7, height=4)
@@ -1124,6 +1142,8 @@ expt3_acc_test_chose_gazetar <- ggplot(data=ms_acc_exp_test_expt3,
           legend.text = element_text(size=13),
           legend.title = element_text(size=13, face="bold")) 
     
+
+expt3_acc_test_chose_gazetar 
 
 ggsave("expt3-acc-test-chosegazetar.pdf", expt3_acc_test_chose_gazetar, width=7.5, height=5)
 ```
