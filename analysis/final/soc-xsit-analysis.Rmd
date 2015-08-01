@@ -9,9 +9,9 @@ Clear workspace and set working directory
 
 ```{r clear workspace, echo=F, warning=F}
 rm(list=ls())
-setwd("../../analysis/final")
 source("useful.R")
 library(pander)
+library(magrittr)
 library(gridExtra)
 ```
 
@@ -22,11 +22,8 @@ Read in data from all 3 Experiments:
 * Parametric manipulation of cue reliablity
 
 ```{r read data, echo=F, warning=F}
-# experiment 1
 df_expt1 <- read.csv("../../data/soc_xsit_expt1_master_clean.csv")
-# experiment 2 
 df_expt2 <- read.csv("../../data/soc_xsit_live_expt2.csv")
-# experiment 3
 df_expt3 <- read.csv("../../data/soc_xsit_reliabiliy_parametric_replication.csv")
 ```
 
@@ -47,8 +44,15 @@ pandoc.table(nsubs, style="rmarkdown")
 Flag trials on which subs chose the target of eye gaze.
 
 ```{r expt1 target of gaze}
+df_expt1 %<>% 
+    mutate(trial_category = ifelse(dataset == "dy", "test",
+                                   ifelse(exposureTrial == 1, "exposure", 
+                                          ifelse(exampleTrial == 1, "example",
+                                                 ifelse(testTrial == 1, "test",
+                                                        NA)))))
+
 df_expo_expt1 <- df_expt1 %>%
-    filter(exposureTrial == 1) %>%
+    filter(trial_category == "exposure") %>%
     mutate(correct_exposure = ifelse(numPic == 6, 
                                      chosenIdx == faceIdx6,
                                      chosenIdx == faceIdx)) %>%
@@ -58,7 +62,7 @@ df_expo_expt1 <- df_expt1 %>%
 Get test trials and merge with exposure trial information. 
 
 ```{r expt 1 test trials w/exposure}
-df_test_expt1 <- df_expt1 %>% filter(testTrial == 1)
+df_test_expt1 <- df_expt1 %>% filter(trial_category == "test")
 df_test_expt1 <- join(df_expo_expt1, df_test_expt1, type = "full")
 ```
 
@@ -69,11 +73,11 @@ df_test_expt1 <- df_test_expt1 %>%
     filter(condition == "Social") %>%
     group_by(subids, numPic) %>%
     summarise(mean_acc_exp = mean(correct_exposure)) %>%
-    mutate(include_expo = ifelse(numPic == 2 & mean_acc_exp > 0.5, 1, 
-                                 ifelse(numPic == 4 & mean_acc_exp > 0.25, 1,
-                                        ifelse(numPic == 6 & mean_acc_exp > 0.17, 1, 
-                                               ifelse(numPic == 8 & mean_acc_exp > 0.125, 1, 
-                                                      0))))) %>%
+    mutate(include_expo = ifelse(numPic == 2 & mean_acc_exp > 0.5, "include", 
+                                 ifelse(numPic == 4 & mean_acc_exp > 0.25, "include",
+                                        ifelse(numPic == 6 & mean_acc_exp > 0.17, "include", 
+                                               ifelse(numPic == 8 & mean_acc_exp > 0.125, 
+                                                      "include", "exclude"))))) %>%
     join(df_test_expt1, by = "subids", type = "full")
 ```
 
@@ -83,18 +87,19 @@ Flag test trials with really slow or fast RTs (+/- 2SD).
 df_test_expt1 <- df_test_expt1 %>%
     mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
                                         log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                    0, 1))
+                                    "exclude", "include")) %>% 
+    filter(include_good_rt == "include")
 ```
 
 Flag exposure trials with really slow or fast RTs (+/- 2SD).
 
 ```{r expt1 exposure trials}
 df_expo_expt1_analysis <- df_expt1 %>% 
-    filter(exposureTrial == 1, rt > 0) %>%
+    filter(trial_category == "exposure", rt > 0) %>%
     mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
                                         log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                    0, 1)) %>%
-    filter(include_good_rt == 1)
+                                    "exclude", "include")) %>%
+    filter(include_good_rt == "include")
 ```
 
 ### Set up filters 
@@ -108,11 +113,11 @@ chance selecting gaze target on exposure trials
 ```{r expt1 test trials}
 # just RT filter
 df_test_expt1 <- df_test_expt1 %>% 
-    filter(include_good_rt == 1)
+    filter(include_good_rt == "include")
 
 # subject and trial level filter
 df_test_expt1_filt <- df_test_expt1 %>% 
-    filter(include_good_rt == 1, include_expo == 1 | condition == "No-Social") %>%
+    filter(include_good_rt == "include", include_expo == "include" | condition == "No-Social") %>%
     filter(correct_exposure == T | condition == "No-Social")
 ```
 
@@ -132,6 +137,19 @@ df_n <- cbind(df_n, df_n_filt)
 
 df_n
 ```
+
+Save filtered dataset for final analyses in manuscript.
+
+```{r}
+df_expt1_analysis_final <- df_test_expt1 %>% 
+    dplyr::bind_rows(df_expo_expt1_analysis) %>% 
+    dplyr::arrange(subids) 
+
+write.csv(x = df_expt1_analysis_final, 
+          "../../paper/manuscript/soc-xsit-expt1-finalData.csv",
+          row.names = F)
+```
+
 
 ### Accuracy on exposure trials in social condition
 
@@ -198,31 +216,29 @@ exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1,
     scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
     geom_smooth(method="lm", se =F) +
     scale_y_continuous(limits=c(0,5000)) +
-    scale_colour_manual(values=c("#969696", "black")) +
+    scale_colour_grey(start = 0.3, end = 0.6) +
     facet_grid( ~ numPic, labeller = mf_labeller) + 
     xlab("Intervening Trials") + 
-    ylab("Study\nTime") +
+    ylab("Study Time (ms)") +
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
     guides(linetype=FALSE) +
-    theme(axis.title.x = element_text(colour="black",size=20,
+     theme(axis.title.x = element_text(colour="black",size=22,
                                       angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=20,
-                                      angle=0,hjust=0.5,vjust=0.5,face="plain"),
           axis.text.x = element_text(colour="grey20",size=18,
                                      angle=0,hjust=0.5,vjust=0,face="plain"),
           axis.text.y = element_text(colour="grey20",size=18,
                                      angle=0,hjust=0.5,vjust=0,face="plain"),
-          legend.position=c(0.1,0.85),
-          legend.text = element_text(size=16),
-          legend.title = element_text(size=16, face="bold"),
-          strip.text = element_text(size=16)) 
+          axis.title.y = element_text(colour="black",size=22,face="plain"),
+          legend.position=c(0.1,0.2),
+          legend.text = element_text(size=18),
+          legend.title = element_text(size=20, face="bold"),
+          strip.text = element_text(size=16))
 
 exp1_rt_exposure_plot
 
 # save output
-setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
-ggsave("exp1-rt-exposure.pdf", exp1_rt_exposure_plot, width=9, height=5)
+## ggsave("../../paper/manuscript/figs/exp1-rt-exp.png", exp1_rt_exposure_plot, width=9, height=5)
 ```
 
 ### Accuracy on test trials 
@@ -259,13 +275,13 @@ expt1.acc.test <- ggplot(data=ms_test_filt_expt1,
                              colour = condition)) + 
     geom_point(size=5) +
     geom_linerange(aes(ymin=accuracy - ci_low, 
-                        ymax=accuracy + ci_high), width = .05, size=1, alpha = 0.6) +
+                       ymax=accuracy + ci_high), width = .05, size=1) +
     geom_line(aes(linetype = trialType), size=0.4) +
     geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
     scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
     scale_y_continuous(limits=c(0,1)) +
-    # scale_colour_grey(start = 0.3, end = 0.6) +
-    scale_colour_manual(values=c("#1f78b4", "red")) +
+    scale_colour_grey(start = 0.3, end = 0.6) +
+    # scale_colour_manual(values=c("#1f78b4", "red")) +
     facet_grid(. ~ numPic, labeller = mf_labeller) + 
     xlab("Intervening Trials") + 
     ylab("Proportion Correct") +
@@ -286,9 +302,10 @@ expt1.acc.test <- ggplot(data=ms_test_filt_expt1,
 
 expt1.acc.test
 
+grid.arrange(exp1_rt_exposure_plot, expt1.acc.test, ncol=1)
+
 # save output
-setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
-ggsave("exp1-acc-test.pdf", expt1.acc.test, width=9, height=5)
+ggsave("../../paper/manuscript/figs/exp1-acc-test.png", expt1.acc.test, width=9, height=5)
 ```
 
 ### LMERs
@@ -477,6 +494,19 @@ df_test_expt2_filt <- df_expt2 %>%
            correct_exposure == T | condition_trial == "no-social")
 ```
 
+Save final, cleaned analysis dataset for manuscript.
+
+```{r save final dataset expt2}
+df_expt2_analysis_final <- df_test_expt2_filt %>% 
+    dplyr::bind_rows(df_expo_expt2_analysis) %>% 
+    dplyr::arrange(subids) 
+
+write.csv(x = df_expt2_analysis_final, 
+          "../../paper/manuscript/soc-xsit-expt2-finalData.csv",
+          row.names = F)
+```
+
+
 ### Analyze Exposure Trials
 
 Accuracy, selecting target of gaze.
@@ -550,14 +580,15 @@ expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2,
     scale_x_continuous(limits=c(-.9,4), breaks=c(0,3)) +
     geom_smooth(method="lm", se=F) +
     scale_y_continuous(limits=c(0,5000)) +
-    scale_colour_manual(values=c("red", "#1f78b4")) +
+    # scale_colour_manual(values=c("red", "#1f78b4")) +
+    scale_color_grey(start = 0.3, end = 0.6) + 
     xlab("Intervening Trials") + 
     ylab("Study Time") +
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
     ggtitle("Study Time on Exposure Trials") + 
-    guides(linetype=FALSE) +
-      theme(axis.title.x = element_text(colour="black",size=22,
+    guides(linetype=FALSE, color=F) +
+    theme(axis.title.x = element_text(colour="black",size=22,
                                       angle=0,hjust=0.5,vjust=0,face="plain"),
           axis.text.x = element_text(colour="grey20",size=18,
                                      angle=0,hjust=0.5,vjust=0,face="plain"),
@@ -573,8 +604,7 @@ expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2,
 expt2.rt.expo
 
 # save output
-setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
-ggsave("exp2-rt-expo.pdf", expt2.rt.expo, width=6, height=5)
+# ggsave("exp2-rt-expo.pdf", expt2.rt.expo, width=6, height=5)
 ```
 
 ## Analyze test trials
@@ -611,20 +641,20 @@ ms_test_expt2_filt$condition_trial <- revalue(ms_test_expt2_filt$condition_trial
 expt2.acc.test <- ggplot(data=ms_test_expt2_filt, 
                          aes(x=intervalNum, y=accuracy, 
                              colour = condition_trial)) + 
-     geom_line(aes(linetype = trialType), size=0.6) +
+    geom_line(aes(linetype = trialType), size=0.6) +
     geom_pointrange(aes(ymin=accuracy - ci_low, 
                         ymax=accuracy + ci_high), 
                     width = .05, size=1.5) +
     geom_hline(aes(yintercept=1/4), linetype = "dashed") +
     scale_x_continuous(limits=c(-.9,4), breaks=c(0, 3)) +
     scale_y_continuous(limits=c(0,1)) +
-    scale_colour_manual(values=c("red", "#1f78b4")) +
-    #scale_colour_grey(start=0.6, end=0.3) +
+    # scale_colour_manual(values=c("red", "#1f78b4")) +
+    scale_colour_grey(start=0.6, end=0.3) +
     xlab("Intervening Trials") + 
     ylab("Proportion Correct") +
     labs(colour = "Condition") +
     labs(linetype = "Trial Type") +
-    guides(linetype=FALSE, color =F) +
+    guides(linetype=FALSE) +
     ggtitle("Accuracy on Test Trials") +
     theme(axis.title.x = element_text(colour="black",size=22,
                                       angle=0,hjust=0.5,vjust=0,face="plain"),
@@ -633,7 +663,7 @@ expt2.acc.test <- ggplot(data=ms_test_expt2_filt,
           axis.text.y = element_text(colour="grey20",size=18,
                                      angle=0,hjust=0.5,vjust=0,face="plain"),
           axis.title.y = element_text(colour="black",size=22,face="plain"),
-          legend.position=c(0.80,0.74),
+          legend.position=c(0.80,0.88),
           legend.text = element_text(size=20),
           legend.title = element_text(size=22, face="bold"),
           plot.title = element_text(lineheight=1, face="bold", size = 24),
@@ -641,11 +671,10 @@ expt2.acc.test <- ggplot(data=ms_test_expt2_filt,
 
 expt2.acc.test
 
-grid.arrange(expt2.acc.test, expt2.rt.expo, ncol=2)
+grid.arrange(expt2.rt.expo, expt2.acc.test, ncol=2)
 
 # save output
-setwd("/Users/kmacdonald/Documents/Projects/SOC-XSIT/plots/srcd")
-ggsave("exp2-acc-test.pdf", expt2.acc.test, width=7, height=5)
+# ggsave("exp2-acc-test.pdf", expt2.acc.test, width=7, height=5)
 ```
 
 ### LMERs 
@@ -653,7 +682,7 @@ ggsave("exp2-acc-test.pdf", expt2.acc.test, width=7, height=5)
 Predicting RT on exposure trials.
 
 ```{r expt2 lmer rt}
-m1_rt_expt2 <- lmer(rt ~ condition_trial * log2(intervalNum + 1) * log2(numPicN) + 
+m1_rt_expt2 <- lmer(rt ~ condition_trial * log2(intervalNum + 1) + 
                         (1|subids), data=df_expo_expt2_analysis)
 ```
 
@@ -925,7 +954,7 @@ expt3_chose_gazetar_plot <- ggplot(ms_expo_test,
 expt3_chose_gazetar_plot
 
 # save plot
-ggsave("exp3-acc-exposure.pdf", expt3_chose_gazetar_plot, width=5.5, height=3.5)
+# ggsave("exp3-acc-exposure.pdf", expt3_chose_gazetar_plot, width=5.5, height=3.5)
 ```
 
 Accuracy on test trials in the test block
@@ -971,7 +1000,7 @@ expt3_acc_test <- ggplot(data=ms_test_test,
 expt3_acc_test
 
 # save output
-ggsave("exp3-acc-test.pdf", expt3_acc_test, width=7.8, height=4.5)
+# ggsave("exp3-acc-test.pdf", expt3_acc_test, width=7.8, height=4.5)
 ```
 
 Analyze subject reported reliablity
@@ -1042,7 +1071,7 @@ expt3_subj_rel_plot <- qplot(total_exposure_correct, subj, col = prop_cond_clean
 expt3_subj_rel_plot 
 
 # save output
-ggsave("expt3-subj-rel-chose-gaze-target.pdf", expt3_subj_rel_plot, width=7, height=4)
+# ggsave("expt3-subj-rel-chose-gaze-target.pdf", expt3_subj_rel_plot, width=7, height=4)
 ```
 
 ### LMERs
@@ -1100,15 +1129,18 @@ m2.lm_expt3 <- lm(correct ~ trialType * reliability,
 df_test_test <- df_test_test %>%
     group_by(subids) %>% 
     mutate(total_exposure_correct = sum(correct_exposure)) 
+```
 
-# now model
+Now model
+
+```{r}
 m4_expt3 <- glmer(correct ~ total_exposure_correct * trialType +
                       (trialType | subids),
                   data = df_test_test,
                   family = binomial)
 ```
 
-Now we plot the new analysis: accuracy on test trials as a funciton of 
+Now we plot the new analysis: accuracy on test trials as a function of 
 accuracy on exposure trials (selecting the gaze target).
 
 ```{r expt3 acc test by acc exposure plot, echo=F}
@@ -1120,6 +1152,7 @@ ms_acc_exp_test_expt3 <- df_test_test %>%
               cil= ci.low(correct),
               correct = mean(correct))
 ```
+
 Now plot
 
 ```{r expt3 chose gazetar analysis}
@@ -1155,4 +1188,16 @@ expt3_acc_test_chose_gazetar <- ggplot(data=ms_acc_exp_test_expt3,
 expt3_acc_test_chose_gazetar 
 
 ggsave("expt3-acc-test-chosegazetar.pdf", expt3_acc_test_chose_gazetar, width=7.5, height=5)
+```
+
+Save final, clean dataset for experiment 3 for manuscript.
+
+```{r}
+df_expt3_analysis_final <- df_test_test %>% 
+    dplyr::bind_rows(df_expo_test_expt3) %>% 
+    dplyr::arrange(subids) 
+
+write.csv(x = df_expt3_analysis_final, 
+          "../../paper/manuscript/soc-xsit-expt3-finalData.csv",
+          row.names = F)
 ```

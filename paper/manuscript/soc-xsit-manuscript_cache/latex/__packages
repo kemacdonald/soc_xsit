@@ -1,0 +1,16 @@
+base
+ggplot2
+bootstrap
+Matrix
+lme4
+stringr
+plotrix
+reshape2
+plyr
+car
+dplyr
+quadprog
+directlabels
+pander
+magrittr
+tidyr
