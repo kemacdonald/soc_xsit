@@ -49,57 +49,67 @@ df_expt1 %<>%
                                    ifelse(exposureTrial == 1, "exposure", 
                                           ifelse(exampleTrial == 1, "example",
                                                  ifelse(testTrial == 1, "test",
-                                                        NA)))))
+                                                        NA))))) %>% 
+    filter(trial_category != "example")
 
 df_expo_expt1 <- df_expt1 %>%
     filter(trial_category == "exposure") %>%
     mutate(correct_exposure = ifelse(numPic == 6, 
                                      chosenIdx == faceIdx6,
                                      chosenIdx == faceIdx)) %>%
-    select(subids, itemNum, correct_exposure)
-```
+    select(subids, itemNum, correct_exposure, rt) %>% 
+    rename(rt_exposure = rt) %>%
+    filter(rt_exposure > 0) %>% 
+    mutate(include_good_rt_exposure = ifelse(log(rt_exposure) > mean(log(rt_exposure)) + 
+                                                 2 * sd(log(rt_exposure)) |
+                                                 log(rt_exposure) < mean(log(rt_exposure)) - 
+                                                 2 * sd(log(rt_exposure)),
+                                             "exclude", "include"))
 
-Get test trials and merge with exposure trial information. 
-
-```{r expt 1 test trials w/exposure}
-df_test_expt1 <- df_expt1 %>% filter(trial_category == "test")
-df_test_expt1 <- join(df_expo_expt1, df_test_expt1, type = "full")
+# Merge with exposure trial information. 
+df_expt1 %<>% left_join(y = df_expo_expt1, by = c("subids", "itemNum"))
 ```
 
 Flag subs in the social condition who performed worse than chance on exposure trials.
 
-```{r expt 1 flag subs <25% correct on exposure}
-df_test_expt1 <- df_test_expt1 %>%
-    filter(condition == "Social") %>%
+```{r expt 1 flag subs < 25% correct on exposure}
+df_test_expo_correct <- df_expt1 %>%
+    filter(condition == "Social", trial_category == "test") %>%
     group_by(subids, numPic) %>%
     summarise(mean_acc_exp = mean(correct_exposure)) %>%
     mutate(include_expo = ifelse(numPic == 2 & mean_acc_exp > 0.5, "include", 
                                  ifelse(numPic == 4 & mean_acc_exp > 0.25, "include",
                                         ifelse(numPic == 6 & mean_acc_exp > 0.17, "include", 
                                                ifelse(numPic == 8 & mean_acc_exp > 0.125, 
-                                                      "include", "exclude"))))) %>%
-    join(df_test_expt1, by = "subids", type = "full")
+                                                      "include", "exclude"))))) %>% 
+    select(subids, mean_acc_exp, include_expo) 
+
+df_expt1 %<>% left_join(y = df_test_expo_correct, by = c("subids"))
 ```
 
 Flag test trials with really slow or fast RTs (+/- 2SD).
 
 ```{r expt1 rt cleaning}
-df_test_expt1 <- df_test_expt1 %>%
-    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
-                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                    "exclude", "include")) %>% 
-    filter(include_good_rt == "include")
+df_test_rt <- df_expt1 %>% 
+    filter(trial_category == "test") %>% 
+    rename(rt_test = rt) %>% 
+    filter(rt_test > 0) %>% 
+    mutate(include_good_rt_test = ifelse(log(rt_test) > mean(log(rt_test)) + 
+                                             2 * sd(log(rt_test)) |
+                                             log(rt_test) < mean(log(rt_test)) - 
+                                             2 * sd(log(rt_test)),
+                                         "exclude", "include")) %>% 
+    select(subids, itemNum, include_good_rt_test)
+
+df_expt1 %<>% left_join(y = df_test_rt, by = c("subids", "itemNum"))
 ```
 
-Flag exposure trials with really slow or fast RTs (+/- 2SD).
+Save filtered dataset for final analyses in manuscript.
 
-```{r expt1 exposure trials}
-df_expo_expt1_analysis <- df_expt1 %>% 
-    filter(trial_category == "exposure", rt > 0) %>%
-    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
-                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                    "exclude", "include")) %>%
-    filter(include_good_rt == "include")
+```{r expt1 save clean dataset}
+write.csv(x = df_expt1, 
+          "../../paper/manuscript/soc-xsit-expt1-finalData.csv",
+          row.names = F)
 ```
 
 ### Set up filters 
@@ -112,12 +122,20 @@ chance selecting gaze target on exposure trials
 
 ```{r expt1 test trials}
 # just RT filter
-df_test_expt1 <- df_test_expt1 %>% 
-    filter(include_good_rt == "include")
+df_test_expt1 <- df_expt1 %>%  
+    filter(trial_category == "test", include_good_rt_test == "include")
 
 # subject and trial level filter
-df_test_expt1_filt <- df_test_expt1 %>% 
-    filter(include_good_rt == "include", include_expo == "include" | condition == "No-Social") %>%
+df_test_expt1_filt <- df_expt1 %>% 
+    filter(trial_category == "test") %>% 
+    filter(include_good_rt_test == "include", 
+           include_expo == "include" | condition == "No-Social") %>%
+    filter(correct_exposure == T | condition == "No-Social")
+
+df_expo_expt1_analysis <- df_expt1 %>%
+    filter(trial_category == "exposure") %>% 
+    filter(include_good_rt_exposure == "include", 
+           include_expo == "include" | condition == "No-Social") %>%
     filter(correct_exposure == T | condition == "No-Social")
 ```
 
@@ -136,18 +154,6 @@ df_n_filt <- df_test_expt1_filt %>%
 df_n <- cbind(df_n, df_n_filt)
 
 df_n
-```
-
-Save filtered dataset for final analyses in manuscript.
-
-```{r}
-df_expt1_analysis_final <- df_test_expt1 %>% 
-    dplyr::bind_rows(df_expo_expt1_analysis) %>% 
-    dplyr::arrange(subids) 
-
-write.csv(x = df_expt1_analysis_final, 
-          "../../paper/manuscript/soc-xsit-expt1-finalData.csv",
-          row.names = F)
 ```
 
 
@@ -215,7 +221,7 @@ exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1,
                         ymax=mean_rt + ci_high), width = .05, size=1) +
     scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
     geom_smooth(method="lm", se =F) +
-    scale_y_continuous(limits=c(0,5000)) +
+    scale_y_continuous(limits=c(0,5200)) +
     scale_colour_grey(start = 0.3, end = 0.6) +
     facet_grid( ~ numPic, labeller = mf_labeller) + 
     xlab("Intervening Trials") + 
@@ -305,7 +311,7 @@ expt1.acc.test
 grid.arrange(exp1_rt_exposure_plot, expt1.acc.test, ncol=1)
 
 # save output
-ggsave("../../paper/manuscript/figs/exp1-acc-test.png", expt1.acc.test, width=9, height=5)
+#ggsave("../../paper/manuscript/figs/exp1-acc-test.png", expt1.acc.test, width=9, height=5)
 ```
 
 ### LMERs
@@ -313,7 +319,7 @@ ggsave("../../paper/manuscript/figs/exp1-acc-test.png", expt1.acc.test, width=9,
 #### Predicting RT on exposure trials.
 
 ```{r expt1 lmer rt}
-m1_rt_expt1 <- lmer(rt ~ condition * log2(intervalNum + 1) * log2(numPicN) + 
+m1_rt_expt1 <- lmer(rt_exposure ~ condition * log2(intervalNum + 1) * log2(numPicN) + 
                         (1|subids), data=df_expo_expt1_analysis)
 ```
 
@@ -383,17 +389,17 @@ df_expt2 %>%
 Create variable to track experiment block.
 
 ```{r expt2 block variable}
-df_expt2 <- df_expt2 %>%
-    mutate(block = ifelse(itemNum <= 7, "first","second"))
+df_expt2 %<>% mutate(block = ifelse(itemNum <= 7, "first","second"))
 ```
 
 Flag trials with extremely slow or fast RTs (+/- 2SD).
 
 ```{r expt2 clean RTs}
-df_expt2 <- df_expt2 %>%
+df_expt2 %<>%
+    filter(rt > 0) %>% 
     mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
                                         log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                    0,1))
+                                    "exclude", "include"))
 ```
 
 ### Flag social vs. no-social trials
@@ -401,7 +407,7 @@ df_expt2 <- df_expt2 %>%
 Create a variable to track the condition for each trial.
 
 ```{r expt2 flag trial type}
-df_expt2 <- df_expt2 %>%
+df_expt2 %<>%
     mutate(condition_trial = ifelse(condition == "No-socialFirst" 
                                     & itemNum <= 7, "no-social", 
                                     ifelse(condition == "SocialFirst" 
@@ -413,7 +419,7 @@ df_expt2 <- df_expt2 %>%
                                                          "no-social", NA)))))
 ```
 
-### Flag subs who got <25% of exposure trials correct. 
+### Flag subs who got < 25% of exposure trials correct. 
 
 ```{r expt2 flag subs <25% correct on exposure}
 ss_exposure <- df_expt2 %>%
@@ -422,18 +428,18 @@ ss_exposure <- df_expt2 %>%
     summarise(mean_acc_exp = mean(correct))
 
 # Merge mean acc with the rest of the dataset.
-df_expt2 <- merge(df_expt2, ss_exposure, by = "subids")
+df_expt2 %<>% left_join(y = ss_exposure, by = "subids")
 ```
 
 ### Flag test trials on which subject chose target of gaze on exposure 
 
 ```{r expt2 flag test trials chose gaze target}
-df_expt2 <- df_expt2 %>%
+df_expt2 %<>%
     filter(trial_cat == "exposure") %>%
     mutate(correct_exposure = faceIdx == chosenIdx,
            rt_exposure = rt) %>%
     select(subids, itemNum, correct_exposure, rt_exposure) %>%
-    merge(df_expt2, by = c("subids", "itemNum"))
+    left_join(x = df_expt2, y = ., by = c("subids", "itemNum"))
 ```
 
 ### Set up filters
@@ -443,7 +449,7 @@ Exposure trials.
 ```{r expt2 expo filters}
 # just RT filter
 df_expo_expt2 <- filter(df_expt2,
-                        include_good_rt == 1,
+                        include_good_rt == "include",
                         condition_trial == "social",
                         trial_cat == "exposure")
 
@@ -451,14 +457,14 @@ df_expo_expt2 <- filter(df_expt2,
 df_expo_expt2_filt <- filter(df_expt2,
                              trial_cat == "exposure",
                              condition_trial == "social" & mean_acc_exp > 0.25,
-                             include_good_rt == 1)
+                             include_good_rt == "include")
 
 # filter that gets both social/no-social trials
 df_expo_expt2_analysis <- df_expt2 %>%
     filter(trial_cat == "exposure",
            mean_acc_exp > 0.25,
            correct_exposure = T | condition_trial == "no-social",
-           include_good_rt == 1)
+           include_good_rt == "include")
 ```
 
 Get the number of subjects filtered out by the subject level filter.
@@ -484,13 +490,13 @@ Test trial filters.
 # just RT filter
 df_test_expt2 <- df_expt2 %>%
     filter(trial_cat == "test",
-           include_good_rt == 1)
+           include_good_rt == "include")
 
 # RT, subject level and trial level filter 
 df_test_expt2_filt <- df_expt2 %>%
     filter(trial_cat == "test",
            mean_acc_exp > 0.25 ,
-           include_good_rt == 1,
+           include_good_rt == "include",
            correct_exposure == T | condition_trial == "no-social")
 ```
 
@@ -755,14 +761,11 @@ df_expt3$reliability[df_expt3$prop_cond_clean=="100%"] <- 1.00
 ### Clean up RTs.
 
 ```{r expt3 clean RTs}
-# remove trials with 0 RT
-df_expt3 <- filter(df_expt3, rt > 0)
-
-# clean RTs
 df_expt3 <- df_expt3 %>%
+    filter(rt > 0) %>% 
     mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) | 
                                         log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                    0,1))
+                                    "exclude", "include"))
 ```
 
 ### Get the number of subjects in each experiment and condition.
@@ -781,19 +784,17 @@ Exposure trials:
 # all expsoure trials
 df_expo_all_expt3 <- df_expt3 %>% 
     filter(trial_category == "exposure",
-           include_good_rt == 1)
+           include_good_rt == "include")
 
 # exposures trials in the familiarization block
 df_expo_fam_expt3 <- df_expt3 %>%
-    filter(trial_category == "exposure" & 
-               block == "familiarization",
-           include_good_rt == 1)
+    filter(trial_category == "exposure" & block == "familiarization",
+           include_good_rt == "include")
 
 # exposure trials in the test block
 df_expo_test_expt3 <- df_expt3 %>% 
-    filter(trial_category == "exposure" & 
-               block == "test",
-           include_good_rt == 1)
+    filter(trial_category == "exposure" & block == "test",
+           include_good_rt == "include")
 ```
 
 Test trials:
@@ -801,20 +802,17 @@ Test trials:
 ```{r expt3 filters test trials}
 # all test trials
 df_test_all_expt3 <- df_expt3 %>% 
-    filter(trial_category == "test",
-           include_good_rt == 1)
+    filter(trial_category == "test", include_good_rt == "include")
 
 # test trials in the familiarization block
 df_test_fam_expt3 <- df_expt3 %>%
-    filter(trial_category == "test" & 
-               block == "familiarization",
-           include_good_rt == 1)
+    filter(trial_category == "test" & block == "familiarization",
+           include_good_rt == "include")
 
 # test trials in the test block
 df_test_test_expt3 <- df_expt3 %>% 
-    filter(trial_category == "test" & 
-               block == "test",
-           include_good_rt == 1)
+    filter(trial_category == "test" & block == "test",
+           include_good_rt == "include")
 ```
 
 Flag whether participant chose the target of eye gaze on exposure trials in the test block.
@@ -824,7 +822,7 @@ df_correct_expo_test <- df_expo_test_expt3 %>%
     select(subids, gaze_target, chosen, 
            correct_exposure = correct, itemNum) 
 
-df_test_test <- merge(df_test_test_expt3, df_correct_expo_test, 
+df_test_test <- left_join(df_test_test_expt3, df_correct_expo_test, 
                       by=c("subids", "itemNum"))
 ```
 
@@ -981,14 +979,14 @@ expt3_acc_test <- ggplot(data=ms_test_test,
     scale_y_continuous(limits=c(0,1)) +
     scale_colour_manual(values=c("#1f78b4", "red")) +
     xlab("Level of Reliability") + 
-    ylab("Prop. Chose \nRepeated Referent") +
+    ylab("Prop. Chose Repeated Referent") +
     labs(color = "Trial Type") +
     guides(color=FALSE) +
     geom_dl(method=list("last.qp",cex=1,hjust=-.15)) +
     theme(axis.title.x = element_text(colour="black",size=16,
                                       angle=0,hjust=0.5,vjust=0,face="plain"),
           axis.title.y = element_text(colour="black",size=16,
-                                      angle=0,hjust=0.5,vjust=0.5,face="plain"),
+                                      angle=90,hjust=0.5,vjust=0.5,face="plain"),
           axis.text.x = element_text(colour="grey20",size=12,
                                      angle=0,hjust=0.5,vjust=0,face="plain"),
           axis.text.y = element_text(colour="grey20",size=12,
@@ -1153,7 +1151,7 @@ ms_acc_exp_test_expt3 <- df_test_test %>%
               correct = mean(correct))
 ```
 
-Now plot
+Plot
 
 ```{r expt3 chose gazetar analysis}
 expt3_acc_test_chose_gazetar <- ggplot(data=ms_acc_exp_test_expt3, 
