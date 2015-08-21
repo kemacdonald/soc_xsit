@@ -1,0 +1,126 @@
+
+   /* Sticky footer styles
+-------------------------------------------------- */
+
+
+
+
+html,
+body {
+  height: 100%;
+  /* The html and body elements cannot have any padding or margin. */
+}
+
+/* Wrapper for page content to push down footer */
+.wrap {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  /* Negative indent footer by it's height */
+  margin: 0 auto -60px;
+}
+
+/* Set the fixed height of the footer here */
+.push,
+.footer {
+  height: 60px;
+}
+
+
+/* Lastly, apply responsive CSS fixes as necessary */
+@media (max-width: 767px) {
+  .footer {
+    margin-left: -20px;
+    margin-right: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+/* have the body padding only available on large screens */
+@media (min-width: 980px) {
+    .wrap > .container {
+    padding-top: 60px;
+  }
+}
+
+.container .credit {
+  margin: 20px 0;
+}
+
+code {
+  font-size: 80%;
+}
+
+.hangingindent {
+  padding-left: 22px ;
+  text-indent: -22px ;
+}
+
+/* Labels
+
+.label,.badge{display:inline-block;padding:2px 4px;font-size:11.844px;font-weight:bold;line-height:14px;color:#ffffff;vertical-align:baseline;white-space:nowrap;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);background-color:#999999;}
+.label{-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;}
+.badge{padding-left:9px;padding-right:9px;-webkit-border-radius:9px;-moz-border-radius:9px;border-radius:9px;}
+.label:empty,.badge:empty{display:none;}
+a.label:hover,a.label:focus,a.badge:hover,a.badge:focus{color:#ffffff;text-decoration:none;cursor:pointer;}
+
+.label-important,.badge-important{background-color:#b94a48;}
+.label-important[href],.badge-important[href]{background-color:#953b39;}
+.label-warning,.badge-warning{background-color:#f89406;}
+.label-warning[href],.badge-warning[href]{background-color:#c67605;}
+.label-success,.badge-success{background-color:#468847;}
+.label-success[href],.badge-success[href]{background-color:#356635;}
+.label-info,.badge-info{background-color:#3a87ad;}
+.label-info[href],.badge-info[href]{background-color:#2d6987;}
+.label-inverse,.badge-inverse{background-color:#333333;}
+.label-inverse[href],.badge-inverse[href]{background-color:#1a1a1a;}
+
+
+*/
+
+.label-mac,.badge-mac{background-color:#C2AB6F;}
+.label-latex,.badge-latex{background-color:#5938B9;}
+.label-mturk,.badge-mturk{background-color:#FF8719;}
+
+
+.label-orange,.badge-orange{background-color:#FF8719;}
+.label-purple,.badge-purple{background-color:#5938B9;}
+.label-green,.badge-green{background-color:#14CC22;}
+.label-cyan,.badge-cyan{background-color:#47C4CF;}
+.label-pink,.badge-pink{background-color:#FF219E;}
+.label-gold,.badge-gold{background-color:#CCB51B;}
+
+
+
+/*    -------- COLOR -------
+Color Scheme for Nautilus Yellow, from L to R (lightest to darkest)
+f5f1eb
+f5ddc4
+f2d68a
+f2c23d
+c4a07c
+cbd6cd
+*/
+
+body {
+  background-color: #ffffff; 
+}
+
+h1, h2, h3 {
+  float: center;
+  color: #8c1515;
+}
+
+
+.navbar-fixed-top, 
+.navbar-inner {
+  background-color: #ffffff; 
+}
+
+/* original c4b4a9 */
+
+
+.footer {
+  background-color: #ffffff;
+}
