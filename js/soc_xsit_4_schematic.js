@@ -223,7 +223,7 @@ var startTime = 0; // Starts the clock for recording RT
  * Returns a condition number (for this experiment 1-8)
  */
 
-try {
+/*try {
     var filename = "KM_soc_xsit_4_social_batch2";
     var condCounts = "1,50;2,50;3,50;4,50"; //Filling in participants needed for each condition
     var xmlHttp = null;
@@ -234,7 +234,9 @@ try {
     // var cond = random(8); // for testing experiment
 } catch (e) {
     var cond = 1;
-}
+}*/
+
+var cond = "3";
 
 
 /* code for condition randomization. This only includes Social Condition for Second Batch */

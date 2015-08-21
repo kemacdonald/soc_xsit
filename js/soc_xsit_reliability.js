@@ -257,7 +257,7 @@ var startTime = 0; // Starts the clock for recording RT
  * Returns a condition number 
  */
 
-try { 
+/*try { 
     var filename = "KM_soc_xsit_reliability_parametric_full_replication";
     var condCounts = "1,100;2,100;3,100;4,100;5,100";  
     var xmlHttp = null;
@@ -268,7 +268,9 @@ try {
     //var cond = random(1,2); // note for testing experiment
 } catch (e) {
     var cond = 1;
-}
+}*/
+
+var cond = "4"
 
 
 // make sure the cond variable is a string

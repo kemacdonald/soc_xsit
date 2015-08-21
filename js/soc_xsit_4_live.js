@@ -230,7 +230,7 @@ var startTime = 0; // Starts the clock for recording RT
  * for the 3 different gaze length conditions)
  */
 
-try { 
+/*try { 
     var filename = "KM_soc_xsit_4_live_replication_btw";
     var condCounts = "1,100;2,100";  
     var xmlHttp = null;
@@ -241,7 +241,9 @@ try {
     //var cond = random(1,2); // note for testing experiment
 } catch (e) {
     var cond = 1;
-}
+}*/
+
+var cond = "1";
 
 /* code for condition randomization. Here we just use the 3-delay condition, 
 so we can compoare to the 0-delay to see if there is a social boost to same trials. 
