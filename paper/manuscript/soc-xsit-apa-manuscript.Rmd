@@ -9,17 +9,17 @@ author-information:
     - \author{Kyle MacDonald, Daniel Yurvosky, and Michael C. Frank}
     
 affiliation-information:
-    # Single affiliation
     - \affiliation{Department of Psychology, Stanford University}
     
-author-note:
-    "We are grateful to the members of the Language and Cognition Lab for their feedback on this project. This work was supported by a National Science Foundation Graduate Research Fellowship to KM and an NIH NRSA Postdoctoral Fellowship to DY. Please address correspondence to Kyle MacDonald, Jordan Hall (Building 420), Stanford University, 450 Serra Mall, Stanford, CA 94305. Email: kyle.macdonald@stanford.edu."
+author-note: |
+    We are grateful to the members of the Language and Cognition Lab for their feedback on this project. This work was supported by a National Science Foundation Graduate Research Fellowship to KM and an NIH NRSA Postdoctoral Fellowship to DY. 
+    
+    Please address correspondence to Kyle MacDonald, Jordan Hall (Building 420), Stanford University, 450 Serra Mall, Stanford, CA 94305. Email: kyle.macdonald@stanford.edu.
 
 abstract: 
     "Both adults and children are capable statistical learners -- able to track word-object co-occurrences over time to infer word meanings from ambiguous learning contexts. But word learning is embedded within a broader social context that includes additional pragmatic cues (e.g. gesture, locus of attention) to a speaker's intended meaning. How do these cues affect statistical word learning? Drawing on social-pragmatic theories of language acquisition, we hypothesize that the presence of a referential cue, like gaze, guides how learners allocate their limited cognitive resources and modulates the underlying representation used for statistical learning. In three large-scale experiments with adults, we test how the presence of referential cues affects cross-situational word learning. Referential cues shift learners away from multiple hypothesis tracking towards storing only a single hypothesis (Experiments 1 and 2). In addition, learners are sensitive to the reliability of a cue and when it is less reliable, they are less likely to use it and more likely to store multiple hypotheses (Experiment 3). Together, the data suggest that learners make a rational tradeoff: In conditions of greater uncertainty, they store a broader range of information."
     
-keywords:
-    "statistical learning, pragmatic cues, word learning, language acquisition"
+keywords: "statistical learning, pragmatic cues, word learning, language acquisition"
 ---
 
 ```{r global_options, include=FALSE}
@@ -87,7 +87,7 @@ This experiment was posted to Amazon Mechanical Turk as a set of
 Human Intelligence Tasks (HITs) to be completed only by participants with US IP
 addresses and an approval rate above 95%. Each HIT paid 30 cents. Approximately 50-130 HITs were posted for each of the 32 conditions (4 referents X 4 intervals X 2 gaze conditions) for total of approximately 2400 paid HITs. If a participant completed the experiment more than once, he or she was paid each time but only data from the first HITs completion was included in the final data set. In addition, data was excluded from the final sample if participants did not give correct answers for familiar trials (5 HITs excluded).
 
-```{r stimuli, fig.width=6, fig.height=5, fig.cap = "Examples of exposure and test trials. Participants saw exposure trials with or without a gaze cue depending on condition assignment. All participants saw both types of test trials: same and switch. On same trials the object that participants chose during exposure appeared with a new novel object. On switch trials the object that participants did not choose appeared with a new novel object."}
+```{r stimuli, fig.width=6, fig.height=5, fig.cap = "Examples of exposure and test trials from Experiment 1 (schematic gaze cue) and Experiments 2/3 (live action gaze cue). Participants saw exposure trials with or without a gaze cue depending on condition assignment. All participants saw both types of test trials: same and switch. On same trials the object that participants chose during exposure appeared with a new novel object. On switch trials the object that participants did not choose appeared with a new novel object."}
 
 grid::grid.raster(png::readPNG("figs/stimuli.png"))
 ```
