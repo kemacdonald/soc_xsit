@@ -1,129 +1,130 @@
-\documentclass[12pt,]{article}
-\usepackage{lmodern}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
-\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-\else % if luatex or xelatex
-  \ifxetex
-    \usepackage{mathspec}
-    \usepackage{xltxtra,xunicode}
-  \else
-    \usepackage{fontspec}
-  \fi
-  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-  \newcommand{\euro}{€}
-\fi
-% use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-% use microtype if available
-\IfFileExists{microtype.sty}{%
-\usepackage{microtype}
-\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
-}{}
-\usepackage[margin=1.2in]{geometry}
+% Template for APA submission with R Markdown
+
+% Stuff changed from PLOS Template
+\documentclass[a4paper,man,natbib]{apa6}
+\usepackage{apacite}
+
+% amsmath package, useful for mathematical formulas
+\usepackage{amsmath}
+% amssymb package, useful for mathematical symbols
+\usepackage{amssymb}
+
+% hyperref package, useful for hyperlinks
+\usepackage{hyperref}
+
+% graphicx package, useful for including eps and pdf graphics
+% include graphics with the command \includegraphics
 \usepackage{graphicx}
+
+% Sweave(-like)
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{fontshape=sl}
+\newenvironment{Schunk}{}{}
+\DefineVerbatimEnvironment{Code}{Verbatim}{}
+\DefineVerbatimEnvironment{CodeInput}{Verbatim}{fontshape=sl}
+\DefineVerbatimEnvironment{CodeOutput}{Verbatim}{}
+\newenvironment{CodeChunk}{}{}
+
+% cite package, to clean up citations in the main text. Do not remove.
+\usepackage{cite}
+
+\usepackage{color}
+
+% Use doublespacing - comment out for single spacing
+%\usepackage{setspace}
+%\doublespacing
+
+
+% Text layout
+\topmargin 0.0cm
+\oddsidemargin 0.5cm
+\evensidemargin 0.5cm
+\textwidth 16cm
+\textheight 21cm
+
+% Bold the 'Figure #' in the caption and separate it with a period
+% Captions will be left justified
+\usepackage[labelfont=bf,labelsep=period,justification=raggedright]{caption}
+
+% Use the APA provided bibtex style
+\bibliographystyle{apacite}
+
+% Remove brackets from numbering in List of References
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\renewcommand{\@biblabel}[1]{\quad#1.}
 \makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
-\ifxetex
-  \usepackage[setpagesize=false, % page size defined by xetex
-              unicode=false, % unicode breaks when used with xetex
-              xetex]{hyperref}
-\else
-  \usepackage[unicode=true]{hyperref}
-\fi
-\hypersetup{breaklinks=true,
-            bookmarks=true,
-            pdfauthor={},
-            pdftitle={Referential cues focus attention and constrain the input to cross-situational word learning mechanisms},
-            colorlinks=true,
-            citecolor=blue,
-            urlcolor=blue,
-            linkcolor=magenta,
-            pdfborder={0 0 0}}
-\urlstyle{same}  % don't use monospace font for urls
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
-\setcounter{secnumdepth}{5}
 
-%%% Use protect on footnotes to avoid problems with footnotes in titles
-\let\rmarkdownfootnote\footnote%
-\def\footnote{\protect\rmarkdownfootnote}
 
-%%% Change title format to be more compact
-\usepackage{titling}
+% Leave date blank
+\date{}
 
-% Create subtitle command for use in maketitle
-\newcommand{\subtitle}[1]{
-  \posttitle{
-    \begin{center}\large#1\end{center}
-    }
-}
+\pagestyle{myheadings}
+%% ** EDIT HERE **
 
-\setlength{\droptitle}{-2em}
-  \title{Referential cues focus attention and constrain the input to
-cross-situational word learning mechanisms}
-  \pretitle{\vspace{\droptitle}\centering\huge}
-  \posttitle{\par}
-  \author{Kyle MacDonald, Daniel Yurovsky, \& Michael C. Frank\\Stanford
-University}
-  \preauthor{\centering\large\emph}
-  \postauthor{\par}
-  \date{}
-  \predate{}\postdate{}
 
-\setlength\parindent{24pt}
-\renewcommand{\baselinestretch}{1.5}
-\usepackage{float}
-\usepackage{textcomp}
+%% ** EDIT HERE **
+%% PLEASE INCLUDE ALL MACROS BELOW
 
+%% END MACROS SECTION
+
+
+% ALL OF THE TITLE PAGE INFORMATION IS SPECIFIED IN THE YAML
+\title{\textbf{Using social cues to constrain cross-situational word learning}}
+\shorttitle{Social context and cross-situational learning}
+
+\author{Kyle MacDonald, Daniel Yurvosky, and Michael C. Frank}
+
+\affiliation{Department of Psychology, Stanford University}
+
+\authornote{We are grateful to the members of the Language and Cognition Lab for
+their feedback on this project. This work was supported by a National
+Science Foundation Graduate Research Fellowship to KM and an NIH NRSA
+Postdoctoral Fellowship to DY. Please address correspondence to Kyle
+MacDonald, Jordan Hall (Building 420), Stanford University, 450 Serra
+Mall, Stanford, CA 94305. Email:
+\href{mailto:kyle.macdonald@stanford.edu}{\nolinkurl{kyle.macdonald@stanford.edu}}.}
+\abstract{Both adults and children are capable statistical learners -- able to
+track word-object co-occurrences over time to infer word meanings from
+ambiguous learning contexts. But word learning is embedded within a
+broader social context that includes additional pragmatic cues
+(e.g.~gesture, locus of attention) to a speaker's intended meaning. How
+do these cues affect statistical word learning? Drawing on
+social-pragmatic theories of language acquisition, we hypothesize that
+the presence of a referential cue, like gaze, guides how learners
+allocate their limited cognitive resources and modulates the underlying
+representation used for statistical learning. In three large-scale
+experiments with adults, we test how the presence of referential cues
+affects cross-situational word learning. Referential cues shift learners
+away from multiple hypothesis tracking towards storing only a single
+hypothesis (Experiments 1 and 2). In addition, learners are sensitive to
+the reliability of a cue and when it is less reliable, they are less
+likely to use it and more likely to store multiple hypotheses
+(Experiment 3). Together, the data suggest that learners make a rational
+tradeoff: In conditions of greater uncertainty, they store a broader
+range of information.}
+\keywords{statistical learning, pragmatic cues, word learning, language
+acquisition}
 
 \begin{document}
-
 \maketitle
 
-\begin{abstract}
-Tracking word-object co-occurrence statistics can reduce referential
-uncertainty and support word learning. But human learners are
-constrained by limits on attention and memory, and therefore must store
-a subset of the information available in a single exposure --- how do
-they select what information to store? Drawing on social-pragmatic
-theories of language acquisition, we hypothesize that the presence of a
-referential cue, like gaze, guides how learners allocate their attention
-and modulates the underlying representation stored in memory. In three
-large-scale experiments with adults, we test how the presence of
-referential cues affects cross-situational word learning. Referential
-cues shift learners away from multiple hypothesis tracking towards
-storing only a single hypothesis (Experiments 1 and 2). In addition,
-learners are sensitive to the reliability of a cue and when it is less
-reliable, they are less likely to use it and more likely to store
-multiple hypotheses (Experiment 3). Together, the data suggest that
-learners make a rational tradeoff: In conditions of greater uncertainty,
-they store a broader range of information.
-\end{abstract}
-
-\newpage
+``Language is a social act.''
 
 \section{Introduction}\label{introduction}
 
-Learning the meaning of a new word requires inferring structure from
-noisy data. We focus here on the problem of mapping concrete nouns to
-objects, as opposed to other substantive inferential problems such as
-word segmentation and generalization. To make such a mapping, learners
-must resolve the core problem of referential uncertainty (Quine, 1960):
-that a speaker's intended meaning is largely unconstrained and a new
-utterance could refer to many possible objects in the visual scene, to
-parts of of those objects, or even to something that is not present. How
-do learners infer word meanings from data with this kind of uncertainty?
+Learning the meaning of a new word should be hard. Even concrete nouns
+are often used in complex contexts with multiple possible referents,
+which in turn have many conceptually natural properties that a speaker
+could talk about. This inherent ambiguity creates the potential for an
+(in principle) unlimited amount of referential uncertainty in the
+learning task (Quine,
+1960).\footnote{Note that this is a simplified version of Quine's *indeterminacy of reference*: that there are many possible meanings for a word ("Gavigai") that include the referent ("Rabbit") in their extension: "white," "rabbit," "dinner," etc. Quine's broader philosophical point was that there are in fact meanings that are extensionally identical and thus logically indistinguishable. For example, the meanings "rabbit" and "undetached rabbit parts" would always be consistent with the presence of a rabbit, making it impossible to tease apart the speaker's meaning.}
+Remarkably, word learning proceeds, with estimates of adult vocabularies
+ranging between 50,000 to 100,000 distinct words (P. Bloom, 2002). How
+do learners infer and retain such a large variety of word meanings from
+data with this kind of uncertainty?
 
 Statistical learning theories offer a solution to this learning problem
 by aggregating cross-situational statistics across labeling events to
@@ -147,7 +148,7 @@ that we accumulate graded, statistical evidence about multiple referents
 for each word (McMurray, Horst, \& Samuelson, 2012), while others argue
 that we track only a single candidate referent (Trueswell, Medina,
 Hafri, \& Gleitman, 2013). Recent experimental and modeling work by
-Yurovsky \& Frank (under review) suggests an integrative explanation:
+Yurovsky \& Frank (in press) suggests an integrative explanation:
 learners allocate a fixed amount of their attention to one hypothesis,
 and the rest gets distributed evenly among the remaining alternatives.
 As the set of alternatives grows, the amount allocated to each object
@@ -172,46 +173,48 @@ Thus, representations in cross-situational word learning can appear
 distributional or discrete, and the input to statistical learning can
 vary along a continuum of ambiguity. These results raise an interesting
 question: could learners be sensitive to the ambiguity of the input and
-use this information to guide how many word-object links they store in
-memory? An answer to this question requires taking cross-situational
-learning models from Marr (1982)'s ``computational'' level down to the
-``algorithmic'' level, where the goal is to specify the nature of the
-input/output representations and the algorithm that performs the
-transformation between the two (see Yurovsky \& Frank (under review)).
+use this information to alter the representations stored in memory? In
+the current line of work, we investigate how social information could
+affect learners' underlying representations.
 
-Our goal in the work reported here is to investigate the interaction
-between the ambiguity of the learning context and learners' underlying
-representations during cross-situational word learning. We hope to
-understand how aspects of the labeling event constrain the input to
-statistical learning mechanisms. To accomplish this, we vary the
-ambiguity of the learning context by manipulating the presence of a
-valid referential cue -- a speaker's gaze. This manipulation is inspired
-by social-pragmatic theories of language acquisition that emphasize the
-importance of using referential cues to infer word meanings (Bloom,
-2002; Clark, 2009). Moreover, experimental work shows that even very
-young children are sophisticated intention-readers, preferring to map
-novel words to objects that are the target of a speaker's gaze and not
-their own (Baldwin, 1993). Together, the evidence suggests that
-referential cues could alter the underlying representations by focusing
-attention and memory to a subset of the statistics in the input.
+Social-pragmatic theories of language learning emphasize the importance
+of pragmatic cues for word learning (P. Bloom, 2002; Clark, 2009;
+Hollich et al., 2000). Experimental work shows that even children as
+young as 16 months are sophisticated intention-readers, preferring to
+map novel words to objects that are the target of a speaker's gaze and
+not their own (Baldwin, 1993). And in naturalistic observations,
+learners tend to retain labels that are accompanied with clear
+referential cues that are concurrent with visual access (Yu \& Smith,
+2012). Moreover, correlational data show strong links between early
+intention-reading skills (e.g., gaze following) and later vocabulary
+growth (Brooks \& Meltzoff, 2005, 2008; Carpenter, Nagell, Tomasello,
+Butterworth, \& Moore, 1998).
 
-In the current set of studies, we use a modified version of Yurovsky \&
-Frank (under review)`s paradigm to provide a direct test of the
-hypothesis that the presence of a social cue to intent, a speaker's
-gaze, will alter learners' allocation of attention and reduce the number
-of word-object links that are stored in memory. In Experiment 1, we
-manipulate the presence of a referential cue at different levels of
-attention and memory demands. At all levels of difficulty, learners
-tracked a strong single hypothesis, but learners were less likely to
-track multiple word-object links when referential cues were present. In
-Experiment 2, we replicate the findings from Experiment 1 with a more
-ecologically valid stimulus set. In Experiment 3, we show that reducing
-the reliability of the referential cue increases learners multiple
-hypothesis tracking, providing evidence that learners were sensitive to
-a graded manipulation of the quality of the learning context. In sum,
-the data suggest that learners adaptively allocate attention and store
-representations with different levels of fidelity depending on the
-amount of referential uncertainty present during learning.
+Together, the evidence suggests that referential cues could interact
+with the representations underlying statistical word learning. In the
+current set of studies, we explore this interaction and ask two
+interrelated questions: (1) Does the presence of a valid referential cue
+modulate ambiguity in the learning context? (2) Do learners' flexibly
+alter their representations of alternative referents in response to
+different levels of contextual ambiguity?
+
+To answer these questions, we use a modified version of Yurovsky \&
+Frank (in press)`s paradigm to test the hypothesis that the presence of
+a social cue, a speaker's gaze, will alter learners' allocation of
+attention and reduce the number of word-object links that are stored in
+memory. In Experiment 1, we manipulate the presence of a referential cue
+at different levels of attention and memory demands. At all levels of
+difficulty, learners tracked a strong single hypothesis, but learners
+were less likely to track multiple word-object links when referential
+cues were present. In Experiment 2, we replicate the findings from
+Experiment 1 with a more ecologically valid stimulus set. In Experiment
+3, we show that reducing the reliability of the referential cue
+increases learners multiple hypothesis tracking, providing evidence that
+learners were sensitive to a graded manipulation of the quality of the
+learning context. In sum, the data suggest that learners adaptively
+allocate attention and store representations with different levels of
+fidelity depending on the amount of referential uncertainty present
+during learning.
 
 \section{Experiment 1}\label{experiment-1}
 
@@ -250,16 +253,17 @@ completion was included in the final data set. In addition, data was
 excluded from the final sample if participants did not give correct
 answers for familiar trials (5 HITs excluded).
 
-\begin{figure}[htbp]
-\centering
-\includegraphics{figs/stimuli-1.pdf}
-\caption{Examples of exposure and test trials. Participants saw exposure
-trials with or without a gaze cue depending on condition assignment. All
-participants saw both types of test trials: same and switch. On same
-trials the object that participants chose during exposure appeared with
-a new novel object. On switch trials the object that participants did
-not choose appeared with a new novel object.}
+\begin{CodeChunk}
+\begin{figure}
+\includegraphics{figs/stimuli-1} \caption[Examples of exposure and test trials]{Examples of exposure and test trials. Participants saw exposure trials with or without a gaze cue depending on condition assignment. All participants saw both types of test trials: same and switch. On same trials the object that participants chose during exposure appeared with a new novel object. On switch trials the object that participants did not choose appeared with a new novel object.}\label{fig:stimuli}
 \end{figure}
+\end{CodeChunk}
+
+\begin{CodeChunk}
+\begin{figure}
+\includegraphics{figs/expt1-plot-1} \caption[Experiment 1 results]{Experiment 1 results. Panel A shows study time on exposure trials across all experimental conditions: gaze and no-gaze, number of referents (2, 4, 6, and 8), and number of intervening trials (0, 1, 3, and 7). Panel B shows accuracy on test trials for both trial types (Same and Switch) across all conditions. Error bars indicate 95\% confidence intervals computed by non-parametric bootstrap.}\label{fig:expt1-plot}
+\end{figure}
+\end{CodeChunk}
 
 \subsubsection{Stimuli}\label{stimuli}
 
@@ -307,18 +311,6 @@ registered, a red dashed box appeared around the object they selected
 for one second after their click was received. This box appeared around
 the selected object whether or not it was the ``correct'' referent.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics{figs/expt1 plot-1.pdf}
-\caption{Experiment 1 results. Panel A shows study time on exposure
-trials across all experimental conditions: gaze and no-gaze, number of
-referents (2, 4, 6, and 8), and number of intervening trials (0, 1, 3,
-and 7). Panel B shows accuracy on test trials for both trial types (Same
-and Switch) across all conditions. Each datapoint represents
-approximately 35-130 participants. Error bars indicate 95\% confidence
-intervals computed by non-parametric bootstrap.}
-\end{figure}
-
 \subsection{Results and Discussion}\label{results-and-discussion}
 
 \subsubsection{Exposure trials}\label{exposure-trials}
@@ -357,11 +349,11 @@ if participants were selecting randomly. Figure 2 shows participants'
 accuracies in identifying the referent of each word in all conditions
 for both kinds of trials (Same and Switch) and in each referential cue
 condition (Gaze and No-gaze). We replicate the finding from Yurovsky \&
-Frank (under review): at all Referent and Interval levels, both for Same
-and for Switch trials, participants' responses differed from those
-expected by chance (smallest \(\chi^2\) 2(4) = 12.07, p \textless{}
-.01). Participants' success on Switch trials provides direct evidence
-that learners encoded more than a single hypothesis in ambiguous word
+Frank (in press): at all Referent and Interval levels, both for Same and
+for Switch trials, participants' responses differed from those expected
+by chance (smallest \(\chi^2\) 2(4) = 12.07, p \textless{} .01).
+Participants' success on Switch trials provides direct evidence that
+learners encoded more than a single hypothesis in ambiguous word
 learning situations, even under high attentional and memory demands.
 
 To quantify the effect of each factor on the likelihood of a correct
@@ -495,14 +487,11 @@ interaction between gaze condition and interval was not significant,
 showing that gaze had the same effect on participants' response times at
 both intervals.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics{figs/expt2 plot-1.pdf}
-\caption{Experiment 2 results. Panel A shows study times for exposure
-trials. Panel B shows accuracy on test trials. Each datapoint represents
-182 participants. Error bars indicate 95\% confidence intervals computed
-by non-parametric bootstrap.}
+\begin{CodeChunk}
+\begin{figure}
+\includegraphics{figs/expt2-plot-1} \caption[Experiment 2 results]{Experiment 2 results. Panel A shows study times for exposure trials. Panel B shows accuracy on test trials. Each datapoint represents 182 participants. Error bars indicate 95\% confidence intervals computed by non-parametric bootstrap.}\label{fig:expt2-plot}
 \end{figure}
+\end{CodeChunk}
 
 \subsubsection{Test trials}\label{test-trials-1}
 
@@ -607,15 +596,11 @@ familiarization increased, participants were more likely to select the
 target of gaze on exposure trials in the post-familiarization block.
 Thus, learners were sensitive to the reliability of the gaze cue.
 
-\begin{figure}[htbp]
-\centering
-\includegraphics{figs/test accuracy expt 3-1.pdf}
-\caption{Accuracy on test trials in Experiment 3 for both trial types
-(Same and Switch) as a function of participants' use of gaze on exposure
-trials. Each datapoint represents approximately 50 participants. Error
-bars indicate 95\% confidence intervals computed by non-parametric
-bootstrap.}
+\begin{CodeChunk}
+\begin{figure}
+\includegraphics{figs/expt3-plot-1} \caption[Accuracy on test trials in Experiment 3 for both trial types (Same and Switch) as a function of participants' use of gaze on exposure trials]{Accuracy on test trials in Experiment 3 for both trial types (Same and Switch) as a function of participants' use of gaze on exposure trials. Each datapoint represents approximately 50 participants. Error bars indicate 95\% confidence intervals computed by non-parametric bootstrap.}\label{fig:expt3-plot}
 \end{figure}
+\end{CodeChunk}
 
 \subsubsection{Test trials}\label{test-trials-2}
 
@@ -677,8 +662,8 @@ important to decide which statistics to store from an individual
 learning moment. Models of cross-situational learning disagree about how
 much information is actually stored in memory, with recent work
 suggesting that learners maintain both a strong candidate hypothesis and
-a set of weaker alternative word-object links (Yurovsky \& Frank, under
-review).
+a set of weaker alternative word-object links (Yurovsky \& Frank, in
+press).
 
 Our results suggest that the representations underlying
 cross-situational learning are quite flexible. In the absence of a
@@ -738,8 +723,8 @@ learning mechansims (Yu \& Ballard, 2007). This `filtering account'
 separates the effect of social cues from the underlying computation that
 aggregates cross-situational information. Another possibility is that
 referential cues provide evidence about a speaker's communicative intent
-(M. C. Frank, Goodman, \& Tenenbaum, 2009). In this model, the learner
-is reasoning about the speaker and word meanings simultaneously, which
+(Frank, Goodman, \& Tenenbaum, 2009). In this model, the learner is
+reasoning about the speaker and word meanings simultaneously, which
 places inferences based on social information as part of the underlying
 computation. A third possibility is that participants thought of the
 referential cue as pedagogical. In this scenario, learners assume that
@@ -760,7 +745,7 @@ Although we moved beyond a simple manipulation of the presence or
 absence of social information, we isolated just a single cue to
 reference, gaze. But real-world learning contexts are much more complex,
 providing learners access to multiple cues such as gaze, pointing, and
-previous discourse. In fact, M. C. Frank, Tenenbaum, \& Fernald (2013)
+previous discourse. In fact, Frank, Tenenbaum, \& Fernald (2013)
 analyzed a corpus of parent-child interactions and concluded that
 learners would do better to aggregate noisy social information from
 multiple cues, rather than monitor a single cue, because no single cue
@@ -788,11 +773,11 @@ And third, in the current experiments we tested a minimal
 cross-situational learning scenario. Our task contained only one
 exposure for each novel word-object pairing. In contrast, real world
 naming events are best characterized by discourse, where an object is
-likely to be named repeatedly in a short amount of time (M. C. Frank et
-al., 2013; Rohde \& Frank, 2014). Thus, we need more evidence to
-understand how learners flexibly allocate cognitive resources in
-response to referential uncertainty at different timescales that more
-accurately reflect language learning environments.
+likely to be named repeatedly in a short amount of time (Frank et al.,
+2013; Rohde \& Frank, 2014). Thus, we need more evidence to understand
+how learners flexibly allocate cognitive resources in response to
+referential uncertainty at different timescales that more accurately
+reflect language learning environments.
 
 Word learning proceeds despite the potential for high levels of
 referential uncertainty and learners' limited cognitive resources. Our
@@ -802,13 +787,6 @@ increases, learners store more word-object links. Overall, these results
 bring together aspects of both social and statistical accounts of word
 learning, and increase our understanding of how statistical learning
 mechanisms operate over social input.
-
-\section{Acknowledgements}\label{acknowledgements}
-
-We are grateful to the members of the Language and Cognition Lab for
-their feedback on this project. This work was supported by a National
-Science Foundation Graduate Research Fellowship to KM and an NIH NRSA
-Postdoctoral Fellowship to DY.
 
 \newpage
 
@@ -830,6 +808,20 @@ Bonawitz, E., Shafto, P., Gweon, H., Goodman, N. D., Spelke, E., \&
 Schulz, L. (2011). The double-edged sword of pedagogy: Instruction
 limits spontaneous exploration and discovery. \emph{Cognition},
 \emph{120}(3), 322--330.
+
+Brooks, R., \& Meltzoff, A. N. (2005). The development of gaze following
+and its relation to language. \emph{Developmental Science}, \emph{8}(6),
+535--543.
+
+Brooks, R., \& Meltzoff, A. N. (2008). Infant gaze following and
+pointing predict accelerated vocabulary growth through two years of age:
+A longitudinal, growth curve modeling study. \emph{Journal of Child
+Language}, \emph{35}(01), 207--220.
+
+Carpenter, M., Nagell, K., Tomasello, M., Butterworth, G., \& Moore, C.
+(1998). Social cognition, joint attention, and communicative competence
+from 9 to 15 months of age. \emph{Monographs of the Society for Research
+in Child Development}, i--174.
 
 Cartmill, E. A., Armstrong, B. F., Gleitman, L. R., Goldin-Meadow, S.,
 Medina, T. N., \& Trueswell, J. C. (2013). Quality of early parent input
@@ -856,6 +848,12 @@ cognitive resources: Levels of analysis between the computational and
 the algorithmic. \emph{Topics in Cognitive Science}, \emph{7}(2),
 217--229.
 
+Hollich, G. J., Hirsh-Pasek, K., Golinkoff, R. M., Brand, R. J., Brown,
+E., Chung, H. L., \ldots{} Bloom, L. (2000). Breaking the language
+barrier: An emergentist coalition model for the origins of word
+learning. \emph{Monographs of the Society for Research in Child
+Development}, i--135.
+
 Kanwisher, N., Woods, R. P., Iacoboni, M., \& Mazziotta, J. C. (1997). A
 locus in human extrastriate cortex for visual shape analysis.
 \emph{Journal of Cognitive Neuroscience}, \emph{9}(1), 133--142.
@@ -863,9 +861,6 @@ locus in human extrastriate cortex for visual shape analysis.
 Koenig, M. A., Cl{é}ment, F., \& Harris, P. L. (2004). Trust in
 testimony: Children's use of true and false statements.
 \emph{Psychological Science}, \emph{15}(10), 694--698.
-
-Marr, D. (1982). Vision: A computational approach. Freeman \& Co., San
-Francisco.
 
 McMurray, B., Horst, J. S., \& Samuelson, L. K. (2012). Word learning
 emerges from the interaction of online referent selection and slow
@@ -938,11 +933,16 @@ Yu, C., \& Smith, L. B. (2007). Rapid word learning under uncertainty
 via cross-situational statistics. \emph{Psychological Science},
 \emph{18}(5), 414--420.
 
-Yurovsky, D., \& Frank, M. (under review). An integrative account of
-constraints on cross-situational learning.
+Yu, C., \& Smith, L. B. (2012). Embodied attention and word learning by
+toddlers. \emph{Cognition}.
+
+Yurovsky, D., \& Frank, M. C. (in press). An integrative account of
+constraints on cross-situational learning. \emph{Cognition}.
 
 Yurovsky, D., Smith, L. B., \& Yu, C. (2013). Statistical word learning
 at scale: The baby's view is better. \emph{Developmental Science},
 \emph{16}(6), 959--966.
+
+\bibliography{library.bib}
 
 \end{document}
