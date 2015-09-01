@@ -4,6 +4,7 @@ body {
   font-family: Palatino Linotype, Bookman Antiqua, Palatino, serif;
   font-size: 16px;
   line-height: 20px;
+  padding-top: 60px;
 }  
 
 /* sliders */
@@ -129,10 +130,10 @@ video {
 #text_test {
   position: absolute;
   margin-left: auto;
-margin-right: auto;
-left: 0;
-right: 0;
-top: 60;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  top: 80;
  text-align: center; 
 }
 
@@ -142,7 +143,7 @@ top: 60;
 margin-right: auto;
 left: 0;
 right: 0;
-top: 60;
+top: 80;
  text-align: center; 
 }
 
