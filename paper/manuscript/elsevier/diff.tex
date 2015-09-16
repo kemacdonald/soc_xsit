@@ -1,4 +1,7 @@
 % Template for Elsevier submission with R Markdown
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL soc-xsit-elsevier_pre.tex   Mon Sep 14 13:43:09 2015
+%DIF ADD soc-xsit-elsevier.tex       Tue Sep 15 18:38:36 2015
 
 % Stuff changed from PLOS Template
 \documentclass[authoryear, review]{elsarticle}
@@ -64,12 +67,36 @@
 
 % Leave date blank
 \date{}
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFaddtex}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdeltex}[1]{{\protect\color{red}\sout{#1}}}                      %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF HYPERREF PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{\texorpdfstring{\DIFaddtex{#1}}{#1}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{\texorpdfstring{\DIFdeltex{#1}}{}} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
 
 \begin{document}
 
 \begin{frontmatter}
 
-\title{Social cues modulate the representations underlying cross-situational
+\title{\DIFdelbegin \DIFdel{Distributional or discrete? }\DIFdelend Social cues modulate the representations underlying cross-situational
 learning}
 
 \author[km]{\corref{cor}Kyle MacDonald}
@@ -81,26 +108,34 @@ learning}
 
 
 \begin{abstract}
-Because children hear language in environments that contain many things
-to talk about, learning the meaning of even the simplest word requires
-making inferences under undertainty. A cross-situational statistical
-learner can aggregate across naming events to form stable word-referent
+\DIFdelbegin \DIFdel{Word learning }\DIFdelend \DIFaddbegin \DIFadd{Because children hear language in environments that contain many things
+to talk about, learning the meaning of even the simplest word }\DIFaddend requires
+making inferences \DIFdelbegin \DIFdel{from noisy data -- even
+concrete nouns occur in contexts with many possible referents. A }\DIFdelend \DIFaddbegin \DIFadd{under undertainty. A cross-situational }\DIFaddend statistical
+learner can \DIFdelbegin \DIFdel{handle this ambiguity by aggregating }\DIFdelend \DIFaddbegin \DIFadd{aggregate }\DIFaddend across naming events to form stable \DIFdelbegin \DIFdel{word-object mappings. But each naming event
+occurs within a social context that can vary along a continuum from low
+to high referential uncertainty. How does statistical word learning
+operate over observations that can provide more or less information?
+Drawing on social-pragmatic theories of language acquisition, we
+hypothesize that the presence of in-the-moment referential cues , like
+gaze, reduces referential uncertainty and modulates the underlying
+representation used for statistical learning}\DIFdelend \DIFaddbegin \DIFadd{word-referent
 mappings, but this approach neglects an important source of information
-that can reduce referential uncertainty: social cues from speakers. In
-three large-scale experiments with adults, we test the effects of
-varying referential uncertainty in cross-situational word learning using
-social cues. Social cues shifted learners away from tracking multiple
-hypotheses and towards storing only a single hypothesis (Experiments 1
-and 2). In addition, learners were sensitive to graded changes in the
-strength of a social cue, and when it became less reliable, they were
-more likely to store multiple hypotheses (Experiment 3). Our data
-suggest that the representations underlying cross-situational word
+that can reduce referential uncertainty: social cues from speakers}\DIFaddend . In
+three large-scale experiments with adults, we test the \DIFdelbegin \DIFdel{effect }\DIFdelend \DIFaddbegin \DIFadd{effects }\DIFaddend of
+varying referential uncertainty \DIFdelbegin \DIFdel{on attention and memory during }\DIFdelend \DIFaddbegin \DIFadd{in }\DIFaddend cross-situational word learning \DIFdelbegin \DIFdel{. Referential cues shift }\DIFdelend \DIFaddbegin \DIFadd{using
+social cues. Social cues shifted }\DIFaddend learners away from tracking multiple
+hypotheses \DIFaddbegin \DIFadd{and }\DIFaddend towards storing only a single hypothesis (Experiments 1
+and 2). In addition, learners \DIFdelbegin \DIFdel{are }\DIFdelend \DIFaddbegin \DIFadd{were }\DIFaddend sensitive to graded changes in the
+strength of a \DIFdelbegin \DIFdel{referential }\DIFdelend \DIFaddbegin \DIFadd{social }\DIFaddend cue, and when it \DIFdelbegin \DIFdel{becomes }\DIFdelend \DIFaddbegin \DIFadd{became }\DIFaddend less reliable, \DIFdelbegin \DIFdel{learners are }\DIFdelend \DIFaddbegin \DIFadd{they were
+}\DIFaddend more likely to store multiple hypotheses (Experiment 3). \DIFdelbegin \DIFdel{Together, the }\DIFdelend \DIFaddbegin \DIFadd{Our }\DIFaddend data
+suggest that \DIFdelbegin \DIFdel{representations in }\DIFdelend \DIFaddbegin \DIFadd{the representations underlying }\DIFaddend cross-situational word
 learning are quite flexible: In conditions of greater uncertainty,
 learners tend to store a broader range of information.
 \end{abstract}
 
 \begin{keyword}
-statistical learning, social cues, word learning, language acquisition
+statistical learning, \DIFdelbegin \DIFdel{pragmatic }\DIFdelend \DIFaddbegin \DIFadd{social }\DIFaddend cues, word learning, language acquisition
 \end{keyword}
 
 \end{frontmatter}
@@ -140,21 +175,21 @@ uncertainty (K. Smith, Smith, \& Blythe, 2011).
 Although all cross-situational learning models agree that the input is
 the co-occurrence between words and objects and the output is stable
 word-object mappings, they disagree about how closely learners
-approximate the input distribution (for review, see Smith, Suanda, \& Yu
-2014). One approach is to model learning as a process of updating
-connection strengths between multiple word-object links (McMurray,
+approximate the input distribution (for \DIFdelbegin \DIFdel{a }\DIFdelend review, see Smith, Suanda, \& Yu
+2014). One approach is to model learning as \DIFdelbegin \DIFdel{updates to }\DIFdelend \DIFaddbegin \DIFadd{a process of updating
+}\DIFaddend connection strengths between multiple word-object links (McMurray,
 Horst, \& Samuelson, 2012), while other approaches argue that learners
-store only a single word-object link (Trueswell, Medina, Hafri, \&
+\DIFdelbegin \DIFdel{only store }\DIFdelend \DIFaddbegin \DIFadd{store only }\DIFaddend a single word-object link (Trueswell, Medina, Hafri, \&
 Gleitman, 2013). Recent experimental and modeling work by Yurovsky \&
 Frank (2015) suggests an integrative explanation: Learners allocate a
 fixed amount of their attention to one hypothesis, and the rest gets
 distributed evenly among the remaining alternatives. As the set of
 alternatives grows, the amount allocated to each object approaches zero.
 
-In addition to the debate about representation, researchers also
-disagree about how to best characterize the ambiguity of the input to
+\DIFdelbegin \DIFdel{Another ongoing debate in the literature is }\DIFdelend \DIFaddbegin \DIFadd{In addition to the debate about representation, researchers also
+disagree about }\DIFaddend how to best characterize the \DIFaddbegin \DIFadd{ambiguity of the }\DIFaddend input to
 cross-situational learning mechanisms. One way researchers have
-quantified this ambiguity is to ask adults to guess the meaning of an
+quantified \DIFaddbegin \DIFadd{this }\DIFaddend ambiguity is to ask adults to guess the meaning of an
 intended referent from clips of caregiver-child interactions (Human
 Simulation Paradigm: HSP). Using the HSP, Medina, Snedeker, Trueswell,
 \& Gleitman (2011) found that adults did not aggregate multiple
@@ -173,12 +208,12 @@ mechanisms can vary along a continuum from low to high ambiguity. These
 results raise an interesting question: could learners be sensitive to
 the ambiguity of the input and use this information to flexibly alter
 the representations they store in memory? In the current line of work,
-we investigate how the presence of referential cues in the social
+we investigate how the presence of \DIFdelbegin \DIFdel{pragmatic }\DIFdelend \DIFaddbegin \DIFadd{referential }\DIFaddend cues in the social
 context might alter the ambiguity of the input to statistical word
 learning mechanisms.
 
 Social-pragmatic theories of language acquisition emphasize the
-importance of social cues for word learning (P. Bloom, 2002; Clark,
+importance of \DIFdelbegin \DIFdel{pragmatic }\DIFdelend \DIFaddbegin \DIFadd{social }\DIFaddend cues for word learning (P. Bloom, 2002; Clark,
 2009; Hollich et al., 2000). Experimental work shows that even children
 as young as 16 months are sophisticated intention-readers, preferring to
 map novel words to objects that are the target of a speaker's gaze and
@@ -200,10 +235,10 @@ statistics in the input, and thus change the representations stored in
 memory.
 
 In the studies reported here, we ask whether the presence of a valid
-social cue, a speaker's gaze, changes the representations underlying
+\DIFdelbegin \DIFdel{pragmatic }\DIFdelend \DIFaddbegin \DIFadd{social }\DIFaddend cue, a speaker's gaze, changes the representations underlying
 cross-situational word learning. We use a modified version of Yurovsky
-\& Frank (2015)'s paradigm, which we describe in greater depth below, to
-provide a direct measure of memory for alternative word-object links
+\& Frank (2015)'s paradigm, which \DIFdelbegin \DIFdel{provides }\DIFdelend \DIFaddbegin \DIFadd{we describe in greater depth below, to
+provide }\DIFaddend a direct measure of memory for alternative word-object links
 during cross-situational learning. In Experiment 1, we manipulate the
 presence of a referential cue at different levels of attention and
 memory demands. At all levels of difficulty, learners tracked a strong
@@ -221,11 +256,13 @@ amount of ambiguity present during learning.
 \section{Experiment 1}\label{experiment-1}
 
 We set out to test the effect of a referential cue on the
-representations underlying cross-situational word learning. We use a
-version of Yurovsky \& Frank (2015)'s paradigm where we manipulate the
+representations underlying cross-situational word learning. \DIFdelbegin \DIFdel{Participants
+saw a
+series of exposure trials where we manipulated }\DIFdelend \DIFaddbegin \DIFadd{We use a
+version of Yurovsky }\& \DIFadd{Frank (2015)'s paradigm where we manipulate }\DIFaddend the
 ambiguity of the learning context by including a gaze cue from a
-schematic, female interlocutor. Participants saw a series of ambiguous
-exposure trials where they heard one novel word that was either paired
+schematic, female interlocutor. \DIFdelbegin \DIFdel{On each exposure trial, participants }\DIFdelend \DIFaddbegin \DIFadd{Participants saw a series of ambiguous
+exposure trials where they }\DIFaddend heard one novel word that was either paired
 with a gaze cue or not and selected the object they thought went with
 each word. In subsequent test trials, participants heard the novel word
 again, this time paired with a new set of novel objects. One of the
@@ -260,7 +297,7 @@ HITs). The final sample consisted of 1,523 participants.
 
 Figure 1 shows screenshots taken from Experiment 1. Visual stimuli were
 black and white pictures of familiar and novel objects taken from
-Kanwisher, Woods, Iacoboni, \& Mazziotta (1997). Auditory stimuli were
+Kanwisher, Woods, Iacoboni, \& Mazziotta (1997). Auditory \DIFdelbegin \DIFdel{simuli }\DIFdelend \DIFaddbegin \DIFadd{stimuli }\DIFaddend were
 recordings of familiar and novel words by an AT\&T Natural Voices
 \texttrademark (voice: Crystal) speech synthesizer. Novel words were 1-3
 syllable pseudowords that obeyed all rules of English phonotactics. A
@@ -477,11 +514,12 @@ Experiment 2 attempts to answer this question.
 \section{Experiment 2}\label{experiment-2}
 
 In Experiment 2, we attempt to replicate the findings from Experiment 1
-using a more ecologically valid stimulus set. We replaced the static,
-schematic drawing with a video of a live actress. While the video
+using a more ecologically valid stimulus set. \DIFdelbegin \DIFdel{To move closer to a real
+world referential cue, we }\DIFdelend \DIFaddbegin \DIFadd{We }\DIFaddend replaced the static,
+schematic drawing with a \DIFaddbegin \DIFadd{video of a }\DIFaddend live actress. \DIFaddbegin \DIFadd{While the video
 stimuli is still far from actual learning contexts, it included a real
 person who provided both a gaze cue and a head turn towards the target
-object. To reduce the across-conditions variability, we introduced a
+object. }\DIFaddend To reduce the across-conditions variability, we introduced a
 within-subjects design where each participant saw both Gaze and No-gaze
 exposure trials. We selected a subset of conditions from Experiment 1,
 testing only the 4-referent display with 0 and 3 intervening trials as
@@ -538,7 +576,7 @@ action stimuli compared to the schematic stimuli used in Experiment 1
 resulted in a slight increase in participants' willingness to follow the
 gaze cue.
 
-Panel A of Figure 3 shows participants' response times. We replicate the
+Panel A of \DIFdelbegin \DIFdel{figure }\DIFdelend \DIFaddbegin \DIFadd{Figure }\DIFaddend 3 shows participants' response times. We replicate the
 findings from Experiment 1, with faster response times in Gaze
 condition. We fit a linear mixed effects model to response times with
 the same specification as Experiment 1, finding main effects for Gaze
@@ -618,8 +656,8 @@ either entirely ambiguous (No-gaze) or entirely unambiguous (Gaze). But
 not all real world learning contexts fall at the extremes of this
 continuum (although see Yurovsky et al., 2013). Could learners be
 sensitive to more subtle changes in the quality of learning contexts? In
-our next experiment, we test a prediction of our account: whether
-learners store more word-object links in response to graded changes of
+our next experiment, we test a \DIFdelbegin \DIFdel{clear }\DIFdelend prediction of our account: whether
+learners \DIFdelbegin \DIFdel{tendency to store multiple }\DIFdelend \DIFaddbegin \DIFadd{store more }\DIFaddend word-object links \DIFdelbegin \DIFdel{responds }\DIFdelend \DIFaddbegin \DIFadd{in response }\DIFaddend to graded changes of
 referential uncertainty during learning.
 
 \section{Experiment 3}\label{experiment-3}
@@ -629,10 +667,12 @@ memory flexibly in response to \emph{graded} changes in the referential
 uncertainty present during learning. To test this hypothesis, we move
 beyond a categorical manipulation of the presence/absence of gaze, and
 we parametically vary the strength of the referential cue. We manipulate
-cue strength by including a block of familiarization trials where we
+cue strength by including a block of familiarization trials \DIFdelbegin \DIFdel{at the start
+of the experiment where we
+establish the reliability of }\DIFdelend \DIFaddbegin \DIFadd{where we
 vary the proportion of Same and Switch trials. If participants saw more
-Switch trials, this provides evidence that the speaker's gaze was an
-unreliable cue to reference. This design was inspired by a growing body
+Switch trials, this provides evidence that }\DIFaddend the speaker's gaze \DIFaddbegin \DIFadd{was an
+unreliable cue to reference}\DIFaddend . This design was inspired by a growing body
 of experimental work showing that even young children are sensitive to
 the prior reliability of speakers and will use this information when
 deciding whom to learn novel words from (Koenig, Clement, \& Harris,
@@ -778,12 +818,14 @@ participants would continue to use the gaze cue in our experiment since
 it was the only cue available and participants did not have a strong
 reason to think that the speaker would be deceptive.
 
-The critical contribution of Experiment 3 is that learners respond to a
+The critical contribution of Experiment 3 is \DIFdelbegin \DIFdel{the finding }\DIFdelend that learners respond to a
 \emph{graded} manipulation of referential uncertainty, with the amount
-of information stored from the intital exposure tracking with the
+of information stored from the intital exposure tracking with \DIFdelbegin \DIFdel{both }\DIFdelend the
 reliability of the cue and participants' use of the cue. This graded
-accuracy performance shows that at the group-level learners stored
-alternative word-object links with different levels of fidelity
+accuracy performance \DIFdelbegin \DIFdel{provides support for a critical prediction
+of our account: that learners store a single candidate word meaning and
+a set of alternatives }\DIFdelend \DIFaddbegin \DIFadd{shows that at the group-level learners stored
+alternative word-object links }\DIFaddend with different levels of fidelity
 depending on the amount of referential uncertainty present during
 learning.
 
@@ -816,10 +858,10 @@ the presence of a referential cue selectively affected one component of
 the underlying representation: the number of alternative word-object
 links, and not learners candidate hypothesis.
 
-\subsection{Relationship to previous
-work}\label{relationship-to-previous-work}
+\DIFaddbegin \subsection{\DIFadd{Relationship to previous
+work}}\label{relationship-to-previous-work}
 
-Why did we not see an increase in the strength of learners' candidate
+\DIFaddend Why did we not see an increase in the strength of learners' candidate
 hypothesis? One possibility is that participants did not shift their
 cognitive resources from the set of alternatives to their single
 hypothesis, but instead rationally conserved their resources for future
@@ -832,11 +874,14 @@ time or mental opportunity) into account. For example, Vul, Goodman,
 Griffiths, \& Tenenbaum (2014) showed that as time pressure increased in
 a decision-making task, participants were more likely to show behavior
 consistent with a less cognitively challenging strategy of matching,
-rather than with the globally optimal strategy. In the current work, we
+rather than with the globally optimal strategy. \DIFdelbegin \DIFdel{Here, we
+show evidence
+that learners adapt their allocation of cognitive resources to the level
+}\DIFdelend \DIFaddbegin \DIFadd{In the current work, we
 found that learners showed evidence of changing how they allocated
-cognitive resources based on the amount of referential uncertainty,
+cognitive resources based on the amount }\DIFaddend of referential uncertainty\DIFdelbegin \DIFdel{in the learning context}\DIFdelend ,
 spending less time studying alternative word-object links and reducing
-the number of links stored in memory when uncertainty was low.
+the number of links stored in memory when uncertainty \DIFdelbegin \DIFdel{is }\DIFdelend \DIFaddbegin \DIFadd{was }\DIFaddend low.
 
 Our results also fit well with recent experimental work that
 investigates how attention and memory can constrain infants' statistical
@@ -847,9 +892,9 @@ learn the correct word--object mappings. Moreover, Vlach \& Johnson
 (2013) showed that 16-month-olds were only able to learn from adjacent
 cross-situational co-occurrence statistics, and unable to learn from
 co-occurrences that were separated in time. Both of these findings make
-the important point that only the information that comes into contact
+the important point that only the \DIFdelbegin \DIFdel{data }\DIFdelend \DIFaddbegin \DIFadd{information }\DIFaddend that comes into contact
 with the learning system can be used for cross-situational word
-learning, and this information is directly influenced by the attention
+learning, and this \DIFdelbegin \DIFdel{data }\DIFdelend \DIFaddbegin \DIFadd{information }\DIFaddend is directly influenced by the attention
 and memory constraints of the learner. Our findings suggest that
 referential cues could play an important role in constraining the input
 to statistical learning mechansims.
@@ -877,9 +922,9 @@ distinguish between these explanations, these questions remain topics
 for future studies specifically designed to tease apart these
 possibilities.
 
-\subsection{Limitations}\label{limitations}
+\DIFaddbegin \subsection{\DIFadd{Limitations}}\label{limitations}
 
-There are several limitations to the current study that are worth
+\DIFaddend There are several limitations to the current study that are worth
 noting. First, the social context we used was relatively impoverished.
 Although we moved beyond a simple manipulation of the presence or
 absence of social information, we isolated just a single cue to
@@ -922,26 +967,27 @@ representations underlying cross-situational learning change in response
 to referential uncertainty at different timescales and in richer
 language contexts that more accurately reflect learning environments.
 
-\subsection{Conclusions}\label{conclusions}
+\DIFaddbegin \subsection{\DIFadd{Conclusions}}\label{conclusions}
 
-Word learning proceeds despite the potential for high levels of
+\DIFaddend Word learning proceeds despite the potential for high levels of
 referential uncertainty and learners' limited cognitive resources. Our
 work shows that cross-situational learners flexibly respond to the
 amount of ambiguity in the input, and as referential uncertainty
 increases, learners store more word-object links. Overall, these results
 bring together aspects of both social and statistical accounts of word
 learning, and increase our understanding of how statistical learning
-mechanisms operate over fundamentally social input.
+mechanisms operate over fundamentally social input\DIFaddbegin \DIFadd{.
+}
 
 \newpage
 
-\section{Acknowledgements}\label{acknowledgements}
+\section{\DIFadd{Acknowledgements}}\label{acknowledgements}
 
-We are grateful to Rose Schneider for helping record stimuli and to the
+\DIFadd{We are grateful to Rose Schneider for helping record stimuli and to the
 members of the Language and Cognition Lab for their feedback on this
 project This work was supported by a National Science Foundation
 Graduate Research Fellowship to KM, an NIH NRSA Postdoctoral Fellowship
-to DY, and a John Merck Scholars Fellowship to M.C.F.
+to DY, and a John Merck Scholars Fellowship to M.C.F}\DIFaddend .
 
 \newpage
 
