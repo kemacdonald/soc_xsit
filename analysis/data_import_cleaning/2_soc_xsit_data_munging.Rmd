@@ -1,0 +1,336 @@
+---
+title: "Soc-xsit Data Munging"
+author: "Kyle MacDonald"
+date: "September 17, 2015"
+output: html_document
+---
+
+## This script creates visualizations and models for our Social Cross-situational Word Learning Project.
+
+Clear workspace and set working directory 
+
+```{r clear workspace, echo=F, warning=F}
+rm(list=ls())
+source("../helpers/useful.R")
+library(pander)
+library(magrittr)
+library(gridExtra)
+library(tidyr)
+library(directlabels)
+```
+
+### Read in data from all 3 Experiments:
+
+* Experiment 1: Large scale experiment manipulating attention and memory demands
+* Experiment 2: Replication of Experiment 1 with more ecologically valid stimulus set
+* Experiment 3: Parametric manipulation of cue reliablity
+
+```{r read data, warning=F}
+df_expt1 <- read.csv("../../data/final-raw/soc_xsit_expt1_master_clean.csv")
+df_expt2 <- read.csv("../../data/final-raw/soc_xsit_live_expt2.csv")
+df_expt3 <- read.csv("../../data/final-raw/soc_xsit_reliabiliy_parametric_replication.csv",
+                     stringsAsFactors = F)
+df_expt3_original <- read.csv("../../data/final-raw/soc_xsit_reliability_expt3.csv",
+                     stringsAsFactors = F)
+```
+
+## Experiment 1 
+
+### Data cleaning 
+
+#### Remove data from pilots 
+
+```{r}
+df_expt1 %<>% filter(dataset == "km")
+```
+
+#### Flag trials on which subs chose the target of eye gaze.
+
+```{r expt1 target of gaze}
+df_expt1 %<>% 
+    mutate(trial_category = ifelse(dataset == "dy", "test",
+                                   ifelse(exposureTrial == 1, "exposure", 
+                                          ifelse(exampleTrial == 1, "example",
+                                                 ifelse(testTrial == 1, "test",
+                                                        NA))))) %>% 
+    filter(trial_category != "example")
+
+df_expo_expt1 <- df_expt1 %>%
+    filter(trial_category == "exposure") %>%
+    mutate(correct_exposure = ifelse(numPic == 6, 
+                                     chosenIdx == faceIdx6,
+                                     chosenIdx == faceIdx)) %>%
+    select(subids, itemNum, correct_exposure, rt) %>% 
+    rename(rt_exposure = rt) %>%
+    filter(rt_exposure > 0) %>% 
+    mutate(include_good_rt_exposure = ifelse(log(rt_exposure) > mean(log(rt_exposure)) + 
+                                                 2 * sd(log(rt_exposure)) |
+                                                 log(rt_exposure) < mean(log(rt_exposure)) - 
+                                                 2 * sd(log(rt_exposure)),
+                                             "exclude", "include"))
+
+# Merge with exposure trial information. 
+df_expt1 %<>% left_join(y = df_expo_expt1, by = c("subids", "itemNum"))
+```
+
+#### Flag subs in the social condition who performed worse than chance on exposure trials.
+
+```{r expt 1 flag subs < 25% correct on exposure}
+df_test_expo_correct <- df_expt1 %>%
+    filter(condition == "Social", trial_category == "test") %>%
+    group_by(subids, numPic) %>%
+    summarise(mean_acc_exp = mean(correct_exposure)) %>%
+    mutate(include_expo = ifelse(numPic == 2 & mean_acc_exp > 0.5, "include", 
+                                 ifelse(numPic == 4 & mean_acc_exp > 0.25, "include",
+                                        ifelse(numPic == 6 & mean_acc_exp > 0.17, "include", 
+                                               ifelse(numPic == 8 & mean_acc_exp > 0.125, 
+                                                      "include", "exclude"))))) %>% 
+    select(subids, mean_acc_exp, include_expo) 
+
+df_expt1 %<>% left_join(y = df_test_expo_correct, by = c("subids"))
+```
+
+#### Flag test trials with really slow or fast RTs (+/- 2SD).
+
+```{r expt1 rt cleaning}
+df_test_rt <- df_expt1 %>% 
+    filter(trial_category == "test") %>% 
+    rename(rt_test = rt) %>% 
+    filter(rt_test > 0) %>% 
+    mutate(include_good_rt_test = ifelse(log(rt_test) > mean(log(rt_test)) + 
+                                             2 * sd(log(rt_test)) |
+                                             log(rt_test) < mean(log(rt_test)) - 
+                                             2 * sd(log(rt_test)),
+                                         "exclude", "include")) %>% 
+    select(subids, itemNum, include_good_rt_test)
+
+df_expt1 %<>% left_join(y = df_test_rt, by = c("subids", "itemNum"))
+```
+
+#### Save clean Expt. 1 dataset
+
+```{r expt1 save clean dataset, eval = F}
+write.csv(x = df_expt1, 
+          "../../data/final-processed/soc-xsit-expt1-finalData.csv",
+          row.names = F)
+```
+
+## Experiment 2
+
+### Data cleaning
+
+#### Create variable to track experiment block.
+
+```{r expt2 block variable}
+df_expt2 %<>% mutate(block = ifelse(itemNum <= 7, "first","second"))
+```
+
+#### Flag trials with extremely slow or fast RTs (+/- 2SD).
+
+```{r expt2 clean RTs}
+df_expt2 %<>%
+    filter(rt > 0) %>% 
+    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                    "exclude", "include"))
+```
+
+#### Flag social vs. no-social trials
+
+```{r expt2 flag trial type}
+df_expt2 %<>%
+    mutate(condition_trial = ifelse(condition == "No-socialFirst" 
+                                    & itemNum <= 7, "no-social", 
+                                    ifelse(condition == "SocialFirst" 
+                                           & itemNum <= 7, "social", 
+                                           ifelse(condition == "No-socialFirst" 
+                                                  & itemNum >= 8, "social",
+                                                  ifelse(condition == "SocialFirst" 
+                                                         & itemNum >= 8, 
+                                                         "no-social", NA)))))
+```
+
+#### Flag subs who got < 25% of exposure trials correct. 
+
+```{r expt2 flag subs <25% correct on exposure}
+ss_exposure <- df_expt2 %>%
+    filter(trial_cat == "exposure" & condition_trial == "social") %>%
+    group_by(subids) %>%
+    summarise(mean_acc_exp = mean(correct))
+
+# Merge mean acc with the rest of the dataset.
+df_expt2 %<>% left_join(y = ss_exposure, by = "subids")
+```
+
+#### Flag test trials on which subject chose target of gaze on exposure 
+
+```{r expt2 flag test trials chose gaze target}
+df_expt2 %<>%
+    filter(trial_cat == "exposure") %>%
+    mutate(correct_exposure = faceIdx == chosenIdx,
+           rt_exposure = rt) %>%
+    select(subids, itemNum, correct_exposure, rt_exposure) %>%
+    left_join(x = df_expt2, y = ., by = c("subids", "itemNum"))
+```
+
+```{r expt2 expo filters}
+# just RT filter
+df_expo_expt2 <- filter(df_expt2,
+                        include_good_rt == "include",
+                        condition_trial == "social",
+                        trial_cat == "exposure")
+
+# RT, subject level and trial level filter 
+df_expo_expt2_filt <- filter(df_expt2,
+                             trial_cat == "exposure",
+                             condition_trial == "social" & mean_acc_exp > 0.25,
+                             include_good_rt == "include")
+
+# filter that gets both social/no-social trials
+df_expo_expt2_analysis <- df_expt2 %>%
+    filter(trial_cat == "exposure",
+           mean_acc_exp > 0.25,
+           correct_exposure = T | condition_trial == "no-social",
+           include_good_rt == "include")
+```
+
+Get the number of subjects filtered out by the subject level filter.
+
+```{r expt2 nsubs filtered}
+df_n_expt2 <- df_expo_expt2 %>%
+    group_by(condition) %>%
+    summarise(n_subs = n_distinct(subids))
+
+df_n_expt2_filt <- df_expo_expt2_filt %>%
+    group_by(condition) %>%
+    summarise(n_subs_filt = n_distinct(subids)) %>%
+    select(n_subs_filt)
+
+nsubs_expt2 <- cbind(df_n_expt2, df_n_expt2_filt)
+
+nsubs_expt2
+```
+
+Test trial filters.
+
+```{r expt2 test filters}
+# just RT filter
+df_test_expt2 <- df_expt2 %>%
+    filter(trial_cat == "test",
+           include_good_rt == "include")
+
+# RT, subject level and trial level filter 
+df_test_expt2_filt <- df_expt2 %>%
+    filter(trial_cat == "test",
+           mean_acc_exp > 0.25 ,
+           include_good_rt == "include",
+           correct_exposure == T | condition_trial == "no-social")
+```
+
+#### Save clean Expt. 2 dataset
+
+```{r save final dataset expt2}
+df_expt2_analysis_final <- df_test_expt2_filt %>% 
+    dplyr::bind_rows(df_expo_expt2_analysis) %>% 
+    dplyr::arrange(subids) 
+
+write.csv(x = df_expt2_analysis_final, 
+          "../../data/final-processed/soc-xsit-expt2-finalData.csv",
+          row.names = F)
+```
+
+## Experiment 3
+
+### Data cleaning and variable creation.
+
+#### Flag pilot vs. replication data
+
+```{r expt3 cleaning 1, warning = F}
+df_expt3 %<>% mutate(experiment = "replication",
+                     rel_subj = to.n(rel_subj))
+
+df_expt3 <- df_expt3_original %>% 
+    mutate(experiment = "original") %>% 
+    bind_rows(df_expt3)
+```
+
+#### Clean up variable names
+
+```{r expt3 cleaning 2}
+df_expt3$prop_cond_clean <- revalue(df_expt3$condition,
+                                    c("0%_reliable" = "0%",
+                                      "25%_reliable" = "25%",
+                                      "50%_reliable" = "50%",
+                                      "75%_reliable" = "75%",
+                                      "100%_reliable" = "100%"))
+
+# change order of condition factor for plotting
+df_expt3$prop_cond_clean <- factor(df_expt3$prop_cond_clean,
+                                   levels = c("0%", "25%", "50%", "75%", "100%"))
+```
+
+#### Create continuous variable for reliability
+
+```{r}
+df_expt3$reliability[df_expt3$prop_cond_clean=="0%"] <- .00
+df_expt3$reliability[df_expt3$prop_cond_clean=="25%"] <- .25
+df_expt3$reliability[df_expt3$prop_cond_clean=="50%"] <- .50
+df_expt3$reliability[df_expt3$prop_cond_clean=="75%"] <- .75
+df_expt3$reliability[df_expt3$prop_cond_clean=="100%"] <- 1.00
+```
+
+#### Clean up RTs.
+
+```{r expt3 clean RTs}
+df_expt3 <- df_expt3 %>%
+    filter(rt > 0) %>% 
+    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) | 
+                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                    "exclude", "include"))
+```
+
+#### Flag whether participant chose the target of eye gaze on exposure trials in test block
+
+```{r expt3 chose gaze target on exposure trials test block}
+df_expt3 %<>% 
+    filter(trial_category == "exposure", block == "test") %>% 
+    select(subids, 
+           gaze_target_exposure = gaze_target, 
+           chosen_exposure = chosen, 
+           correct_exposure = correct, 
+           itemNum,
+           experiment) %>% 
+    left_join(x = df_expt3, by = c("subids", "itemNum", "experiment"))
+```
+
+#### Get total number of correct for each sub on exposure trials in test block
+
+```{r}
+df_expt3 %<>%
+    filter(trial_category == "exposure",
+           block == "test", include_good_rt == "include") %>% 
+    group_by(subids, experiment) %>% 
+    summarise(total_exposure_correct = sum(correct_exposure))  %>% 
+    left_join(x = df_expt3, by = c("subids", "experiment"))
+```
+
+#### Get mean accuracy on each trial type for each sub
+
+```{r}
+df_expt3 %<>%
+    filter(trial_category == "test",
+           block == "test", include_good_rt == "include") %>% 
+    group_by(subids, experiment, trialType) %>% 
+    summarise(sub_mean_accuracy = mean(correct))  %>% 
+    spread(key = trialType, value = sub_mean_accuracy) %>% 
+    rename(same_accuracy = Same, switch_accuracy = Switch) %>% 
+    left_join(x = df_expt3, by = c("subids", "experiment"))
+```
+
+#### Save clean Expt. 3 dataset 
+
+```{r}
+write.csv(x = df_expt3, 
+          "../../data/final-processed/soc-xsit-expt3-finalData.csv",
+          row.names = F)
+```
