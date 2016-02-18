@@ -115,14 +115,13 @@ Now plot those means.
 ggplot(data=ms_expo_expt1, 
        aes(x=intervalNum, y=accuracy_exposure)) + 
     geom_pointrange(aes(ymin=accuracy_exposure - ci_low, 
-                        ymax=accuracy_exposure + ci_high), 
-                    width = .05, size=0.6) +
+                        ymax=accuracy_exposure + ci_high), size=0.6) +
     geom_smooth(method = "lm", se = F) +
     geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
     scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
     scale_y_continuous(limits=c(0,1)) +
     scale_colour_manual(values=c("#1f78b4", "red")) +
-    facet_grid( ~ numPic, labeller = mf_labeller) + 
+    facet_grid( ~ numPic) + 
     xlab("Intervening Trials") + 
     ylab("Prop. Chose Gaze Target") +
     labs(colour = "Condition") +
@@ -160,14 +159,14 @@ ms_expo_rt_expt1$condition <- revalue(ms_expo_rt_expt1$condition,
 exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1, 
                                 aes(x=intervalNum, y=mean_rt, color = condition)) + 
     geom_linerange(aes(ymin=mean_rt - ci_low, 
-                        ymax=mean_rt + ci_high), width = .05, size=1) +
+                        ymax=mean_rt + ci_high), size=1) +
     geom_point(size=5) +
     scale_x_continuous(limits=c(-.9,9.5), breaks=c(0, 1, 3, 7)) +
     geom_smooth(method="lm", se =F) +
     scale_y_continuous(limits=c(0,5200)) +
    # scale_colour_grey(start = 0.3, end = 0.6) +
     scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-    facet_grid( ~ numPic, labeller = mf_labeller) + 
+    facet_grid( ~ numPic) + 
     xlab("Interval Between Exposure and Test") + 
     ylab("Reponse Time (ms)") +
     labs(colour = "Condition") +
@@ -224,14 +223,14 @@ expt1.acc.test <- ggplot(data=ms_test_expt1,
     geom_point(size=5) +
     geom_smooth(method="lm", se =F) +
     geom_linerange(aes(ymin=accuracy - ci_low, 
-                       ymax=accuracy + ci_high), width = .05, size=1) +
+                       ymax=accuracy + ci_high), size=1) +
     #geom_line(aes(linetype = trialType), size=0.4) +
     geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
     scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
     scale_y_continuous(limits=c(0,1)) +
     #scale_colour_grey(start = 0.3, end = 0.6) +
     scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-    facet_grid(. ~ numPic, labeller = mf_labeller) + 
+    facet_grid(. ~ numPic) + 
     xlab("Interval Between Exposure and Test") + 
     ylab("Proportion Correct") +
     labs(colour = "Condition") +
@@ -406,8 +405,7 @@ Now plot mean correct for exposure trials for each interval.
 ggplot(data=ms_expo_all_expt2, 
        aes(x=intervalNum, y=accuracy_exposure)) + 
     geom_pointrange(aes(ymin=accuracy_exposure - ci_low, 
-                        ymax=accuracy_exposure + ci_high), 
-                    width = .05, size=0.6) +
+                        ymax=accuracy_exposure + ci_high), size=0.6) +
     geom_hline(aes(yintercept=1/4), linetype = "dashed") +
     scale_x_continuous(limits=c(-.9,4), breaks=c(0,3)) +
     scale_y_continuous(limits=c(0,1)) +
@@ -445,7 +443,7 @@ ms_rt_expo_expt2$condition <- revalue(ms_rt_expo_expt2$condition,
 expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2, 
                         aes(x=intervalNum, y=rt_exposure, color = condition)) + 
     geom_pointrange(aes(ymin=rt_exposure - ci_low, 
-                        ymax=rt_exposure + ci_high), width = .05, size=1.5) +
+                        ymax=rt_exposure + ci_high), size=1.5) +
     scale_x_continuous(limits=c(-.9,4), breaks=c(0,3)) +
     geom_smooth(method="lm", se=F) +
     scale_y_continuous(limits=c(0,5000)) +
@@ -507,8 +505,7 @@ expt2.acc.test <- ggplot(data=ms_test_expt2_filt,
                              colour = condition_trial)) + 
     geom_line(aes(linetype = trialType), size=0.6) +
     geom_pointrange(aes(ymin=accuracy - ci_low, 
-                        ymax=accuracy + ci_high), 
-                    width = .05, size=1.5) +
+                        ymax=accuracy + ci_high), size=1.5) +
     geom_hline(aes(yintercept=1/4), linetype = "dashed") +
     scale_x_continuous(limits=c(-.9,4), breaks=c(0, 3)) +
     scale_y_continuous(limits=c(0,1)) +
@@ -622,8 +619,7 @@ ms_rt_expo_fam <- df_expt3 %>%
 ggplot(ms_rt_expo_fam, 
        aes(x=prop_cond_clean, y=rt_exposure)) +
     geom_pointrange(aes(ymin=rt_exposure - ci_low,
-                        ymax=rt_exposure + ci_high), 
-                    width = .1, size = 0.8) + 
+                        ymax=rt_exposure + ci_high), size = 0.8) + 
     scale_y_continuous(limits=c(500,4500)) +
     ylab("Response Time (ms)") +
     xlab("Level of Reliability") +
@@ -648,8 +644,7 @@ ggplot(ms_test_fam,
        aes(x=prop_cond_clean, y=accuracy, 
            group=trialType, colour=trialType)) +
     geom_pointrange(aes(ymin=accuracy - ci_low,
-                        ymax=accuracy + ci_high), 
-                    width = .1, size=0.7) +
+                        ymax=accuracy + ci_high), size=0.7) +
     geom_hline(yintercept=0.5, linetype = "dashed") +
     scale_y_continuous(limits=c(0,1)) + 
     geom_smooth(method='lm') +
@@ -676,8 +671,7 @@ ggplot(ms_test_fam_blocked,
        aes(x=prop_cond_clean, y=accuracy, 
            group=trialType, colour=trialType)) +
     geom_pointrange(aes(ymin=accuracy - ci_low,
-                        ymax=accuracy + ci_high), 
-                    width = .1, size=0.7) +
+                        ymax=accuracy + ci_high), size=0.7) +
     geom_hline(yintercept=0.5, linetype = "dashed") +
     scale_y_continuous(limits=c(0,1)) + 
     geom_smooth(method='lm') +
@@ -705,8 +699,7 @@ Plot.
 ggplot(ms_rt_expo_test, 
        aes(x=prop_cond_clean, y=rt_exposure, color = trialType)) +
     geom_pointrange(aes(ymin=rt_exposure - ci_low,
-                        ymax=rt_exposure + ci_high), 
-                    width = .1, size = 0.8) + 
+                        ymax=rt_exposure + ci_high), size = 0.8) + 
     scale_y_continuous(limits=c(500,4500)) +
     ylab("Response Time (ms)") +
     xlab("Condition") +
@@ -736,7 +729,7 @@ ggplot(ms_expo_test,
        aes(x=prop_cond_clean, y=accuracy, group=1)) +
     geom_smooth(method="lm", se=F, color="black") +
     geom_pointrange(aes(ymin=accuracy - ci_low,
-                        ymax=accuracy + ci_high), width = .05, size=1, color = "black") +
+                        ymax=accuracy + ci_high), size=1, color = "black") +
     geom_hline(yintercept=0.25, linetype = "dashed") +
     scale_y_continuous(limits=c(0,1)) +
     xlab("Level of Reliablity") + 
@@ -942,8 +935,7 @@ expt3_acc_test <- ggplot(data=ms_test_test,
                          aes(x=prop_cond_clean, y=accuracy, group=trialType,
                              color=trialType, label = trialType)) + 
     geom_pointrange(aes(ymin=accuracy - ci_low, 
-                        ymax=accuracy + ci_high), 
-                    width = .05, size=1) +
+                        ymax=accuracy + ci_high), size=1) +
     geom_smooth(method='lm', se=F) +
     geom_hline(aes(yintercept=1/4), linetype = "dashed") +
     scale_y_continuous(limits=c(0,1)) +
@@ -970,8 +962,7 @@ expt3_acc_test_chose_gazetar <- ggplot(data=ms_acc_exp_test_expt3,
                                        aes(x=total_exposure_correct, y=correct, group=trialType,
                                            color=trialType, label = trialType)) + 
     geom_pointrange(aes(ymin=correct - cil, 
-                        ymax=correct + cih), 
-                    width = .05, size=1) +
+                        ymax=correct + cih), size=1) +
     geom_smooth(method='lm', se=F) +
     geom_hline(aes(yintercept=1/4), linetype = "dashed") +
     scale_x_continuous(limits=c(0,8), breaks=c(0:8)) +
@@ -999,8 +990,7 @@ expt3_subj_rel_test_plot <- ggplot(data=ms_rel_subj,
                                    aes(x=rel_bin, y=mean_accuracy, group=trialType,
                                        color=trialType, label = trialType)) + 
     geom_pointrange(aes(ymin=mean_accuracy - ci_low, 
-                        ymax=mean_accuracy + ci_high), 
-                    width = .05, size=1) +
+                        ymax=mean_accuracy + ci_high), size=1) +
     geom_smooth(method='lm', se=F) +
     geom_hline(aes(yintercept=1/4), linetype = "dashed") +
     scale_y_continuous(limits=c(0,1)) +

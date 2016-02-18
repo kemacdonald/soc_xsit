@@ -44,7 +44,7 @@ df_expt3_original <- read.csv("../../data/final-raw/soc_xsit_reliability_expt3.c
 df_expt1 %<>% filter(dataset == "km")
 ```
 
-#### Flag trials on which subs chose the target of eye gaze.
+#### Flag trials on which ss chose the target of eye gaze.
 
 ```{r expt1 target of gaze}
 df_expt1 %<>% 
