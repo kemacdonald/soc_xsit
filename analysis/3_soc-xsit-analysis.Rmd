@@ -141,6 +141,7 @@ levels of attention and memory demands.
 
 ```{r expt1 rt on exposure trials}
 ms_expo_rt_expt1 <-  df_expo_expt1_analysis %>%
+    mutate(rt = rt + 2000) %>% 
     group_by(numPic, intervalNum, condition) %>%
     summarise(mean_rt = mean(rt),
               ci_low = ci.low(rt),
@@ -336,6 +337,7 @@ df_expo_expt2_filt <- filter(df_expt2,
 
 # filter that gets both social/no-social trials
 df_expo_expt2_analysis <- df_expt2 %>%
+    mutate(rt = rt + 2000) %>% 
     filter(trial_cat == "exposure",
            mean_acc_exp > 0.25,
            correct_exposure = T | condition_trial == "no-social",
@@ -423,6 +425,21 @@ ggplot(data=ms_expo_all_expt2,
           legend.position = c(0,0)) 
 ```
 
+Plot distribution of RT on exposure trials.
+
+```{r expt2 rt dist}
+ggplot(aes(x = rt, fill = condition_trial), data = df_expo_expt2_analysis) +
+    geom_density(adjust = 2, alpha = 0.7) +
+    xlim(0, 12500) 
+```
+
+```{r}
+df_expo_expt2_analysis %>% 
+    group_by(condition_trial) %>% 
+    summarise(median_rt = median(rt),
+              mean_rt = mean(rt))
+```
+
 RT on exposure trials.
 
 ```{r expt2 rt expo}
@@ -443,10 +460,10 @@ ms_rt_expo_expt2$condition <- revalue(ms_rt_expo_expt2$condition,
 expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2, 
                         aes(x=intervalNum, y=rt_exposure, color = condition)) + 
     geom_pointrange(aes(ymin=rt_exposure - ci_low, 
-                        ymax=rt_exposure + ci_high), size=1.5) +
+                        ymax=rt_exposure + ci_high), size=1) +
     scale_x_continuous(limits=c(-.9,4), breaks=c(0,3)) +
     geom_smooth(method="lm", se=F) +
-    scale_y_continuous(limits=c(0,5000)) +
+    scale_y_continuous(limits=c(3000,6500)) +
     scale_colour_manual(values=c("#e34a33", "#2c7fb8")) +
     #scale_color_grey(start = 0.3, end = 0.6) + 
     xlab("Intervening Trials") + 
