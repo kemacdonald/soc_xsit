@@ -4,34 +4,43 @@
 rm(list=ls())
 
 ## Load libraries 
-source("useful.R")
+library(chron)
 library(rjson)
 library(plyr)
 library(dplyr)
 library(stringr)
 
-## set file paths for reading and writing data
-read_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC-XSIT", "expts", "soc_xsit_reliability", "data/")
-write_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC-XSIT", "SOC_XSIT_GIT", "data/")
 
-## gets all .results files at one time
-all_results <- list.files(path = read_path, pattern = '*.results', all.files = FALSE)
+## set path for writing data (same for all three experiments)
+write_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC-XSIT", "SOC_XSIT_GIT", "data/", "raw_not_anonymized/")
 
-## for selecting one out of multiple result files 
-all_results <- all_results[5] 
+##### Experiment 1: Soc-xsit Schematic ######
 
-## creates empty data frame for storing data
-all.data <- data.frame()
+##### Experiment 2: Soc-xsit Human ######
+
+
+##### Experiment 3: Soc-xsit Reliability #####
 
 ## number of trials in experiment
 num_trials <- 34
+
+## set file paths for reading  data
+setwd("../../../expts/final/e3_soc_xsit_reliability/data/")
+
+## gets all .results files at one time
+all_results <- list.files(pattern = '*.results', all.files = FALSE)
+## grab just the confirmatory replication experiment
+all_results <- c(all_results[5])
+
+## creates empty data frame for storing data
+all.data <- data.frame()
 
 ## loops through all of the results files, grabbing relevant data from JSON, creating columns for 
 ## the following: condition (soc/no_soc), number of pics each trial, interval between exposure and test  
 ## also flags test and exposure trials
 
 for(f in 1:length(all_results)) {
-  data <- read.table(paste(read_path, all_results[f],sep=""), sep="\t", 
+  data <- read.table(paste(all_results[f], sep=""), sep="\t", 
                      header=TRUE, stringsAsFactors=FALSE)
   long.data <- as.data.frame(matrix(ncol = 0, nrow = num_trials*nrow(data)))
   c <- 1
@@ -205,10 +214,6 @@ keep.data$numPicN <- as.numeric(keep.data$numPic)
 
 # create block variable
 keep.data$block <- ifelse(keep.data$itemNum <= 7, "familiarization", "test")
-
-# anonymize subids
-keep.data <- as.data.frame(ungroup(keep.data))
-keep.data <- anonymize.sids(keep.data, "subid")
 
 ##### SAVE OUTPUT  #####
 

@@ -30,7 +30,7 @@ knitr::opts_chunk$set(fig.width=4.5, fig.height=5, fig.crop = F, fig.path='figs/
 
 ```{r libraries}
 #devtools::install_github("kemacdonald/kmr") # uncomment to install, necessary for knitting
-source("../../../analysis/final/useful.R")
+source("../analysis/helpers/useful.R")
 library(kmr)
 library(lme4)
 library(dplyr)

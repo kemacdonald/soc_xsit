@@ -618,7 +618,7 @@ df_expt3$prop_cond_clean <- factor(df_expt3$prop_cond_clean,
                                    levels = c("0%", "25%", "50%", "75%", "100%"))
 ```
 
-#### Analyze Familiarization Block
+### Analyze Familiarization Block
 
 RT on exposure trials.
 
@@ -631,6 +631,8 @@ ms_rt_expo_fam <- df_expt3 %>%
               ci_low = ci.low(rt),
               ci_high = ci.high(rt))
 ```
+
+Plot.
 
 ```{r expt 3 rt exposure trials plot}
 ggplot(ms_rt_expo_fam, 
@@ -655,6 +657,8 @@ ms_test_fam <- df_expt3 %>%
               ci_low = ci.low(correct),
               ci_high = ci.high(correct))
 ```
+
+Plot
 
 ```{r, echo = F}
 ggplot(ms_test_fam, 
@@ -696,7 +700,7 @@ ggplot(ms_test_fam_blocked,
     ggtitle("Accuracy on Test Trials in Familiarization Block")
 ```
 
-#### Analyze performance on test block
+### Analyze performance on test block
 
 Anayze RT on exposure trials in the test block.
 
@@ -807,21 +811,6 @@ mss_subj_rel <- df_expt3 %>%
     distinct()
 ```
 
-Histogram across conditions
-
-```{r}
-qplot(rel_subj, facets=.~prop_cond_clean, 
-      data=mss_subj_rel, binwidth = 0.1) +
-    xlab("Subjective Reliability Judgment")
-```
-
-Reported reliability vs. number correct on exposure - individual consistency.
-
-```{r subjective reliablity analysis 2}
-qplot(total_exposure_correct, rel_subj, col = prop_cond_clean, 
-      data=mss_subj_rel) + geom_smooth(method="lm", se=FALSE)
-```
-
 Reported reliability vs. number correct on exposure - means.
 
 ```{r subjective reliablity analysis 3}
@@ -884,68 +873,10 @@ ms_acc_exp_test_expt3 <- df_expt3 %>%
               correct = mean(correct))
 ```
 
-## LMERs Experiment 3
-
-### Accuracy on exposure trials in test block.
-
-```{r expt3 lmer acc expo test block}
-m1_expo_expt3 <- glmer(correct ~ reliability + (1 | subids),
-                       data = filter(df_expt3, trial_category == "exposure", block == "test",
-                                     experiment == "replication", include_good_rt == "include"),
-                       nAGQ = 0,
-                       control = glmerControl(optimizer = "bobyqa"),
-                       family = binomial)
-
-knitr::kable(summary(m1_expo_expt3)$coef)
-```
-
-Participants are more likely to select the target of gaze when the gaze cue is more reliable.
-
-#### Predict gaze following based on subjective reliability judgments.
-
-```{r glm expt 3 gaze following}
-m1_subj_rel_expt3 <- glmer(correct ~ rel_subj + (1 | subids),
-                       data = filter(df_expt3, trial_category == "exposure", block == "test",
-                                     experiment == "replication", include_good_rt == "include"),
-                       nAGQ = 0,
-                       control = glmerControl(optimizer = "bobyqa"),
-                       family = binomial)
-
-knitr::kable(summary(m1_subj_rel_expt3)$coef)
-```
-
-Participants who rate the cue as more reliable are also more likely to use the cue
-
-### Accuracy on test trials in test block.
-
-```{r expt3 glmer rel condition as continuous}
-m2_expt3 <- glmer(correct ~ trialType * reliability + (trialType | subids),
-                  data = filter(df_expt3, trial_category == "test", block == "test",
-                                     experiment == "replication", include_good_rt == "include"),
-                  control = glmerControl(optimizer = "bobyqa"),
-                  nAGQ = 1,
-                  family = binomial)
-
-knitr::kable(summary(m2_expt3)$coef, digits = 3)
-```
-
-#### Predict test performance from selecting target of gaze on exposure trials
-
-```{r glmer total exposure correct}
-m4_expt3 <- glmer(correct ~ total_exposure_correct * trialType + (trialType | subids),
-                  control = glmerControl(optimizer = "bobyqa"),
-                  data = filter(df_expt3, trial_category == "test", block == "test",
-                                experiment == "replication", include_good_rt == "include"),
-                  nAGQ = 1,
-                  family = binomial)
-
-knitr::kable(summary(m4_expt3)$coef, digits = 3)
-```
-
 Now we plot the new analysis: accuracy on test trials as a function of 
 accuracy on exposure trials (selecting the gaze target).
 
-#### Final plot 
+### Final plot 
 
 ```{r expt3 acc test expt 3 cogsci plot, echo=F}
 expt3_acc_test <- ggplot(data=ms_test_test, 
@@ -1031,4 +962,75 @@ expt3_subj_rel_test_plot <- ggplot(data=ms_rel_subj,
 ```{r expt3 final plot}
 gridExtra::grid.arrange(expt3_acc_test, expt3_acc_test_chose_gazetar, expt3_subj_rel_test_plot, 
                         ncol = 3)
+```
+
+### Inspection time analysis
+
+Here we plot accuracy at test as a function of how long participants inspected the display during exposure at the trial level. 
+
+First we need to get RT on exposure for each test trial
+
+```{r}
+df_inspect <- df_expt3 %>% 
+    filter(trial_category == "exposure") %>% 
+    select(subids, itemNum, inspection_time_exposure = rt) %>% 
+    left_join(filter(df_expt3, trial_category == "test"), by = c("subids", "itemNum")) 
+```
+
+## LMERs Experiment 3
+
+### Accuracy on exposure trials in test block.
+
+```{r expt3 lmer acc expo test block}
+m1_expo_expt3 <- glmer(correct ~ reliability + (1 | subids),
+                       data = filter(df_expt3, trial_category == "exposure", block == "test",
+                                     experiment == "replication", include_good_rt == "include"),
+                       nAGQ = 0,
+                       control = glmerControl(optimizer = "bobyqa"),
+                       family = binomial)
+
+knitr::kable(summary(m1_expo_expt3)$coef)
+```
+
+Participants are more likely to select the target of gaze when the gaze cue is more reliable.
+
+### Predict gaze following based on subjective reliability judgments.
+
+```{r glm expt 3 gaze following}
+m1_subj_rel_expt3 <- glmer(correct ~ rel_subj + (1 | subids),
+                       data = filter(df_expt3, trial_category == "exposure", block == "test",
+                                     experiment == "replication", include_good_rt == "include"),
+                       nAGQ = 0,
+                       control = glmerControl(optimizer = "bobyqa"),
+                       family = binomial)
+
+knitr::kable(summary(m1_subj_rel_expt3)$coef)
+```
+
+Participants who rate the cue as more reliable are also more likely to use the cue
+
+### Predict Accuracy on test trials in test block.
+
+```{r expt3 glmer rel condition as continuous}
+m2_expt3 <- glmer(correct ~ trialType * reliability + (trialType | subids),
+                  data = filter(df_expt3, trial_category == "test", block == "test",
+                                     experiment == "replication", include_good_rt == "include"),
+                  control = glmerControl(optimizer = "bobyqa"),
+                  nAGQ = 1,
+                  family = binomial)
+
+knitr::kable(summary(m2_expt3)$coef, digits = 3)
+```
+
+### Predict test performance from selecting target of gaze on exposure trials
+
+```{r glmer total exposure correct}
+m4_expt3 <- glmer(correct ~ total_exposure_correct * trialType + (trialType | subids),
+                  control = glmerControl(optimizer = "bobyqa"),
+                  data = filter(df_expt3, trial_category == "test", block == "test",
+                                experiment == "replication", include_good_rt == "include"),
+                  nAGQ = 1,
+                  family = binomial)
+
+knitr::kable(summary(m4_expt3)$coef, digits = 3)
 ```
