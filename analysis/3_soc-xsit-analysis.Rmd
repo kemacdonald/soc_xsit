@@ -31,9 +31,9 @@ Read in data from all 3 Experiments:
 * Experiment 3: Parametric manipulation of cue reliablity
 
 ```{r read data, echo=F, warning=F}
-df_expt1 <- read.csv("../data/final-processed/soc-xsit-expt1-finalData.csv")
-df_expt2 <- read.csv("../data/final-processed/soc-xsit-expt2-finalData.csv")
-df_expt3 <- read.csv("../data/final-processed/soc-xsit-expt3-finalData.csv")
+df_expt1 <- read.csv("../data/3_final-processed/soc-xsit-expt1-finalData.csv")
+df_expt2 <- read.csv("../data/3_final-processed/soc-xsit-expt2-finalData.csv")
+df_expt3 <- read.csv("../data/3_final-processed/soc-xsit-expt3-finalData.csv")
 ```
 
 ## Experiment 1
@@ -600,6 +600,10 @@ knitr::kable(summary(m1_expt2_filt)$coef, digits = 3)
 Model output is no different when we use the filtered data.
 
 ## Experiment 3
+
+```{r}
+df_expt3 <- filter(df_expt3, experiment == "replication")
+```
 
 ### Get the number of subjects in each experiment and condition.
 

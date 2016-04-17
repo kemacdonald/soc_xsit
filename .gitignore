@@ -13,4 +13,5 @@ Thumbs.db
 .mov
 .mp4
 .mpg
-raw_not_anonymized/
+1_raw_not_anonymized/
+2_raw_compiled/
