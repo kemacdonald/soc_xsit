@@ -16,7 +16,7 @@ author-information:
     - \address{Department of Psychology, Stanford University, United States}
 
 abstract: 
-    "Because children hear language in environments that contain many things to talk about, learning the meaning of even the simplest word requires making inferences under undertainty. A cross-situational statistical learner can aggregate across naming events to form stable word-referent mappings, but this approach neglects an important source of information that can reduce referential uncertainty: social cues from speakers. In three large-scale experiments with adults, we test the effects of varying referential uncertainty in cross-situational word learning using social cues. Social cues shifted learners away from tracking multiple hypotheses and towards storing only a single hypothesis (Experiments 1 and 2). In addition, learners were sensitive to graded changes in the strength of a social cue, and when it became less reliable, they were more likely to store multiple hypotheses (Experiment 3). Our data suggest that the representations underlying cross-situational word learning are quite flexible: In conditions of greater uncertainty, learners tend to store a broader range of information."
+    "Because children hear language in environments that contain many things to talk about, learning the meaning of even the simplest word requires making inferences under uncertainty. A cross-situational statistical learner can aggregate across naming events to form stable word-referent mappings, but this approach neglects an important source of information that can reduce referential uncertainty: social cues from speakers. In three large-scale experiments with adults, we test the effects of varying referential uncertainty in cross-situational word learning using social cues. Social cues shifted learners away from tracking multiple hypotheses and towards storing only a single hypothesis (Experiments 1 and 2). In addition, learners were sensitive to graded changes in the strength of a social cue, and when it became less reliable, they were more likely to store multiple hypotheses (Experiment 3). Our data suggest that the representations underlying cross-situational word learning are quite flexible: In conditions of greater uncertainty, learners tend to store a broader range of information."
     
 keywords:
     "statistical learning, social cues, word learning, language acquisition"
@@ -41,9 +41,9 @@ library(xtable)
 ```
 
 ```{r data}
-df_expt1 <- read.csv("../data/final-processed/soc-xsit-expt1-finalData.csv")
-df_expt2 <- read.csv("../data/final-processed/soc-xsit-expt2-finalData.csv")
-df_expt3 <- read.csv("../data/final-processed/soc-xsit-expt3-finalData.csv")
+df_expt1 <- read.csv("../data/3_final-processed/soc-xsit-expt1-finalData.csv")
+df_expt2 <- read.csv("../data/3_final-processed/soc-xsit-expt2-finalData.csv")
+df_expt3 <- read.csv("../data/3_final-processed/soc-xsit-expt3-finalData.csv")
 ```
 
 ```{r chance_functions}

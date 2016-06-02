@@ -21,6 +21,7 @@ library(pander)
 library(magrittr)
 library(gridExtra)
 library(tidyr)
+library(langcog)
 library(directlabels)
 ```
 
@@ -42,8 +43,8 @@ df_expt3 <- read.csv("../data/3_final-processed/soc-xsit-expt3-finalData.csv")
 
 ```{r describe data, tidy=TRUE}
 nsubs <- df_expt1 %>%
-    group_by(condition, intervalNum, numPicN) %>%
-    summarise(n_subs = n_distinct(subids))
+  group_by(condition, intervalNum, numPicN) %>%
+  summarise(n_subs = n_distinct(subids))
 
 knitr::kable(nsubs)
 ```
@@ -59,37 +60,37 @@ chance selecting gaze target on exposure trials
 ```{r expt1 test trials}
 # just RT filter
 df_expo_expt1 <- df_expt1 %>%  
-    filter(trial_category == "exposure", include_good_rt_exposure == "include")
+  filter(trial_category == "exposure", include_good_rt_exposure == "include")
 
 df_test_expt1 <- df_expt1 %>%  
-    filter(trial_category == "test", include_good_rt_test == "include",
-           correct_exposure == T | condition == "No-Social")
+  filter(trial_category == "test", include_good_rt_test == "include",
+         correct_exposure == T | condition == "No-Social")
 
 # subject and trial level filter
 df_test_expt1_filt <- df_expt1 %>% 
-    filter(trial_category == "test") %>% 
-    filter(include_good_rt_test == "include", 
-           include_expo == "include" | condition == "No-Social") %>%
-    filter(correct_exposure == T | condition == "No-Social")
+  filter(trial_category == "test") %>% 
+  filter(include_good_rt_test == "include", 
+         include_expo == "include" | condition == "No-Social") %>%
+  filter(correct_exposure == T | condition == "No-Social")
 
 df_expo_expt1_analysis <- df_expt1 %>%
-    filter(trial_category == "exposure") %>% 
-    filter(include_good_rt_exposure == "include", 
-           include_expo == "include" | condition == "No-Social") %>%
-    filter(correct_exposure == T | condition == "No-Social")
+  filter(trial_category == "exposure") %>% 
+  filter(include_good_rt_exposure == "include", 
+         include_expo == "include" | condition == "No-Social") %>%
+  filter(correct_exposure == T | condition == "No-Social")
 ```
 
 Get the number of subjects filtered out
 
 ```{r expt1 nsubs filtered}
 df_n <- df_test_expt1 %>%
-    group_by(condition) %>%
-    summarise(n_subs = n_distinct(subids))
+  group_by(condition) %>%
+  summarise(n_subs = n_distinct(subids))
 
 df_n_filt <- df_test_expt1_filt %>%
-    group_by(condition) %>%
-    summarise(n_subs_filt = n_distinct(subids)) %>%
-    select(n_subs_filt)
+  group_by(condition) %>%
+  summarise(n_subs_filt = n_distinct(subids)) %>%
+  select(n_subs_filt)
 
 df_n <- cbind(df_n, df_n_filt)
 
@@ -102,36 +103,35 @@ Get means and CIs for each combination of number of referents and interval
 
 ```{r expt1 accuracy on exposure trials}
 ms_expo_expt1 <-  df_expo_expt1 %>%
-    filter(condition == "Social") %>%
-    group_by(numPic, intervalNum) %>%
-    summarise(accuracy_exposure = mean(correct_exposure),
-              ci_low = ci.low(correct_exposure),
-              ci_high = ci.high(correct_exposure))
+  filter(condition == "Social") %>%
+  group_by(numPic, intervalNum, subids) %>%
+  summarise(accuracy_exposure = mean(correct_exposure, na.rm = T)) %>% 
+  group_by(numPic, intervalNum) %>%
+  multi_boot_standard("accuracy_exposure")
 ```
 
-Now plot those means.
+Now plot those means and CIs.
 
 ```{r expt 1 accuracy on exposure trials plot, echo=F}
-ggplot(data=ms_expo_expt1, 
-       aes(x=intervalNum, y=accuracy_exposure)) + 
-    geom_pointrange(aes(ymin=accuracy_exposure - ci_low, 
-                        ymax=accuracy_exposure + ci_high), size=0.6) +
-    geom_smooth(method = "lm", se = F) +
-    geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
-    scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
-    scale_y_continuous(limits=c(0,1)) +
-    scale_colour_manual(values=c("#1f78b4", "red")) +
-    facet_grid( ~ numPic) + 
-    xlab("Intervening Trials") + 
-    ylab("Prop. Chose Gaze Target") +
-    labs(colour = "Condition") +
-    labs(linetype = "Trial Type") +
-    guides(linetype=FALSE) +
-    theme(text = element_text(size=14), 
-          axis.title.y=element_text(vjust=1),
-          axis.title.x=element_text(vjust=-0.3),
-          legend.justification=c(0,0),
-          legend.position = c(0,0)) 
+ggplot(data=ms_expo_expt1, aes(x=intervalNum, y=mean)) + 
+  geom_pointrange(aes(ymin=ci_lower, 
+                      ymax=ci_upper), size=0.6) +
+  geom_smooth(method = "lm", se = F) +
+  geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
+  scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_colour_manual(values=c("#1f78b4", "red")) +
+  facet_grid( ~ numPic) + 
+  xlab("Intervening Trials") + 
+  ylab("Prop. Chose Gaze Target") +
+  labs(colour = "Condition") +
+  labs(linetype = "Trial Type") +
+  guides(linetype=FALSE) +
+  theme(text = element_text(size=14), 
+        axis.title.y=element_text(vjust=1),
+        axis.title.x=element_text(vjust=-0.3),
+        legend.justification=c(0,0),
+        legend.position = c(0,0)) 
 ```
 
 ### RT on exposure trials 
@@ -141,11 +141,11 @@ levels of attention and memory demands.
 
 ```{r expt1 rt on exposure trials}
 ms_expo_rt_expt1 <-  df_expo_expt1_analysis %>%
-    mutate(rt = rt + 2000) %>% 
-    group_by(numPic, intervalNum, condition) %>%
-    summarise(mean_rt = mean(rt),
-              ci_low = ci.low(rt),
-              ci_high = ci.high(rt))
+  mutate(rt = rt + 2000) %>% 
+  group_by(numPic, intervalNum, condition, subids) %>%
+  summarise(mean_rt = mean(rt)) %>% 
+  group_by(numPic, intervalNum, condition) %>%
+  multi_boot_standard("mean_rt")
 ```
 
 Now we plot mean reaction times for each condition.
@@ -157,24 +157,25 @@ ms_expo_rt_expt1$condition <- revalue(ms_expo_rt_expt1$condition,
 ```
 
 ```{r expt1 plot rt on exposure trials, echo=F}
+ms_expo_rt_expt1$intervalNum <- as.factor(ms_expo_rt_expt1$intervalNum)
+ms_expo_rt_expt1$numPic <- paste(ms_expo_rt_expt1$numPic, "-Referents", sep="")
+
 exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1, 
-                                aes(x=intervalNum, y=mean_rt, color = condition)) + 
-    geom_linerange(aes(ymin=mean_rt - ci_low, 
-                        ymax=mean_rt + ci_high), size=1) +
-    geom_point(size=5) +
-    scale_x_continuous(limits=c(-.9,9.5), breaks=c(0, 1, 3, 7)) +
-    geom_smooth(method="lm", se =F) +
-    scale_y_continuous(limits=c(0,5200)) +
-   # scale_colour_grey(start = 0.3, end = 0.6) +
-    scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-    facet_grid( ~ numPic) + 
-    xlab("Interval Between Exposure and Test") + 
-    ylab("Reponse Time (ms)") +
-    labs(colour = "Condition") +
-    labs(linetype = "Trial Type") +
-    guides(linetype=FALSE, color=F) +
-    theme(
-        title = element_text(size = 24),
+                                aes(x=intervalNum, y=mean, color = condition, 
+                                    group = condition)) + 
+  geom_smooth(method = "lm", se = F) +
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), size = 1) +
+  geom_point(color = "white", size = 2.5, data = 
+               filter(ms_expo_rt_expt1, condition == "No-Gaze")) +
+  scale_y_continuous(limits=c(3000,7500)) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  facet_grid( ~ numPic) + 
+  xlab("Interval Between Exposure and Test") + 
+  ylab("Reponse Time (ms)") +
+  labs(colour = "Condition") +
+  labs(linetype = "Trial Type") +
+  guides(linetype=FALSE, color=F) +
+  theme(title = element_text(size = 24),
         axis.title.x = element_text(colour="black",size=22,
                                     angle=0,hjust=0.5,vjust=0,face="plain"),
         axis.text.x = element_text(colour="grey20",size=18,
@@ -188,26 +189,23 @@ exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1,
         strip.text = element_text(size=16),
         panel.grid.minor = element_blank(),
         panel.grid.major = element_line(colour = "gray88", linetype = "solid"),
-        panel.margin = unit(1, "lines")
-    )
+        panel.margin = unit(1, "lines"))
 ```
 
 ### Accuracy on test trials 
 
 ```{r expt1 acc test}
 ms_test_expt1 <- df_test_expt1  %>%
-    group_by(condition, intervalNum, numPic, trialType) %>%
-    summarise(accuracy = mean(correct),
-              ci_low = ci.low(correct),
-              ci_high = ci.high(correct),
-              exclusionary_criteria = "Trial Level")
+  group_by(condition, intervalNum, numPic, trialType, subids) %>%
+  summarise(accuracy = mean(correct), exclusionary_criteria = "Trial Level") %>% 
+  group_by(condition, intervalNum, numPic, trialType) %>%
+  multi_boot_standard("accuracy")
 
 ms_test_filt_expt1 <- df_test_expt1_filt  %>%
-    group_by(condition, intervalNum, numPic, trialType) %>%
-    summarise(accuracy = mean(correct),
-              ci_low = ci.low(correct),
-              ci_high = ci.high(correct),
-              exclusionary_criteria = "Subject and Trial level")
+  group_by(condition, intervalNum, numPic, trialType, subids) %>%
+  summarise(accuracy = mean(correct), exclusionary_criteria = "Subject and Trial level") %>%
+  group_by(condition, intervalNum, numPic, trialType) %>%
+  multi_boot_standard("accuracy")
 
 ms_test_all_expt1 <- rbind(ms_test_expt1, ms_test_filt_expt1)
 ```
@@ -218,27 +216,27 @@ ms_test_expt1$condition <- revalue(ms_test_expt1$condition,
 ```
 
 ```{r expt1 acc test plot, echo=F}
-expt1.acc.test <- ggplot(data=ms_test_expt1, 
-                         aes(x=intervalNum, y=accuracy, 
-                             colour = condition, lineType = trialType)) + 
-    geom_point(size=5) +
-    geom_smooth(method="lm", se =F) +
-    geom_linerange(aes(ymin=accuracy - ci_low, 
-                       ymax=accuracy + ci_high), size=1) +
-    #geom_line(aes(linetype = trialType), size=0.4) +
-    geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
-    scale_x_continuous(limits=c(-.9,8), breaks=c(0, 1, 3, 7)) +
-    scale_y_continuous(limits=c(0,1)) +
-    #scale_colour_grey(start = 0.3, end = 0.6) +
-    scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-    facet_grid(. ~ numPic) + 
-    xlab("Interval Between Exposure and Test") + 
-    ylab("Proportion Correct") +
-    labs(colour = "Condition") +
-    labs(linetype = "Trial Type") +
-    guides(linetype=FALSE) +
-    theme(
-        axis.title.x = element_text(colour="black",size=22,
+ms_test_expt1 %<>%
+  ungroup() %>% 
+  mutate(intervalNum = as.factor(intervalNum),
+         numPic_name = as.factor(paste(ms_test_expt1$numPic, "-Referents", sep="")))
+
+expt1.acc.test <- ggplot(data=ms_test_expt1, aes(x=intervalNum, y=mean,colour = condition, 
+                               lineType = trialType)) + 
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = condition), 
+                  fill = "white", stroke = 1.5, size= 1, fatten = 2.5,
+                  position = position_jitter(width = .3)) +
+  scale_shape_manual(values = c(21, 19)) +
+  geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1.1), breaks = c(0, .25, .5, .75, 1.0)) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  facet_grid(. ~ numPic_name) + 
+  xlab("Interval Between Exposure and Test") + 
+  ylab("Proportion Correct") +
+  labs(colour = "Condition") +
+  labs(linetype = "Trial Type") +
+  guides(linetype=F, shape = F, color = F) +
+  theme(axis.title.x = element_text(colour="black",size=22,
                                     angle=0,hjust=0.5,vjust=0,face="plain"),
         axis.text.x = element_text(colour="grey20",size=18,
                                    angle=0,hjust=0.5,vjust=0,face="plain"),
@@ -251,11 +249,8 @@ expt1.acc.test <- ggplot(data=ms_test_expt1,
         strip.text = element_text(size=16),
         panel.grid.minor = element_blank(),
         panel.grid.major = element_line(colour = "gray88", linetype = "solid"),
-        panel.margin = unit(1, "lines")
-    )
-```
+        panel.margin = unit(1, "lines"))
 
-```{r}
 grid.arrange(exp1_rt_exposure_plot, expt1.acc.test, ncol=1)
 ```
 
@@ -265,7 +260,7 @@ grid.arrange(exp1_rt_exposure_plot, expt1.acc.test, ncol=1)
 
 ```{r expt1 lmer rt}
 m1_rt_expt1 <- lmer(rt_exposure ~ condition * log2(intervalNum + 1) * log2(numPicN) + 
-                        (1|subids), data=df_expo_expt1_analysis)
+                      (1|subids), data=df_expo_expt1_analysis)
 
 knitr::kable(summary(m1_rt_expt1)$coef, digits = 3)
 ```
@@ -274,22 +269,28 @@ knitr::kable(summary(m1_rt_expt1)$coef, digits = 3)
 
 ```{r expt1 lmer acc test}
 # 2-way model
-m1_2way_expt1 <- glmer(correct ~ (trialType + condition + log2(intervalNum + 1) + log2(numPicN))^2 + 
-                           (trialType | subids), 
+m1_2way_expt1 <- glmer(correct ~ (trialType + condition + 
+                                    log2(intervalNum + 1) + 
+                                    log2(numPicN))^2 + 
+                         (trialType | subids), 
                        data=df_test_expt1_filt, 
                        family=binomial, 
                        nAGQ=0)
 
 # 3-way model
-m1_3way_expt1 <- glmer(correct ~ (trialType + condition + log2(intervalNum + 1) + log2(numPicN))^3 + 
-                           (trialType | subids), 
+m1_3way_expt1 <- glmer(correct ~ (trialType + condition + 
+                                    log2(intervalNum + 1) + 
+                                    log2(numPicN))^3 + 
+                         (trialType | subids), 
                        data=df_test_expt1_filt, 
                        family=binomial, 
                        nAGQ=0)
 
 # 4-way model
-m1_4way_expt1 <- glmer(correct ~ (trialType + condition + log2(intervalNum + 1) + log2(numPicN))^4 + 
-                           (trialType | subids), 
+m1_4way_expt1 <- glmer(correct ~ (trialType + condition + 
+                                    log2(intervalNum + 1) + 
+                                    log2(numPicN))^4 + 
+                         (trialType | subids), 
                        data=df_test_expt1_filt, 
                        family=binomial, 
                        nAGQ=0)
@@ -300,8 +301,7 @@ model_comp <- anova(m1_2way_expt1, m1_3way_expt1, m1_4way_expt1)
 knitr::kable(model_comp)
 ```
 
-3-way model is best based on model comparison, but not theoretically motivated. So we stick with the 
-2-way interactions model as the key test of our hypothesis. 
+3-way model is best based on model comparison, but not theoretically motivated. So we stick with the 2-way interactions model as the key test of our hypothesis. 
 
 ## Experiment 2
 
@@ -312,8 +312,8 @@ Get the number of subjects in each condition.
 
 ```{r expt2 nsubs}
 nsubs_expt2 <- df_expt2 %>% 
-    group_by(condition, interval) %>%
-    summarise(n_subs = n_distinct(subids))
+  group_by(condition, interval) %>%
+  summarise(n_subs = n_distinct(subids))
 
 knitr::kable(nsubs_expt2)
 ```
@@ -337,24 +337,24 @@ df_expo_expt2_filt <- filter(df_expt2,
 
 # filter that gets both social/no-social trials
 df_expo_expt2_analysis <- df_expt2 %>%
-    mutate(rt = rt + 2000) %>% 
-    filter(trial_cat == "exposure",
-           mean_acc_exp > 0.25,
-           correct_exposure = T | condition_trial == "no-social",
-           include_good_rt == "include")
+  mutate(rt = rt + 2000) %>% 
+  filter(trial_cat == "exposure",
+         mean_acc_exp > 0.25,
+         correct_exposure = T | condition_trial == "no-social",
+         include_good_rt == "include")
 ```
 
 Get the number of subjects filtered out by the subject level filter.
 
 ```{r expt2 nsubs filtered}
 df_n_expt2 <- df_expo_expt2 %>%
-    group_by(condition) %>%
-    summarise(n_subs = n_distinct(subids))
+  group_by(condition) %>%
+  summarise(n_subs = n_distinct(subids))
 
 df_n_expt2_filt <- df_expo_expt2_filt %>%
-    group_by(condition) %>%
-    summarise(n_subs_filt = n_distinct(subids)) %>%
-    select(n_subs_filt)
+  group_by(condition) %>%
+  summarise(n_subs_filt = n_distinct(subids)) %>%
+  select(n_subs_filt)
 
 nsubs_expt2_filt <- cbind(df_n_expt2, df_n_expt2_filt)
 
@@ -366,15 +366,15 @@ Test trial filters.
 ```{r expt2 test filters}
 # just RT filter
 df_test_expt2 <- df_expt2 %>%
-    filter(trial_cat == "test",
-           include_good_rt == "include")
+  filter(trial_cat == "test",
+         include_good_rt == "include")
 
 # RT, subject level and trial level filter 
 df_test_expt2_filt <- df_expt2 %>%
-    filter(trial_cat == "test",
-           mean_acc_exp > 0.25 ,
-           include_good_rt == "include",
-           correct_exposure == T | condition_trial == "no-social")
+  filter(trial_cat == "test",
+         mean_acc_exp > 0.25 ,
+         include_good_rt == "include",
+         correct_exposure == T | condition_trial == "no-social")
 ```
 
 ### Analyze Exposure Trials
@@ -384,19 +384,19 @@ Accuracy, selecting target of gaze.
 ```{r expt2 acc expo}
 # unfiltered
 ms_expo_expt2 <- df_expo_expt2 %>%
-    group_by(intervalNum) %>%
-    summarise(accuracy_exposure = mean(correct),
-              ci_low = ci.low(correct),
-              ci_high = ci.high(correct)) %>%
-    mutate(filter = "Unfiltered")
+  group_by(intervalNum, subids) %>%
+  summarise(accuracy_exposure = mean(correct)) %>% 
+  group_by(intervalNum) %>% 
+  multi_boot_standard("accuracy_exposure") %>% 
+  mutate(filter = "Unfiltered")
 
 # filtered
 ms_expo_expt2_filt <- df_expo_expt2_filt %>%
-    group_by(intervalNum) %>%
-    summarise(accuracy_exposure = mean(correct),
-              ci_low = ci.low(correct),
-              ci_high = ci.high(correct)) %>%
-    mutate(filter = "Filtered")
+  group_by(intervalNum, subids) %>%
+  summarise(accuracy_exposure = mean(correct)) %>% 
+  group_by(intervalNum) %>% 
+  multi_boot_standard("accuracy_exposure") %>% 
+  mutate(filter = "Filtered")
 
 ms_expo_all_expt2 <- rbind(ms_expo_expt2, ms_expo_expt2_filt)
 ```
@@ -405,49 +405,48 @@ Now plot mean correct for exposure trials for each interval.
 
 ```{r expt2 acc expo plot, echo=F}
 ggplot(data=ms_expo_all_expt2, 
-       aes(x=intervalNum, y=accuracy_exposure)) + 
-    geom_pointrange(aes(ymin=accuracy_exposure - ci_low, 
-                        ymax=accuracy_exposure + ci_high), size=0.6) +
-    geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-    scale_x_continuous(limits=c(-.9,4), breaks=c(0,3)) +
-    scale_y_continuous(limits=c(0,1)) +
-    scale_colour_manual(values=c("#1f78b4", "red")) +
-    xlab("Intervening Trials") + 
-    ylab("Prop. Choosing Repeated Referent") +
-    labs(colour = "Condition") +
-    labs(linetype = "Trial Type") +
-    guides(linetype=FALSE) +
-    facet_grid(~filter) +
-    theme(text = element_text(size=14), 
-          axis.title.y=element_text(vjust=1),
-          axis.title.x=element_text(vjust=-0.3),
-          legend.justification=c(0,0),
-          legend.position = c(0,0)) 
+       aes(x=intervalNum, y=mean)) + 
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), size=0.6) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+  scale_x_continuous(limits=c(-.9,4), breaks=c(0,3)) +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_colour_manual(values=c("#1f78b4", "red")) +
+  xlab("Interval Between Exposure and Test") +
+  ylab("Prop. Choosing Repeated Referent") +
+  labs(colour = "Condition") +
+  labs(linetype = "Trial Type") +
+  guides(linetype=FALSE) +
+  facet_grid(~filter) +
+  theme(text = element_text(size=14), 
+        axis.title.y=element_text(vjust=1),
+        axis.title.x=element_text(vjust=-0.3),
+        legend.justification=c(0,0),
+        legend.position = c(0,0)) 
 ```
 
 Plot distribution of RT on exposure trials.
 
 ```{r expt2 rt dist}
 ggplot(aes(x = rt, fill = condition_trial), data = df_expo_expt2_analysis) +
-    geom_density(adjust = 2, alpha = 0.7) +
-    xlim(0, 12500) 
+  geom_density(adjust = 2, alpha = 0.7) +
+  xlim(0, 12500) 
 ```
 
 ```{r}
 df_expo_expt2_analysis %>% 
-    group_by(condition_trial) %>% 
-    summarise(median_rt = median(rt),
-              mean_rt = mean(rt))
+  group_by(condition_trial) %>% 
+  summarise(median_rt = median(rt),
+            mean_rt = mean(rt))
 ```
 
 RT on exposure trials.
 
 ```{r expt2 rt expo}
 ms_rt_expo_expt2 <- df_expo_expt2_analysis %>%
-    group_by(condition_trial, intervalNum) %>%
-    summarise(rt_exposure = mean(rt),
-              ci_low = ci.low(rt),
-              ci_high = ci.high(rt))
+  group_by(condition_trial, intervalNum, subids) %>%
+  summarise(rt_exposure = mean(rt)) %>% 
+  group_by(condition_trial, intervalNum) %>%
+  multi_boot_standard("rt_exposure")
 ```
 
 Plot RT differences
@@ -457,33 +456,28 @@ Plot RT differences
 ms_rt_expo_expt2$condition <- revalue(ms_rt_expo_expt2$condition,
                                       c("no-social" = "No-Gaze", "social" = "Gaze"))
 
-expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2, 
-                        aes(x=intervalNum, y=rt_exposure, color = condition)) + 
-    geom_pointrange(aes(ymin=rt_exposure - ci_low, 
-                        ymax=rt_exposure + ci_high), size=1) +
-    scale_x_continuous(limits=c(-.9,4), breaks=c(0,3)) +
-    geom_smooth(method="lm", se=F) +
-    scale_y_continuous(limits=c(3000,6500)) +
-    scale_colour_manual(values=c("#e34a33", "#2c7fb8")) +
-    #scale_color_grey(start = 0.3, end = 0.6) + 
-    xlab("Intervening Trials") + 
-    ylab("Response Time (ms)") +
-    labs(colour = "Condition") +
-    labs(linetype = "Trial Type") +
-    ggtitle("Study Time on Exposure Trials") + 
-    #guides(linetype=FALSE, color=F) +
-    theme(axis.title.x = element_text(colour="black",size=22,
-                                      angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=18,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=18,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=22,face="plain"),
-          #legend.position=c(0.82,0.80),
-          legend.text = element_text(size=20),
-          legend.title = element_text(size=22, face="bold"),
-          plot.title = element_text(lineheight=1, face="bold", size = 24),
-          strip.text = element_text(size=16))
+expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2, aes(x=as.factor(intervalNum), y=mean, 
+                                  color = condition, group = condition)) + 
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), size=1, fatten = 5) +
+  geom_line(size = 1.5) +
+  scale_y_continuous(limits=c(3000,6500)) +
+  scale_colour_manual(values=c("#e34a33", "#2c7fb8")) +
+  xlab("Interval Between Exposure and Test") +
+  ylab("Response Time (ms)") +
+  labs(colour = "Condition") +
+  labs(linetype = "Trial Type") +
+  ggtitle("Study Time on Exposure Trials") + 
+  theme(axis.title.x = element_text(colour="black",size=22,
+                                    angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.x = element_text(colour="grey20",size=18,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.y = element_text(colour="grey20",size=18,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.title.y = element_text(colour="black",size=22,face="plain"),
+        legend.text = element_text(size=20),
+        legend.title = element_text(size=22, face="bold"),
+        plot.title = element_text(lineheight=1, face="bold", size = 24),
+        strip.text = element_text(size=16))
 ```
 
 ## Analyze test trials
@@ -493,19 +487,19 @@ Get means and CIs for each condition.
 ```{r expt2 acc test aggregate}
 # unfiltered
 ms_test_expt2 <- df_test_expt2 %>%
-    group_by(trialType, condition_trial, intervalNum) %>%
-    summarise(accuracy = mean(correct),
-              ci_low = ci.low(correct),
-              ci_high = ci.high(correct)) %>%
-    mutate(filter = "Unfiltered")
+  group_by(trialType, condition_trial, intervalNum, subids) %>%
+  summarise(accuracy = mean(correct)) %>% 
+  group_by(trialType, condition_trial, intervalNum) %>% 
+  multi_boot_standard("accuracy") %>% 
+  mutate(filter = "Unfiltered")
 
 # filtered (subject level)
 ms_test_expt2_filt <- df_test_expt2_filt %>%
-    group_by(trialType, condition_trial, intervalNum) %>%
-    summarise(accuracy = mean(correct),
-              ci_low = ci.low(correct),
-              ci_high = ci.high(correct)) %>%
-    mutate(filter = "Filtered")
+  group_by(trialType, condition_trial, intervalNum, subids) %>%
+  summarise(accuracy = mean(correct)) %>% 
+  group_by(trialType, condition_trial, intervalNum) %>% 
+  multi_boot_standard("accuracy") %>% 
+  mutate(filter = "Filtered")
 
 ms_test_all_expt2 <- rbind(ms_test_expt2, ms_test_expt2_filt)
 ```
@@ -515,40 +509,36 @@ Now plot accuracy for test trials.
 ```{r expt2 acc test plot, echo=F}
 # revalue social/no-social --> gaze/no-gaze
 ms_test_expt2_filt$condition_trial <- revalue(ms_test_expt2_filt$condition_trial,
-                                              c("no-social" = "No-Gaze", "social" = "Gaze"))
+                                              c("no-social" = "No-Gaze", 
+                                                "social" = "Gaze"))
 
-expt2.acc.test <- ggplot(data=ms_test_expt2_filt, 
-                         aes(x=intervalNum, y=accuracy, 
-                             colour = condition_trial)) + 
-    geom_line(aes(linetype = trialType), size=0.6) +
-    geom_pointrange(aes(ymin=accuracy - ci_low, 
-                        ymax=accuracy + ci_high), size=1.5) +
-    geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-    scale_x_continuous(limits=c(-.9,4), breaks=c(0, 3)) +
-    scale_y_continuous(limits=c(0,1)) +
-    scale_colour_manual(values=c("#e34a33", "#2c7fb8")) +
-    #scale_colour_grey(start=0.6, end=0.3) +
-    xlab("Intervening Trials") + 
-    ylab("Proportion Correct") +
-    labs(colour = "Condition") +
-    labs(linetype = "Trial Type") +
-    guides(linetype=FALSE) +
-    ggtitle("Accuracy on Test Trials") +
-    theme(axis.title.x = element_text(colour="black",size=22,
-                                      angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=18,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=18,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=22,face="plain"),
-          #legend.position=c(0.80,0.88),
-          legend.text = element_text(size=20),
-          legend.title = element_text(size=22, face="bold"),
-          plot.title = element_text(lineheight=1, face="bold", size = 24),
-          strip.text = element_text(size=16))
-```
+## todo: fix geom_line to connect the correct points
+expt2.acc.test <- ggplot(data=ms_test_expt2_filt, aes(x=as.factor(intervalNum), 
+                                    y=mean, colour = condition_trial)) + 
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), size=1, fatten = 5,
+                  position = position_jitter(width = .5)) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_colour_manual(values=c("#e34a33", "#2c7fb8")) +
+  xlab("Interval Between Exposure and Test") +
+  ylab("Proportion Correct") +
+  labs(colour = "Condition") +
+  labs(linetype = "Trial Type") +
+  guides(linetype=FALSE) +
+  ggtitle("Accuracy on Test Trials") +
+  theme(axis.title.x = element_text(colour="black",size=22,
+                                    angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.x = element_text(colour="grey20",size=18,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.y = element_text(colour="grey20",size=18,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.title.y = element_text(colour="black",size=22,face="plain"),
+        #legend.position=c(0.80,0.88),
+        legend.text = element_text(size=20),
+        legend.title = element_text(size=22, face="bold"),
+        plot.title = element_text(lineheight=1, face="bold", size = 24),
+        strip.text = element_text(size=16))
 
-```{r expt2_paper_plot}
 grid.arrange(expt2.rt.expo, expt2.acc.test, ncol=2)
 ```
 
@@ -568,13 +558,13 @@ Comparing models with different levels of complexity.
 ```{r expt 2 lmers model comparison}
 # filtered 2-way
 m1_expt2_2way_filt <- glmer(correct ~ (trialType + condition_trial + intervalNum)^2 + 
-                                (trialType | subids), nAGQ=0,
+                              (trialType | subids), nAGQ=0,
                             data = df_test_expt2_filt,
                             family=binomial)
 
 # filtered 3-way
 m1_expt2_3_way_filt <- glmer(correct ~ (trialType + condition_trial + intervalNum)^3 + 
-                                 (trialType | subids), nAGQ=0,
+                               (trialType | subids), nAGQ=0,
                              data = df_test_expt2_filt,
                              family=binomial)
 
@@ -590,7 +580,7 @@ knitr::kable(model_comp_expt2)
 ```{r expt2 lmers filters}
 # filtered 2-way
 m1_expt2_filt <- glmer(correct ~ (trialType + condition_trial + intervalNum)^2 + 
-                           (trialType | subids), nAGQ=0,
+                         (trialType | subids), nAGQ=0,
                        data = df_test_expt2_filt,
                        family=binomial)
 
@@ -609,8 +599,8 @@ df_expt3 <- filter(df_expt3, experiment == "replication")
 
 ```{r expt3 get number of subs}
 n_subs_expt3 <- df_expt3 %>%
-    group_by(prop_cond_clean, experiment) %>%
-    summarise(n_subs = n_distinct(subids))
+  group_by(prop_cond_clean, experiment) %>%
+  summarise(n_subs = n_distinct(subids))
 
 knitr::kable(n_subs_expt3)
 ```
@@ -628,80 +618,80 @@ RT on exposure trials.
 
 ```{r expt3 rt exposure trials fam block}
 ms_rt_expo_fam <- df_expt3 %>%
-    filter(trial_category == "exposure", block == "familiarization", 
-           include_good_rt == "include", experiment == "replication") %>% 
-    group_by(prop_cond_clean, experiment) %>%
-    summarise(rt_exposure = mean(rt),
-              ci_low = ci.low(rt),
-              ci_high = ci.high(rt))
+  filter(trial_category == "exposure", block == "familiarization", 
+         include_good_rt == "include", experiment == "replication") %>% 
+  group_by(prop_cond_clean, experiment, subids) %>%
+  summarise(rt_exposure = mean(rt)) %>% 
+  group_by(prop_cond_clean, experiment) %>% 
+  multi_boot_standard("rt_exposure")
 ```
 
 Plot.
 
 ```{r expt 3 rt exposure trials plot}
 ggplot(ms_rt_expo_fam, 
-       aes(x=prop_cond_clean, y=rt_exposure)) +
-    geom_pointrange(aes(ymin=rt_exposure - ci_low,
-                        ymax=rt_exposure + ci_high), size = 0.8) + 
-    scale_y_continuous(limits=c(500,4500)) +
-    ylab("Response Time (ms)") +
-    xlab("Level of Reliability") +
-    theme(text = element_text(size=16),
-          axis.text.x  = element_text(angle=0, vjust=0.5, size=12))
+       aes(x=prop_cond_clean, y=mean)) +
+  geom_pointrange(aes(ymin=ci_lower,
+                      ymax=ci_upper), size = 0.8) + 
+  scale_y_continuous(limits=c(500,4500)) +
+  ylab("Response Time (ms)") +
+  xlab("Level of Reliability") +
+  theme(text = element_text(size=16),
+        axis.text.x  = element_text(angle=0, vjust=0.5, size=12))
 ```
 
 Accuracy on test trials in familiarization block
 
 ```{r expt3 acc test trials familiarization block}
 ms_test_fam <- df_expt3 %>%
-    filter(trial_category == "test", block == "familiarization", 
-           include_good_rt == "include", experiment == "replication") %>% 
-    group_by(prop_cond_clean, trialType) %>%
-    summarise(accuracy = mean(correct),
-              ci_low = ci.low(correct),
-              ci_high = ci.high(correct))
+  filter(trial_category == "test", block == "familiarization", 
+         include_good_rt == "include", experiment == "replication") %>% 
+  group_by(prop_cond_clean, trialType, subids) %>%
+  summarise(accuracy = mean(correct)) %>% 
+  group_by(prop_cond_clean, trialType) %>% 
+  multi_boot_standard("accuracy")
 ```
 
 Plot
 
 ```{r, echo = F}
 ggplot(ms_test_fam, 
-       aes(x=prop_cond_clean, y=accuracy, 
+       aes(x=prop_cond_clean, y=mean, 
            group=trialType, colour=trialType)) +
-    geom_pointrange(aes(ymin=accuracy - ci_low,
-                        ymax=accuracy + ci_high), size=0.7) +
-    geom_hline(yintercept=0.5, linetype = "dashed") +
-    scale_y_continuous(limits=c(0,1)) + 
-    geom_smooth(method='lm') +
-    ggtitle("Accuracy on Test Trials in Familiarization Block")
+  geom_pointrange(aes(ymin=ci_lower,
+                      ymax=ci_upper), size=0.7) +
+  geom_hline(yintercept=0.5, linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1)) + 
+  geom_smooth(method='lm', se = F) +
+  ggtitle("Accuracy on Test Trials in Familiarization Block")
 ```
 
 Split this by first and second half. 
 
 ```{r expt3 acc test trials familiarization block split}
 ms_test_fam_blocked <- df_expt3 %>%
-    filter(trial_category == "test", block == "familiarization", 
-           include_good_rt == "include", experiment == "replication") %>% 
-    mutate(second_half = ifelse(itemNum > 3, "First Block", "Second Block")) %>%
-    group_by(prop_cond_clean, trialType, second_half) %>%
-    summarise(accuracy = mean(correct),
-              ci_low = ci.low(correct),
-              ci_high = ci.high(correct))
+  filter(trial_category == "test", block == "familiarization", 
+         include_good_rt == "include", experiment == "replication") %>% 
+  mutate(second_half = ifelse(itemNum > 3, "First Block", "Second Block")) %>%
+  group_by(prop_cond_clean, trialType, second_half, subids) %>%
+  summarise(accuracy = mean(correct)) %>% 
+  group_by(prop_cond_clean, trialType, second_half) %>% 
+  multi_boot_standard("accuracy")
 ```
 
 Plot. 
 
 ```{r, echo = F}
 ggplot(ms_test_fam_blocked, 
-       aes(x=prop_cond_clean, y=accuracy, 
+       aes(x=prop_cond_clean, y=mean, 
            group=trialType, colour=trialType)) +
-    geom_pointrange(aes(ymin=accuracy - ci_low,
-                        ymax=accuracy + ci_high), size=0.7) +
-    geom_hline(yintercept=0.5, linetype = "dashed") +
-    scale_y_continuous(limits=c(0,1)) + 
-    geom_smooth(method='lm') +
-    facet_grid(. ~ second_half) + 
-    ggtitle("Accuracy on Test Trials in Familiarization Block")
+  geom_pointrange(aes(ymin=ci_lower,
+                      ymax=ci_upper), size=0.7) +
+  geom_hline(yintercept=0.5, linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1)) + 
+  geom_smooth(method='lm', se = F) +
+  facet_grid(. ~ second_half) + 
+  ggtitle("Accuracy on Test Trials in Familiarization Block")
 ```
 
 ### Analyze performance on test block
@@ -710,63 +700,61 @@ Anayze RT on exposure trials in the test block.
 
 ```{r expt3 rt exposure trials test block}
 ms_rt_expo_test <- df_expt3 %>%
-    filter(trial_category == "exposure", block == "test", 
-           include_good_rt == "include", experiment == "replication") %>% 
-    group_by(prop_cond_clean, trialType) %>%
-    summarise(rt_exposure = mean(rt),
-              ci_low = ci.low(rt),
-              ci_high = ci.high(rt))
+  filter(trial_category == "exposure", block == "test", 
+         include_good_rt == "include", experiment == "replication") %>% 
+  group_by(prop_cond_clean, trialType, subids) %>%
+  summarise(rt_exposure = mean(rt)) %>% 
+  group_by(prop_cond_clean, trialType) %>%
+  multi_boot_standard("rt_exposure")
 ```
 
 Plot. 
 
 ```{r rt exposure trials exposure block}
 ggplot(ms_rt_expo_test, 
-       aes(x=prop_cond_clean, y=rt_exposure, color = trialType)) +
-    geom_pointrange(aes(ymin=rt_exposure - ci_low,
-                        ymax=rt_exposure + ci_high), size = 0.8) + 
-    scale_y_continuous(limits=c(500,4500)) +
-    ylab("Response Time (ms)") +
-    xlab("Condition") +
-    theme(text = element_text(size=14))
+       aes(x=prop_cond_clean, y=mean, color = trialType)) +
+  geom_pointrange(aes(ymin=ci_lower,
+                      ymax=ci_upper), size = 0.8) + 
+  scale_y_continuous(limits=c(500,4500)) +
+  ylab("Response Time (ms)") +
+  xlab("Condition") +
+  theme(text = element_text(size=14)) +
+  scale_color_solarized()
 ```
 
 Accuracy on familiarization trials in test block
 
 ```{r expt3 acc fam trials in test block}
 ms_expo_test <- df_expt3 %>%
-        filter(trial_category == "exposure", block == "test", 
-           include_good_rt == "include", experiment == "replication") %>% 
-    group_by(prop_cond_clean) %>%
-    summarise(accuracy = mean(correct_exposure, na.rm=T),
-              ci_low = ci.low(correct_exposure),
-              ci_high = ci.high(correct_exposure),
-              mean_rel = mean(rel_subj, na.rm=T),
-              ci_low_rel = ci.low(rel_subj),
-              ci_high_rel = ci.high(rel_subj)
-              )
+  filter(trial_category == "exposure", block == "test", 
+         include_good_rt == "include", experiment == "replication") %>% 
+  group_by(prop_cond_clean, subids) %>%
+  summarise(accuracy = mean(correct_exposure, na.rm=T),
+            mean_rel = mean(rel_subj, na.rm=T)) %>% 
+  group_by(prop_cond_clean) %>% 
+  multi_boot_standard("accuracy")
 ```
 
 Now plot chose target of gaze
 
 ```{r chose gaze target plot}
 ggplot(ms_expo_test, 
-       aes(x=prop_cond_clean, y=accuracy, group=1)) +
-    geom_smooth(method="lm", se=F, color="black") +
-    geom_pointrange(aes(ymin=accuracy - ci_low,
-                        ymax=accuracy + ci_high), size=1, color = "black") +
-    geom_hline(yintercept=0.25, linetype = "dashed") +
-    scale_y_continuous(limits=c(0,1)) +
-    xlab("Level of Reliablity") + 
-    ylab("Prop. Chose Target of Gaze") + 
-    theme(axis.title.x = element_text(colour="black",size=16,
-                                      angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=16,
-                                      angle=90,hjust=0.5,vjust=0.5,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=12,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=12,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"))
+       aes(x=prop_cond_clean, y=mean, group=1)) +
+  geom_smooth(method="lm", se=F, color="black") +
+  geom_pointrange(aes(ymin=ci_lower,
+                      ymax=ci_upper), size=1, color = "black") +
+  geom_hline(yintercept=0.25, linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1)) +
+  xlab("Level of Reliablity") + 
+  ylab("Prop. Chose Target of Gaze") + 
+  theme(axis.title.x = element_text(colour="black",size=16,
+                                    angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.title.y = element_text(colour="black",size=16,
+                                    angle=90,hjust=0.5,vjust=0.5,face="plain"),
+        axis.text.x = element_text(colour="grey20",size=12,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.y = element_text(colour="grey20",size=12,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"))
 
 ```
 
@@ -774,107 +762,108 @@ Accuracy on test trials in the test block
 
 ```{r expt3 acc on test trials test block}
 ms_test_test <- df_expt3 %>%
-    filter(trial_category == "test", block == "test", 
-           include_good_rt == "include") %>% 
-    group_by(prop_cond_clean, trialType) %>%
-    summarise(accuracy = mean(correct),
-              ci_low = ci.low(correct),
-              ci_high = ci.high(correct))
+  filter(trial_category == "test", block == "test", 
+         include_good_rt == "include") %>% 
+  group_by(prop_cond_clean, trialType, subids) %>%
+  summarise(accuracy = mean(correct)) %>% 
+  group_by(prop_cond_clean, trialType) %>% 
+  multi_boot_standard("accuracy")
 ```
 
 Analyze subject reported reliablity
 
 ```{r subjective reliablity analysis 1}
 ms_test_subj_rel <- df_expt3 %>%
-    filter(experiment == "replication") %>% 
-    mutate(rel_subj = as.numeric(as.character(rel_subj))) %>% 
-    group_by(prop_cond_clean) %>%
-    summarise(subjective_reliability = mean(rel_subj, na.rm=T),
-              ci_low = ci.low(rel_subj),
-              ci_high = ci.high(rel_subj))
+  filter(experiment == "replication") %>% 
+  mutate(rel_subj = as.numeric(as.character(rel_subj))) %>% 
+  group_by(prop_cond_clean, subids) %>%
+  summarise(subjective_reliability = mean(rel_subj, na.rm=T)) %>% 
+  group_by(prop_cond_clean) %>% 
+  multi_boot_standard("subjective_reliability", na.rm = T)
 ```
 
 Plot relationship between reliablity condition and subjective reliabiltiy judgments.
 
 ```{r}
-qplot(x = prop_cond_clean, y = subjective_reliability,
+qplot(x = prop_cond_clean, y = mean,
       group=1, data=ms_test_subj_rel) + 
-    ylim(c(0,1)) +
-    geom_smooth(method="lm", se=T) +
-    xlab("Reliablity Condition") +
-    ylab("Subjective Reliablity Judgment")
+  ylim(c(0,1)) +
+  geom_smooth(method="lm", se=T) +
+  xlab("Reliablity Condition") +
+  ylab("Subjective Reliablity Judgment")
 ```
 
 Summarise subjective reliablity at the participant level.
 
 ```{r expt3 summarise subjective reliablity}
 mss_subj_rel <- df_expt3 %>% 
-    filter(experiment == "replication", is.na(rel_subj) == F) %>% 
-    select(subids, rel_subj, prop_cond_clean, total_exposure_correct, 
-           same_accuracy, switch_accuracy, experiment) %>% 
-    distinct()
+  filter(experiment == "replication", is.na(rel_subj) == F) %>% 
+  select(subids, rel_subj, prop_cond_clean, total_exposure_correct, 
+         same_accuracy, switch_accuracy, experiment) %>% 
+  distinct()
 ```
 
 Reported reliability vs. number correct on exposure - means.
 
 ```{r subjective reliablity analysis 3}
 ms_test_subj_rel <- df_expt3 %>%
-    filter(experiment == "replication", include_good_rt == "include", is.na(rel_subj) == F) %>% 
-    group_by(prop_cond_clean, total_exposure_correct) %>%
-    summarise(subj = mean(rel_subj, na.rm=TRUE), 
-              cih = ci.high(rel_subj),
-              cil = ci.low(rel_subj))
+  filter(experiment == "replication", include_good_rt == "include", 
+         is.na(rel_subj) == F) %>% 
+  group_by(prop_cond_clean, total_exposure_correct, subids) %>%
+  summarise(subj = mean(rel_subj, na.rm=TRUE)) %>% 
+  group_by(prop_cond_clean, total_exposure_correct) %>% 
+  multi_boot_standard("subj")
 ```
 
 Plot.
 
 ```{r expt3 subj rel plot}
-qplot(total_exposure_correct, subj, col = prop_cond_clean, 
-      ymin = subj - cil, ymax = subj + cih,
+qplot(total_exposure_correct, mean, col = prop_cond_clean, 
+      ymin = ci_lower, ymax = ci_upper,
       geom="pointrange",
       position=position_dodge(width=.1),
       data=ms_test_subj_rel, ylab="Subjective reliability", 
       xlab="Num Trials Chose Gaze Target") + 
-    geom_smooth(method="lm", se=FALSE) +
-    scale_color_discrete(name="Reliability Level") +
-    theme(axis.title.x = element_text(colour="black",size=16,
-                                      angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=16,
-                                      angle=90,hjust=0.5,vjust=0.5,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=12,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=12,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          legend.text = element_text(size=13),
-          legend.title = element_text(size=13, face="bold"))
+  geom_smooth(method="lm", se=FALSE) +
+  scale_color_discrete(name="Reliability Level") +
+  theme(axis.title.x = element_text(colour="black",size=16,
+                                    angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.title.y = element_text(colour="black",size=16,
+                                    angle=90,hjust=0.5,vjust=0.5,face="plain"),
+        axis.text.x = element_text(colour="grey20",size=12,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.y = element_text(colour="grey20",size=12,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        legend.text = element_text(size=13),
+        legend.title = element_text(size=13, face="bold"))
 ```
 
 Relationship between subjective reliability, reliablity condition, and test trial performance
 
 ```{r expt3 subj reliablity munging}
 gather_mss_rel_subj <- mss_subj_rel %>% 
-    gather(key = trialType, value = sub_mean_accuracy, 5:6) %>% 
-    arrange(subids)
+  gather(key = trialType, value = sub_mean_accuracy, 5:6) %>% 
+  arrange(subids)
 
 gather_mss_rel_subj$rel_bin <- cut(gather_mss_rel_subj$rel_subj, breaks = 5, 
-                                   labels = c("0.0-0.2", "0.2-0.4", "0.4-0.6", "0.6-0.8", "0.8-1.0" )
-                                   )
+                                   labels = c("0.0-0.2", "0.2-0.4", "0.4-0.6", 
+                                              "0.6-0.8", "0.8-1.0" ))
 
 ms_rel_subj <- gather_mss_rel_subj %>% 
-    group_by(rel_bin, trialType) %>% 
-    summarise(mean_accuracy = mean(sub_mean_accuracy, na.rm = T),
-              ci_low = ci.low(sub_mean_accuracy),
-              ci_high = ci.high(sub_mean_accuracy))
+  group_by(rel_bin, trialType, subids) %>% 
+  summarise(mean_accuracy = mean(sub_mean_accuracy, na.rm = T)) %>% 
+  group_by(rel_bin, trialType) %>% 
+  multi_boot_standard("mean_accuracy", na.rm =T)
 ```
 
 ```{r expt3 acc test by acc exposure plot, echo=F}
 ms_acc_exp_test_expt3 <- df_expt3 %>%
-    filter(trial_category == "test", block == "test",
-           include_good_rt == "include", experiment == "replication") %>% 
-    group_by(trialType, total_exposure_correct) %>%
-    summarise(cih = ci.high(correct), 
-              cil= ci.low(correct),
-              correct = mean(correct))
+  filter(trial_category == "test", block == "test",
+         include_good_rt == "include", experiment == "replication") %>% 
+  group_by(trialType, total_exposure_correct, subids) %>%
+  summarise(correct = mean(correct)) %>% 
+  group_by(trialType, total_exposure_correct) %>% 
+  multi_boot_standard("correct")
 ```
 
 Now we plot the new analysis: accuracy on test trials as a function of 
@@ -884,88 +873,85 @@ accuracy on exposure trials (selecting the gaze target).
 
 ```{r expt3 acc test expt 3 cogsci plot, echo=F}
 expt3_acc_test <- ggplot(data=ms_test_test, 
-                         aes(x=prop_cond_clean, y=accuracy, group=trialType,
+                         aes(x=prop_cond_clean, y=mean, group=trialType,
                              color=trialType, label = trialType)) + 
-    geom_pointrange(aes(ymin=accuracy - ci_low, 
-                        ymax=accuracy + ci_high), size=1) +
-    geom_smooth(method='lm', se=F) +
-    geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-    scale_y_continuous(limits=c(0,1)) +
-    # scale_colour_grey(start=0.3, end=0.6) +
-    scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-    xlab("Reliability of Gaze") + 
-    ylab("Proportion Correct") +
-    labs(color = "Trial Type") +
-    guides(color=FALSE) +
-    theme(axis.title.x = element_text(colour="black",size=18,
-                                      angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=18,
-                                      angle=90,hjust=0.5,vjust=0.8,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=12,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=12,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          legend.text = element_text(size=13),
-          legend.title = element_text(size=13, face="bold")) 
+  geom_pointrange(aes(ymin=ci_lower, 
+                      ymax=ci_upper), size=1) +
+  geom_smooth(method='lm', se=F) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  xlab("Reliability of Gaze") + 
+  ylab("Proportion Correct") +
+  labs(color = "Trial Type") +
+  guides(color=FALSE) +
+  theme(axis.title.x = element_text(colour="black",size=18,
+                                    angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.title.y = element_text(colour="black",size=18,
+                                    angle=90,hjust=0.5,vjust=0.8,face="plain"),
+        axis.text.x = element_text(colour="grey20",size=12,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.y = element_text(colour="grey20",size=12,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        legend.text = element_text(size=13),
+        legend.title = element_text(size=13, face="bold")) 
 ```
 
 ```{r expt3 chose gazetar analysis, echo = F}
 expt3_acc_test_chose_gazetar <- ggplot(data=ms_acc_exp_test_expt3, 
-                                       aes(x=total_exposure_correct, y=correct, group=trialType,
-                                           color=trialType, label = trialType)) + 
-    geom_pointrange(aes(ymin=correct - cil, 
-                        ymax=correct + cih), size=1) +
-    geom_smooth(method='lm', se=F) +
-    geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-    scale_x_continuous(limits=c(0,8), breaks=c(0:8)) +
-    scale_y_continuous(limits=c(0,1)) +
-    #scale_colour_grey(start=0.3, end=0.6) +
-    scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-    xlab("Num. Trials Used Gaze") + 
-    ylab("") +
-    labs(color = "Trial Type") +
-    guides(color=FALSE) +
-    theme(axis.title.x = element_text(colour="black",size=18,
-                                      angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=18,
-                                      angle=90,hjust=0.5,vjust=0.8,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=12,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=12,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          legend.text = element_text(size=13),
-          legend.title = element_text(size=13, face="bold")) 
+                                       aes(x=total_exposure_correct, y=mean,
+                                           group=trialType, color=trialType, 
+                                           label = trialType)) + 
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), size=1) +
+  geom_smooth(method='lm', se=F) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+  scale_x_continuous(limits=c(0,8), breaks=c(0:8)) +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  xlab("Num. Trials Used Gaze") + 
+  ylab("") +
+  labs(color = "Trial Type") +
+  guides(color=FALSE) +
+  theme(axis.title.x = element_text(colour="black",size=18,
+                                    angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.title.y = element_text(colour="black",size=18,
+                                    angle=90,hjust=0.5,vjust=0.8,face="plain"),
+        axis.text.x = element_text(colour="grey20",size=12,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.y = element_text(colour="grey20",size=12,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        legend.text = element_text(size=13),
+        legend.title = element_text(size=13, face="bold")) 
 ```
 
 ```{r expt3_subj_rel_plot paper, echo = F}
 expt3_subj_rel_test_plot <- ggplot(data=ms_rel_subj, 
-                                   aes(x=rel_bin, y=mean_accuracy, group=trialType,
+                                   aes(x=rel_bin, y=mean, group=trialType,
                                        color=trialType, label = trialType)) + 
-    geom_pointrange(aes(ymin=mean_accuracy - ci_low, 
-                        ymax=mean_accuracy + ci_high), size=1) +
-    geom_smooth(method='lm', se=F) +
-    geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-    scale_y_continuous(limits=c(0,1)) +
-    scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-    xlab("Subjective Reliability Judgment") + 
-    ylab("") +
-    labs(color = "Trial Type") +
-    guides(color=FALSE) +
-    theme(axis.title.x = element_text(colour="black",size=18,
-                                      angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.title.y = element_text(colour="black",size=18,
-                                      angle=90,hjust=0.5,vjust=0.8,face="plain"),
-          axis.text.x = element_text(colour="grey20",size=12,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          axis.text.y = element_text(colour="grey20",size=12,
-                                     angle=0,hjust=0.5,vjust=0,face="plain"),
-          legend.text = element_text(size=13),
-          legend.title = element_text(size=13, face="bold")) 
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), size=1) +
+  geom_smooth(method='lm', se=F) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  xlab("Subjective Reliability Judgment") + 
+  ylab("") +
+  labs(color = "Trial Type") +
+  guides(color=FALSE) +
+  theme(axis.title.x = element_text(colour="black",size=18,
+                                    angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.title.y = element_text(colour="black",size=18,
+                                    angle=90,hjust=0.5,vjust=0.8,face="plain"),
+        axis.text.x = element_text(colour="grey20",size=12,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.y = element_text(colour="grey20",size=12,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        legend.text = element_text(size=13),
+        legend.title = element_text(size=13, face="bold")) 
 ```
 
 ```{r expt3 final plot}
-gridExtra::grid.arrange(expt3_acc_test, expt3_acc_test_chose_gazetar, expt3_subj_rel_test_plot, 
-                        ncol = 3)
+gridExtra::grid.arrange(expt3_acc_test, expt3_acc_test_chose_gazetar,
+                        expt3_subj_rel_test_plot, ncol = 3)
 ```
 
 ### Inspection time analysis
@@ -976,9 +962,9 @@ First we need to get RT on exposure for each test trial
 
 ```{r}
 df_inspect <- df_expt3 %>% 
-    filter(trial_category == "exposure") %>% 
-    select(subids, itemNum, inspection_time_exposure = rt) %>% 
-    left_join(filter(df_expt3, trial_category == "test"), by = c("subids", "itemNum")) 
+  filter(trial_category == "exposure") %>% 
+  select(subids, itemNum, inspection_time_exposure = rt) %>% 
+  left_join(filter(df_expt3, trial_category == "test"), by = c("subids", "itemNum")) 
 ```
 
 ## LMERs Experiment 3
@@ -987,8 +973,10 @@ df_inspect <- df_expt3 %>%
 
 ```{r expt3 lmer acc expo test block}
 m1_expo_expt3 <- glmer(correct ~ reliability + (1 | subids),
-                       data = filter(df_expt3, trial_category == "exposure", block == "test",
-                                     experiment == "replication", include_good_rt == "include"),
+                       data = filter(df_expt3, trial_category == "exposure", 
+                                     block == "test",
+                                     experiment == "replication", 
+                                     include_good_rt == "include"),
                        nAGQ = 0,
                        control = glmerControl(optimizer = "bobyqa"),
                        family = binomial)
@@ -1002,11 +990,13 @@ Participants are more likely to select the target of gaze when the gaze cue is m
 
 ```{r glm expt 3 gaze following}
 m1_subj_rel_expt3 <- glmer(correct ~ rel_subj + (1 | subids),
-                       data = filter(df_expt3, trial_category == "exposure", block == "test",
-                                     experiment == "replication", include_good_rt == "include"),
-                       nAGQ = 0,
-                       control = glmerControl(optimizer = "bobyqa"),
-                       family = binomial)
+                           data = filter(df_expt3, trial_category == "exposure", 
+                                         block == "test",
+                                         experiment == "replication", 
+                                         include_good_rt == "include"),
+                           nAGQ = 0,
+                           control = glmerControl(optimizer = "bobyqa"),
+                           family = binomial)
 
 knitr::kable(summary(m1_subj_rel_expt3)$coef)
 ```
@@ -1018,7 +1008,7 @@ Participants who rate the cue as more reliable are also more likely to use the c
 ```{r expt3 glmer rel condition as continuous}
 m2_expt3 <- glmer(correct ~ trialType * reliability + (trialType | subids),
                   data = filter(df_expt3, trial_category == "test", block == "test",
-                                     experiment == "replication", include_good_rt == "include"),
+                                experiment == "replication", include_good_rt == "include"),
                   control = glmerControl(optimizer = "bobyqa"),
                   nAGQ = 1,
                   family = binomial)
