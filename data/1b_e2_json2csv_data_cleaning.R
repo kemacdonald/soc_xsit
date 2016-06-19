@@ -1,5 +1,5 @@
 ##### GET RELEVANT FIELDS FROM JSON OUTPUT #####
-##### Experiment 3: Soc-xsit Reliability #####
+##### Experiment 2: Soc-xsit Live #####
 
 # Clear workspace
 rm(list=ls())
@@ -10,18 +10,20 @@ library(rjson)
 library(plyr)
 library(dplyr)
 library(stringr)
+library(magrittr)
 
 ## set path for writing data (same for all three experiments)
 write_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC-XSIT", "SOC_XSIT_GIT", "data/", "2_raw_compiled/")
 
 ## number of trials in experiment
-num_trials <- 34
+num_trials <- 36
 
 ## set file paths for reading data
-setwd("1_raw_not_anonymized/e3_reliability/")
+setwd("1_raw_not_anonymized/e2_live/")
 
 ## gets all .results files at one time
 all_results <- list.files(pattern = '*.results', all.files = FALSE)
+all_results <- all_results[3]
 
 ## creates empty data frame for storing data
 all.data <- data.frame()
@@ -35,9 +37,9 @@ for(f in 1:length(all_results)) {
                      header=TRUE, stringsAsFactors=FALSE)
   long.data <- as.data.frame(matrix(ncol = 0, nrow = num_trials*nrow(data)))
   c <- 1
+  print(paste("Data Set", f))
   # loops over each participant
   for (i in 1:nrow(data)) {   
-      print(i)
     # create list of trial information to allow for iteration
     d <- fromJSON(as.character(data$Answer.data[i])) 
     
@@ -52,35 +54,30 @@ for(f in 1:length(all_results)) {
                                               ,start=4)
       long.data$trial.num[c] <- j
       long.data$gazeLength[c] <- fromJSON(as.character(data$Answer.condition[i]))
-      long.data$condition[c] <- fromJSON(as.character(data$Answer.prop_cond[i]))       
       long.data$interval[c] <- fromJSON(as.character(data$Answer.delay_condition[i]))  
       long.data$numPic[c] <- fromJSON(as.character(data$Answer.numReferents[i]))
       long.data$browser[c] <- fromJSON(as.character(data$Answer.browser[i]))
       long.data$comments[c] <- fromJSON(as.character(data$Answer.broken[i]))
+      long.data$condition[c] <- fromJSON(as.character(data$Answer.social_cond[i]))
       long.data$itemNum[c] <- d[[j]]$itemNum
       long.data$trialType[c] <- d[[j]]$trialType
       long.data$samePos[c] <- d[[j]]$samePos
       long.data$chosen[c] <- d[[j]]$chosen
-      long.data$correct[c] <- d[[j]]$correct
       long.data$chosenIdx[c] <- d[[j]]$chosen_idx
-      long.data$gaze_target[c] <- d[[j]]$gaze_target
-      long.data$trial_category[c] <- d[[j]]$trial_category
       long.data$kept[c] <- d[[j]]$kept
       long.data$keptIdx[c] <- d[[j]]$kept_idx
       long.data$rt[c] <- d[[j]]$rt
       long.data$face[c] <- d[[j]]$face
       long.data$faceIdx[c] <- d[[j]]$faceIdx
-      long.data$rel_subj[c] <- data$Answer.reliability[i]
-     
+      
       c <- c + 1
     }
   }
+  all.data <- bind_rows(all.data, long.data)
 }  
 
-# sanity check: make sure we have all 500 ss
-length(unique(long.data$subid))
-
-all.data <- long.data
+# sanity check: make sure we have all 200 ss
+length(unique(all.data$subid))
 
 ##### CLEAN DATASET #####
 
@@ -92,7 +89,7 @@ all.data$day.and.time <- chron(dates = all.data$submit.date,
 all.data <- all.data[with(all.data,order(subid,day.and.time)),]
 
 # drop subs who have more than 36 trials
-drop.subs <- ddply(all.data,.(subid), function(x) {nrow(x) > 34}) 
+drop.subs <- ddply(all.data,.(subid), function(x) {nrow(x) > num_trials}) 
 
 # grabs subs who participated more than once
 drop.subs <- drop.subs[drop.subs$V1,1] 
@@ -125,13 +122,64 @@ trial.nums <- function(x) {
   return(xmod)
 }
 
+## flag example, exposure, and test trials
+zero_int <- c("example", "example", "example", "example", 
+              "exposure", "test", "exposure", "test", "exposure", "test", "exposure", "test",
+              "exposure", "test", "exposure", "test", "exposure", "test", "exposure", "test",
+              "exposure", "test", "exposure", "test", "exposure", "test", "exposure", "test",
+              "exposure", "test", "exposure", "test", "exposure", "test", "exposure", "test")
+
+one_int <- c("example", "example", "example", "example", 
+             "exposure", "exposure", "test", "test", "exposure", "exposure", "test", "test",
+             "exposure", "exposure", "test", "test", "exposure", "exposure", "test", "test",
+             "exposure", "exposure", "test", "test", "exposure", "exposure", "test", "test",
+             "exposure", "exposure", "test", "test", "exposure", "exposure", "test", "test")
+
+three_int <- c("example", "example", "example", "example", 
+               "exposure", "exposure", "exposure", "exposure", "test", "test", "test", "test",
+               "exposure", "exposure", "exposure", "exposure", "test", "test", "test", "test",
+               "exposure", "exposure", "exposure", "exposure", "test", "test", "test", "test",
+               "exposure", "exposure", "exposure", "exposure", "test", "test", "test", "test")
+
+seven_int <- c("example", "example", "example", "example", 
+               "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure",
+               "test", "test", "test", "test", "test", "test", "test", "test",
+               "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure",
+               "test", "test", "test", "test", "test", "test", "test", "test")
+
+# this function takes each participant's data frame
+# and returns that data frame with the correct trial order sequence 
+flag_trial_cat_fun <- function(d) {
+  # check interval number
+  interval <- unique(d["interval"])
+  # cbind appropriate trial category order
+  if (interval == "Zero") {
+    trial_category <- zero_int
+  } else if (interval == "One") {
+    trial_category <- one_int
+  } else if (interval == "Three") {
+    trial_category <- three_int
+  } else if (interval == "Seven") {
+    trial_category <- seven_int
+  } else {
+    print("interval not recognized")
+    break 
+  }
+  # create new variable
+  d$trial_category <- trial_category
+  # return
+  d
+}
+
+all.data <- ddply(all.data, .(subid), .fun = flag_trial_cat_fun)
+
 ## excludes subjects for getting example trials wrong
 
 # grabs example data
 example.data <- filter(all.data, trial_category == "example")
 include.subs <- ddply(example.data,.(subid),
-            function(x) {x$chosen[1] == "squirrel" & 
-                           x$chosen[2] == "tomato"})
+                      function(x) {x$chosen[1] == "squirrel" & x$chosen[2] == "squirrel" &
+                          x$chosen[3] == "tomato" & x$chosen[4] == "tomato"})
 
 names(include.subs) <- c("subid","include")
 
@@ -152,9 +200,9 @@ keep.data$first.trial[(keep.data$interval=="Zero" & keep.data$trial.num==4) |
 keep.data$numPicN <- as.numeric(keep.data$numPic)
 
 # create block variable
-keep.data$block <- ifelse(keep.data$itemNum <= 7, "familiarization", "test")
+keep.data$block <- ifelse(keep.data$itemNum <= 7, "first", "second")
 
 ##### SAVE OUTPUT  #####
 
-write.csv(keep.data, paste(write_path, "e3_soc_xsit_reliabiliy_parametric_replication.csv", sep=""),
+write.csv(keep.data, paste(write_path, "e2_soc_xsit_live_within.csv", sep=""),
           row.names=FALSE)

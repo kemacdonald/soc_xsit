@@ -1,1 +1,1 @@
-experiment/analysis code & writeups for soc_xsit project
+Data cleaning, analysis code & writeups for Social Cross-situational Word Learning project

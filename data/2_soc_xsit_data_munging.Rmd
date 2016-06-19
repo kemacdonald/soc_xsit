@@ -11,7 +11,7 @@ Clear workspace and set working directory
 
 ```{r clear workspace, echo=F, warning=F}
 rm(list=ls())
-source("../helpers/useful.R")
+source("../analysis/useful.R")
 library(pander)
 library(magrittr)
 library(gridExtra)
@@ -31,6 +31,14 @@ df_expt2 <- read.csv("../../data/final-raw/soc_xsit_live_expt2.csv")
 df_expt3 <- read.csv("../../data/final-raw/soc_xsit_reliabiliy_parametric_replication.csv",
                      stringsAsFactors = F)
 df_expt3_original <- read.csv("../../data/final-raw/soc_xsit_reliability_expt3.csv",
+                     stringsAsFactors = F)
+```
+
+
+```{r}
+df_expt1 <- read.csv("2_raw_compiled/e1_soc_xsit_schematic.csv", stringsAsFactors = F)
+df_expt2 <- read.csv("2_raw_compiled/e2_soc_xsit_live_within.csv", stringsAsFactors = F)
+df_expt3 <- read.csv("2_raw_compiled/e3_soc_xsit_reliabiliy_parametric_replication.csv",
                      stringsAsFactors = F)
 ```
 

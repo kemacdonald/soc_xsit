@@ -11,10 +11,14 @@ library(rjson)
 library(plyr)
 library(dplyr)
 library(stringr)
+library(magrittr)
+
+# write path
+write_path <- file.path("/Users", "kmacdonald", "Documents", "Projects", "SOC-XSIT", "SOC_XSIT_GIT", "data/", "2_raw_compiled/")
 
 setwd("1_raw_not_anonymized/e1_schematic/")
 
-# read raw data
+## read raw data
 all_results <- list.files(pattern = '*.results', all.files = FALSE)
 
 ## number of trials in experiment
@@ -25,7 +29,6 @@ all.data <- data.frame()
 
 ## loops through all of the results files, grabbing relevant data from JSON, creating columns for 
 ## the following: condition (soc/no_soc), number of pics each trial, interval between exposure and test  
-
 for(f in 1:length(all_results)) {
   data <- read.table(paste(all_results[f], sep=""), sep="\t", 
                      header=TRUE, stringsAsFactors=FALSE)
@@ -40,11 +43,13 @@ for(f in 1:length(all_results)) {
     delay_cond <- "Answer.delay_condition"
   }
   
+  ## print progress of loop
+  print(paste("Data Set", f))
+  
   # loops over each participant
   for (i in 1:nrow(data)) {   
     # create list of trial information to allow for iteration
     d <- fromJSON(as.character(data$Answer.data[i])) 
-    
     # grab fields from JSON
     for (j in 1:length(d)) {
       long.data$subid[c] <- data$workerid[i]
@@ -69,12 +74,12 @@ for(f in 1:length(all_results)) {
       c <- c + 1
     }
   }
+  all.data <- bind_rows(all.data, long.data)
 }  
 
-# sanity check: make sure we have the right number of ss
-length(unique(long.data$subid))
-
-all.data <- long.data
+## sanity check: make sure we have the right number of ss
+orig_n <- length(unique(all.data$subid))
+orig_rows <- nrow(all.data)
 
 ##### CLEAN DATASET #####
 
@@ -85,22 +90,33 @@ all.data$day.and.time <- chron(dates = all.data$submit.date,
 
 all.data <- all.data[with(all.data,order(subid,day.and.time)),]
 
-# drop subs who have more than 36 trials
-drop.subs <- ddply(all.data,.(subid), function(x) {nrow(x) > 34}) 
+# drop subs who have more than 20 trials (since they completed HIT more than once)
+drop.subs <- ddply(all.data,.(subid), function(x) {nrow(x) > 20}) 
+drop.subs %<>% rename(duplicate = V1) 
 
-# grabs subs who participated more than once
-drop.subs <- drop.subs[drop.subs$V1,1] 
+# grabs subs who participated more than and join with all data
+all.data %<>% left_join(., drop.subs, by = "subid")
 
-# grabs earliest HIT for each participant
-all.drops <- matrix(0,nrow(all.data))
+## keep just one set of the duplicates
+dups <- filter(all.data, duplicate == T)
 
-for(sub in drop.subs) {
-  rows <- as.integer(all.data$subid == sub)
-  all.drops[rows & (cumsum(rows) > 20)] <- 1
-}
+dups_removed <- ddply(dups, .(subid), function(x){
+  d <- data.frame()  
+  for(i in 1:num_trials) {
+    d <- bind_rows(d, x[i,])
+  }
+  d
+})
 
-## subsets data without subs who participated twice
-all.data <- subset(all.data,!all.drops) 
+## remove subs who participated twice
+all.data %<>% filter(duplicate == F)
+
+## add first completion for those ss who did it twice
+all.data <- rbind(all.data, dups_removed)
+
+## how many ss left?
+new_rows <- nrow(all.data)
+orig_rows - new_rows ## this is how many trials were removed with the duplicate filter
 
 # recodes subid as factor and recode trial type as factor with two levels: Same and Switch
 all.data$subid <- as.factor(all.data$subid)
@@ -119,13 +135,56 @@ trial.nums <- function(x) {
   return(xmod)
 }
 
-## excludes subjects for getting example trials wrong
+## flag example, exposure, and test trials
+zero_int <- c("example", "example", "example", "example", 
+               "exposure", "test", "exposure", "test", "exposure", "test", "exposure", "test",
+             "exposure", "test", "exposure", "test", "exposure", "test", "exposure", "test")
+
+one_int <- c("example", "example", "example", "example", 
+             "exposure", "exposure", "test", "test", "exposure", "exposure", "test", "test",
+             "exposure", "exposure", "test", "test", "exposure", "exposure", "test", "test")
+
+three_int <- c("example", "example", "example", "example", 
+               "exposure", "exposure", "exposure", "exposure", "test", "test", "test", "test",
+               "exposure", "exposure", "exposure", "exposure", "test", "test", "test", "test")
+
+seven_int <- c("example", "example", "example", "example", 
+           "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure",
+           "test", "test", "test", "test", "test", "test", "test", "test")
+
+# this function takes each participant's data frame
+# and returns that data frame with the correct trial order sequence 
+flag_trial_cat_fun <- function(d) {
+  # check interval number
+  interval <- unique(d["interval"])
+  # cbind appropriate trial category order
+  if (interval == "Zero") {
+    trial_category <- zero_int
+  } else if (interval == "One") {
+    trial_category <- one_int
+  } else if (interval == "Three") {
+    trial_category <- three_int
+  } else if (interval == "Seven") {
+    trial_category <- seven_int
+  } else {
+    print("interval not recognized")
+    break 
+  }
+  # create new variable
+  d$trial_category <- trial_category
+  # return
+  d
+}
+
+all.data <- ddply(all.data, .(subid), .fun = flag_trial_cat_fun)
+
+#### exclude subjects for getting example trials wrong
 
 # grabs example data
 example.data <- filter(all.data, trial_category == "example")
 include.subs <- ddply(example.data,.(subid),
-                      function(x) {x$chosen[1] == "squirrel" & 
-                          x$chosen[2] == "tomato"})
+                      function(x) {x$chosen[1] == "squirrel" & x$chosen[2] == "squirrel" &
+                          x$chosen[3] == "tomato" & x$chosen[4] == "tomato"})
 
 names(include.subs) <- c("subid","include")
 
@@ -134,6 +193,9 @@ all.data <- merge(all.data,include.subs,sort = FALSE)
 
 # keeps just the subs who responded accurately on example trials
 keep.data <- subset(all.data,include)
+
+# this is the number of ss removed for getting familiarization questions wrong
+ss_removed <- length(unique(all.data$subid)) - length(unique(keep.data$subid))
 
 ## flag first test trials for subjects ##  
 keep.data$first.trial <- FALSE
@@ -145,10 +207,7 @@ keep.data$first.trial[(keep.data$interval=="Zero" & keep.data$trial.num==4) |
 # creates numeric vars for data analysis 
 keep.data$numPicN <- as.numeric(keep.data$numPic)
 
-# create block variable
-keep.data$block <- ifelse(keep.data$itemNum <= 7, "familiarization", "test")
-
 ##### SAVE OUTPUT  #####
 
-#write.csv(keep.data, paste(write_path, "e3_soc_xsit_reliabiliy_parametric_replication.csv", sep=""),
- #         row.names=FALSE)
+write.csv(keep.data, paste(write_path, "e1_soc_xsit_schematic.csv", sep=""),
+         row.names=FALSE)
