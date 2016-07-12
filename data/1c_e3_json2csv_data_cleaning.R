@@ -1,4 +1,5 @@
 ##### GET RELEVANT FIELDS FROM JSON OUTPUT #####
+
 ##### Experiment 3: Soc-xsit Reliability #####
 
 # Clear workspace
@@ -37,7 +38,6 @@ for(f in 1:length(all_results)) {
   c <- 1
   # loops over each participant
   for (i in 1:nrow(data)) {   
-      print(i)
     # create list of trial information to allow for iteration
     d <- fromJSON(as.character(data$Answer.data[i])) 
     
@@ -49,7 +49,7 @@ for(f in 1:length(all_results)) {
                                          word(data$assignmentsubmittime[i]
                                               ,start=-1L))
       long.data$submit.time[c] <-  word(data$assignmentsubmittime[i]
-                                              ,start=4)
+                                        ,start=4)
       long.data$trial.num[c] <- j
       long.data$gazeLength[c] <- fromJSON(as.character(data$Answer.condition[i]))
       long.data$condition[c] <- fromJSON(as.character(data$Answer.prop_cond[i]))       
@@ -71,7 +71,6 @@ for(f in 1:length(all_results)) {
       long.data$face[c] <- d[[j]]$face
       long.data$faceIdx[c] <- d[[j]]$faceIdx
       long.data$rel_subj[c] <- data$Answer.reliability[i]
-     
       c <- c + 1
     }
   }
@@ -130,8 +129,8 @@ trial.nums <- function(x) {
 # grabs example data
 example.data <- filter(all.data, trial_category == "example")
 include.subs <- ddply(example.data,.(subid),
-            function(x) {x$chosen[1] == "squirrel" & 
-                           x$chosen[2] == "tomato"})
+                      function(x) {x$chosen[1] == "squirrel" & 
+                          x$chosen[2] == "tomato"})
 
 names(include.subs) <- c("subid","include")
 
@@ -154,7 +153,20 @@ keep.data$numPicN <- as.numeric(keep.data$numPic)
 # create block variable
 keep.data$block <- ifelse(keep.data$itemNum <= 7, "familiarization", "test")
 
+##### Anonymize workerids before moving to version control #######
+
+# grab worker ids and create anonymous id number
+anonymized_df <- keep.data %>% 
+  select(subid) %>% 
+  distinct() %>% 
+  mutate(subids = 1:nrow(.))
+
+# now join with original data frame
+df_final_clean <- left_join(keep.data, anonymized_df, by = "subid") 
+df_final_clean <- select(df_final_clean, -subid) %>% 
+  rename(subid = subids)
+
 ##### SAVE OUTPUT  #####
 
-write.csv(keep.data, paste(write_path, "e3_soc_xsit_reliabiliy_parametric_replication.csv", sep=""),
+write.csv(df_final_clean, paste(write_path, "e3_soc_xsit_reliabiliy_parametric_replication.csv", sep=""),
           row.names=FALSE)

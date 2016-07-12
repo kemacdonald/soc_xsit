@@ -162,7 +162,7 @@ df_expt2 %<>%
 
 ```{r expt2 flag subs <25% correct on exposure}
 ss_exposure <- df_expt2 %>%
-    filter(trial_cat == "exposure" & condition_trial == "social") %>%
+    filter(trial_category == "exposure" & condition_trial == "social") %>%
     group_by(subids) %>%
     summarise(mean_acc_exp = mean(correct))
 

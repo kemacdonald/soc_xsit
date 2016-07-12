@@ -207,7 +207,19 @@ keep.data$first.trial[(keep.data$interval=="Zero" & keep.data$trial.num==4) |
 # creates numeric vars for data analysis 
 keep.data$numPicN <- as.numeric(keep.data$numPic)
 
-##### SAVE OUTPUT  #####
+###### Anonymize workerids before moving to version control
 
-write.csv(keep.data, paste(write_path, "e1_soc_xsit_schematic.csv", sep=""),
+# grab worker ids and create anonymous id number
+anonymized_df <- keep.data %>% 
+  select(subid) %>% 
+  distinct() %>% 
+  mutate(subids = 1:nrow(.))
+
+# now join with original data frame
+df_final_clean <- left_join(keep.data, anonymized_df, by = "subid") 
+df_final_clean <- select(df_final_clean, -subid) %>% 
+  rename(subid = subids)
+
+##### SAVE OUTPUT  #####
+write.csv(df_final_clean, paste(write_path, "e1_soc_xsit_schematic.csv", sep=""),
          row.names=FALSE)

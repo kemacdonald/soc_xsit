@@ -23,7 +23,6 @@ setwd("1_raw_not_anonymized/e2_live/")
 
 ## gets all .results files at one time
 all_results <- list.files(pattern = '*.results', all.files = FALSE)
-all_results <- all_results[3]
 
 ## creates empty data frame for storing data
 all.data <- data.frame()
@@ -76,8 +75,14 @@ for(f in 1:length(all_results)) {
   all.data <- bind_rows(all.data, long.data)
 }  
 
-# sanity check: make sure we have all 200 ss
+# sanity check: make sure we have all 400 ss
 length(unique(all.data$subid))
+
+all.data %>% 
+  group_by(condition, interval) %>%
+  distinct(subid) %>% 
+  summarise(count = n())
+  
 
 ##### CLEAN DATASET #####
 
@@ -171,6 +176,15 @@ flag_trial_cat_fun <- function(d) {
   d
 }
 
+# get ss who did not compl
+drops <- all.data %>% 
+  group_by(subid) %>% 
+  summarise(trials = n())
+
+all.data %<>% left_join(., drops, by = "subid")
+
+all.data %<>% filter(trials == 36)
+
 all.data <- ddply(all.data, .(subid), .fun = flag_trial_cat_fun)
 
 ## excludes subjects for getting example trials wrong
@@ -202,7 +216,20 @@ keep.data$numPicN <- as.numeric(keep.data$numPic)
 # create block variable
 keep.data$block <- ifelse(keep.data$itemNum <= 7, "first", "second")
 
+###### Anonymize workerids before moving to version control #######
+
+# grab worker ids and create anonymous id number
+anonymized_df <- keep.data %>% 
+  select(subid) %>% 
+  distinct() %>% 
+  mutate(subids = 1:nrow(.))
+
+# now join with original data frame
+df_final_clean <- left_join(keep.data, anonymized_df, by = "subid") 
+df_final_clean <- select(df_final_clean, -subid) %>% 
+  rename(subid = subids)
+
 ##### SAVE OUTPUT  #####
 
-write.csv(keep.data, paste(write_path, "e2_soc_xsit_live_within.csv", sep=""),
+write.csv(df_final_clean, paste(write_path, "e2_soc_xsit_live_within.csv", sep=""),
           row.names=FALSE)
