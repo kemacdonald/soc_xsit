@@ -5,8 +5,6 @@ date: "September 17, 2015"
 output: html_document
 ---
 
-## This script creates visualizations and models for our Social Cross-situational Word Learning Project.
-
 Clear workspace and set working directory 
 
 ```{r clear workspace, echo=F, warning=F}
