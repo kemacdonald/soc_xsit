@@ -1,7 +1,0 @@
-soc-xsit todo
-
-- fix figures in keynote
-- do inspection time analysis
-- run inspection time experiment
-- see how many ss filtered out in experiment 2 
-- address concerns about interpretation and include relevant literature that we missed in the first round
