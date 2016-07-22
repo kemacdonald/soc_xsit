@@ -29,7 +29,7 @@ df_expt2 <- read.csv("../../data/final-raw/soc_xsit_live_expt2.csv")
 df_expt3 <- read.csv("../../data/final-raw/soc_xsit_reliabiliy_parametric_replication.csv",
                      stringsAsFactors = F)
 df_expt3_original <- read.csv("../../data/final-raw/soc_xsit_reliability_expt3.csv",
-                     stringsAsFactors = F)
+                              stringsAsFactors = F)
 ```
 
 
@@ -54,26 +54,26 @@ df_expt1 %<>% filter(dataset == "km")
 
 ```{r expt1 target of gaze}
 df_expt1 %<>% 
-    mutate(trial_category = ifelse(dataset == "dy", "test",
-                                   ifelse(exposureTrial == 1, "exposure", 
-                                          ifelse(exampleTrial == 1, "example",
-                                                 ifelse(testTrial == 1, "test",
-                                                        NA))))) %>% 
-    filter(trial_category != "example")
+  mutate(trial_category = ifelse(dataset == "dy", "test",
+                                 ifelse(exposureTrial == 1, "exposure", 
+                                        ifelse(exampleTrial == 1, "example",
+                                               ifelse(testTrial == 1, "test",
+                                                      NA))))) %>% 
+  filter(trial_category != "example")
 
 df_expo_expt1 <- df_expt1 %>%
-    filter(trial_category == "exposure") %>%
-    mutate(correct_exposure = ifelse(numPic == 6, 
-                                     chosenIdx == faceIdx6,
-                                     chosenIdx == faceIdx)) %>%
-    select(subids, itemNum, correct_exposure, rt) %>% 
-    rename(rt_exposure = rt) %>%
-    filter(rt_exposure > 0) %>% 
-    mutate(include_good_rt_exposure = ifelse(log(rt_exposure) > mean(log(rt_exposure)) + 
-                                                 2 * sd(log(rt_exposure)) |
-                                                 log(rt_exposure) < mean(log(rt_exposure)) - 
-                                                 2 * sd(log(rt_exposure)),
-                                             "exclude", "include"))
+  filter(trial_category == "exposure") %>%
+  mutate(correct_exposure = ifelse(numPic == 6, 
+                                   chosenIdx == faceIdx6,
+                                   chosenIdx == faceIdx)) %>%
+  select(subids, itemNum, correct_exposure, rt) %>% 
+  rename(rt_exposure = rt) %>%
+  filter(rt_exposure > 0) %>% 
+  mutate(include_good_rt_exposure = ifelse(log(rt_exposure) > mean(log(rt_exposure)) + 
+                                             2 * sd(log(rt_exposure)) |
+                                             log(rt_exposure) < mean(log(rt_exposure)) - 
+                                             2 * sd(log(rt_exposure)),
+                                           "exclude", "include"))
 
 # Merge with exposure trial information. 
 df_expt1 %<>% left_join(y = df_expo_expt1, by = c("subids", "itemNum"))
@@ -83,15 +83,15 @@ df_expt1 %<>% left_join(y = df_expo_expt1, by = c("subids", "itemNum"))
 
 ```{r expt 1 flag subs < 25% correct on exposure}
 df_test_expo_correct <- df_expt1 %>%
-    filter(condition == "Social", trial_category == "test") %>%
-    group_by(subids, numPic) %>%
-    summarise(mean_acc_exp = mean(correct_exposure)) %>%
-    mutate(include_expo = ifelse(numPic == 2 & mean_acc_exp > 0.5, "include", 
-                                 ifelse(numPic == 4 & mean_acc_exp > 0.25, "include",
-                                        ifelse(numPic == 6 & mean_acc_exp > 0.17, "include", 
-                                               ifelse(numPic == 8 & mean_acc_exp > 0.125, 
-                                                      "include", "exclude"))))) %>% 
-    select(subids, mean_acc_exp, include_expo) 
+  filter(condition == "Social", trial_category == "test") %>%
+  group_by(subids, numPic) %>%
+  summarise(mean_acc_exp = mean(correct_exposure)) %>%
+  mutate(include_expo = ifelse(numPic == 2 & mean_acc_exp > 0.5, "include", 
+                               ifelse(numPic == 4 & mean_acc_exp > 0.25, "include",
+                                      ifelse(numPic == 6 & mean_acc_exp > 0.17, "include", 
+                                             ifelse(numPic == 8 & mean_acc_exp > 0.125, 
+                                                    "include", "exclude"))))) %>% 
+  select(subids, mean_acc_exp, include_expo) 
 
 df_expt1 %<>% left_join(y = df_test_expo_correct, by = c("subids"))
 ```
@@ -100,15 +100,15 @@ df_expt1 %<>% left_join(y = df_test_expo_correct, by = c("subids"))
 
 ```{r expt1 rt cleaning}
 df_test_rt <- df_expt1 %>% 
-    filter(trial_category == "test") %>% 
-    rename(rt_test = rt) %>% 
-    filter(rt_test > 0) %>% 
-    mutate(include_good_rt_test = ifelse(log(rt_test) > mean(log(rt_test)) + 
-                                             2 * sd(log(rt_test)) |
-                                             log(rt_test) < mean(log(rt_test)) - 
-                                             2 * sd(log(rt_test)),
-                                         "exclude", "include")) %>% 
-    select(subids, itemNum, include_good_rt_test)
+  filter(trial_category == "test") %>% 
+  rename(rt_test = rt) %>% 
+  filter(rt_test > 0) %>% 
+  mutate(include_good_rt_test = ifelse(log(rt_test) > mean(log(rt_test)) + 
+                                         2 * sd(log(rt_test)) |
+                                         log(rt_test) < mean(log(rt_test)) - 
+                                         2 * sd(log(rt_test)),
+                                       "exclude", "include")) %>% 
+  select(subids, itemNum, include_good_rt_test)
 
 df_expt1 %<>% left_join(y = df_test_rt, by = c("subids", "itemNum"))
 ```
@@ -135,34 +135,34 @@ df_expt2 %<>% mutate(block = ifelse(itemNum <= 7, "first","second"))
 
 ```{r expt2 clean RTs}
 df_expt2 %<>%
-    filter(rt > 0) %>% 
-    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
-                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                    "exclude", "include"))
+  filter(rt > 0) %>% 
+  mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                    log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                  "exclude", "include"))
 ```
 
 #### Flag social vs. no-social trials
 
 ```{r expt2 flag trial type}
 df_expt2 %<>%
-    mutate(condition_trial = ifelse(condition == "No-socialFirst" 
-                                    & itemNum <= 7, "no-social", 
-                                    ifelse(condition == "SocialFirst" 
-                                           & itemNum <= 7, "social", 
-                                           ifelse(condition == "No-socialFirst" 
-                                                  & itemNum >= 8, "social",
-                                                  ifelse(condition == "SocialFirst" 
-                                                         & itemNum >= 8, 
-                                                         "no-social", NA)))))
+  mutate(condition_trial = ifelse(condition == "No-socialFirst" 
+                                  & itemNum <= 7, "no-social", 
+                                  ifelse(condition == "SocialFirst" 
+                                         & itemNum <= 7, "social", 
+                                         ifelse(condition == "No-socialFirst" 
+                                                & itemNum >= 8, "social",
+                                                ifelse(condition == "SocialFirst" 
+                                                       & itemNum >= 8, 
+                                                       "no-social", NA)))))
 ```
 
 #### Flag subs who got < 25% of exposure trials correct. 
 
 ```{r expt2 flag subs <25% correct on exposure}
 ss_exposure <- df_expt2 %>%
-    filter(trial_category == "exposure" & condition_trial == "social") %>%
-    group_by(subids) %>%
-    summarise(mean_acc_exp = mean(correct))
+  filter(trial_category == "exposure" & condition_trial == "social") %>%
+  group_by(subids) %>%
+  summarise(mean_acc_exp = mean(correct))
 
 # Merge mean acc with the rest of the dataset.
 df_expt2 %<>% left_join(y = ss_exposure, by = "subids")
@@ -172,11 +172,11 @@ df_expt2 %<>% left_join(y = ss_exposure, by = "subids")
 
 ```{r expt2 flag test trials chose gaze target}
 df_expt2 %<>%
-    filter(trial_cat == "exposure") %>%
-    mutate(correct_exposure = faceIdx == chosenIdx,
-           rt_exposure = rt) %>%
-    select(subids, itemNum, correct_exposure, rt_exposure) %>%
-    left_join(x = df_expt2, y = ., by = c("subids", "itemNum"))
+  filter(trial_cat == "exposure") %>%
+  mutate(correct_exposure = faceIdx == chosenIdx,
+         rt_exposure = rt) %>%
+  select(subids, itemNum, correct_exposure, rt_exposure) %>%
+  left_join(x = df_expt2, y = ., by = c("subids", "itemNum"))
 ```
 
 ```{r expt2 expo filters}
@@ -194,23 +194,23 @@ df_expo_expt2_filt <- filter(df_expt2,
 
 # filter that gets both social/no-social trials
 df_expo_expt2_analysis <- df_expt2 %>%
-    filter(trial_cat == "exposure",
-           mean_acc_exp > 0.25,
-           correct_exposure = T | condition_trial == "no-social",
-           include_good_rt == "include")
+  filter(trial_cat == "exposure",
+         mean_acc_exp > 0.25,
+         correct_exposure = T | condition_trial == "no-social",
+         include_good_rt == "include")
 ```
 
 Get the number of subjects filtered out by the subject level filter.
 
 ```{r expt2 nsubs filtered}
 df_n_expt2 <- df_expo_expt2 %>%
-    group_by(condition) %>%
-    summarise(n_subs = n_distinct(subids))
+  group_by(condition) %>%
+  summarise(n_subs = n_distinct(subids))
 
 df_n_expt2_filt <- df_expo_expt2_filt %>%
-    group_by(condition) %>%
-    summarise(n_subs_filt = n_distinct(subids)) %>%
-    select(n_subs_filt)
+  group_by(condition) %>%
+  summarise(n_subs_filt = n_distinct(subids)) %>%
+  select(n_subs_filt)
 
 nsubs_expt2 <- cbind(df_n_expt2, df_n_expt2_filt)
 
@@ -222,23 +222,23 @@ Test trial filters.
 ```{r expt2 test filters}
 # just RT filter
 df_test_expt2 <- df_expt2 %>%
-    filter(trial_cat == "test",
-           include_good_rt == "include")
+  filter(trial_cat == "test",
+         include_good_rt == "include")
 
 # RT, subject level and trial level filter 
 df_test_expt2_filt <- df_expt2 %>%
-    filter(trial_cat == "test",
-           mean_acc_exp > 0.25 ,
-           include_good_rt == "include",
-           correct_exposure == T | condition_trial == "no-social")
+  filter(trial_cat == "test",
+         mean_acc_exp > 0.25 ,
+         include_good_rt == "include",
+         correct_exposure == T | condition_trial == "no-social")
 ```
 
 #### Save clean Expt. 2 dataset
 
 ```{r save final dataset expt2}
 df_expt2_analysis_final <- df_test_expt2_filt %>% 
-    dplyr::bind_rows(df_expo_expt2_analysis) %>% 
-    dplyr::arrange(subids) 
+  dplyr::bind_rows(df_expo_expt2_analysis) %>% 
+  dplyr::arrange(subids) 
 
 write.csv(x = df_expt2_analysis_final, 
           "../../data/final-processed/soc-xsit-expt2-finalData.csv",
@@ -256,8 +256,8 @@ df_expt3 %<>% mutate(experiment = "replication",
                      rel_subj = to.n(rel_subj))
 
 df_expt3 <- df_expt3_original %>% 
-    mutate(experiment = "original") %>% 
-    bind_rows(df_expt3)
+  mutate(experiment = "original") %>% 
+  bind_rows(df_expt3)
 ```
 
 #### Clean up variable names
@@ -289,48 +289,48 @@ df_expt3$reliability[df_expt3$prop_cond_clean=="100%"] <- 1.00
 
 ```{r expt3 clean RTs}
 df_expt3 <- df_expt3 %>%
-    filter(rt > 0) %>% 
-    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) | 
-                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                    "exclude", "include"))
+  filter(rt > 0) %>% 
+  mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) | 
+                                    log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                  "exclude", "include"))
 ```
 
 #### Flag whether participant chose the target of eye gaze on exposure trials in test block
 
 ```{r expt3 chose gaze target on exposure trials test block}
 df_expt3 %<>% 
-    filter(trial_category == "exposure", block == "test") %>% 
-    select(subids, 
-           gaze_target_exposure = gaze_target, 
-           chosen_exposure = chosen, 
-           correct_exposure = correct, 
-           itemNum,
-           experiment) %>% 
-    left_join(x = df_expt3, by = c("subids", "itemNum", "experiment"))
+  filter(trial_category == "exposure", block == "test") %>% 
+  select(subids, 
+         gaze_target_exposure = gaze_target, 
+         chosen_exposure = chosen, 
+         correct_exposure = correct, 
+         itemNum,
+         experiment) %>% 
+  left_join(x = df_expt3, by = c("subids", "itemNum", "experiment"))
 ```
 
 #### Get total number of correct for each sub on exposure trials in test block
 
 ```{r}
 df_expt3 %<>%
-    filter(trial_category == "exposure",
-           block == "test", include_good_rt == "include") %>% 
-    group_by(subids, experiment) %>% 
-    summarise(total_exposure_correct = sum(correct_exposure))  %>% 
-    left_join(x = df_expt3, by = c("subids", "experiment"))
+  filter(trial_category == "exposure",
+         block == "test", include_good_rt == "include") %>% 
+  group_by(subids, experiment) %>% 
+  summarise(total_exposure_correct = sum(correct_exposure))  %>% 
+  left_join(x = df_expt3, by = c("subids", "experiment"))
 ```
 
 #### Get mean accuracy on each trial type for each sub
 
 ```{r}
 df_expt3 %<>%
-    filter(trial_category == "test",
-           block == "test", include_good_rt == "include") %>% 
-    group_by(subids, experiment, trialType) %>% 
-    summarise(sub_mean_accuracy = mean(correct))  %>% 
-    spread(key = trialType, value = sub_mean_accuracy) %>% 
-    rename(same_accuracy = Same, switch_accuracy = Switch) %>% 
-    left_join(x = df_expt3, by = c("subids", "experiment"))
+  filter(trial_category == "test",
+         block == "test", include_good_rt == "include") %>% 
+  group_by(subids, experiment, trialType) %>% 
+  summarise(sub_mean_accuracy = mean(correct))  %>% 
+  spread(key = trialType, value = sub_mean_accuracy) %>% 
+  rename(same_accuracy = Same, switch_accuracy = Switch) %>% 
+  left_join(x = df_expt3, by = c("subids", "experiment"))
 ```
 
 #### Save clean Expt. 3 dataset 
@@ -355,105 +355,101 @@ df_expt4 %<>% mutate(block = ifelse(itemNum <= 7, "first","second"))
 
 ```{r expt4 clean RTs}
 df_expt4 %<>%
-    filter(rt > 0) %>% 
-    mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
-                                        log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
-                                    "exclude", "include"))
+  filter(rt > 0) %>% 
+  mutate(include_good_rt = ifelse(log(rt) > mean(log(rt)) + 2 * sd(log(rt)) |
+                                    log(rt) < mean(log(rt)) - 2 * sd(log(rt)),
+                                  "exclude", "include"))
 ```
-
-#### Score each trial: correct vs. incorrect
-
-```{r expt4 correct}
-df_expt4 %>% 
-  mutate(correct = ifelse())
-```
-
 
 #### Flag subs who got < 25% of exposure trials correct. 
 
-```{r expt2 flag subs <25% correct on exposure}
+```{r expt4 flag subs <25% correct on exposure}
 ss_exposure <- df_expt4 %>%
-    filter(trial_category == "exposure" & gaze_trial == "Gaze") %>%
-    group_by(subid) %>%
-    summarise(mean_acc_exp = mean(correct))
+  filter(trial_category == "exposure" & gaze_trial == "Gaze") %>%
+  group_by(subid) %>%
+  summarise(mean_acc_exp = mean(correct))
 
 # Merge mean acc with the rest of the dataset.
-df_expt2 %<>% left_join(y = ss_exposure, by = "subids")
+df_expt4 %<>% left_join(y = ss_exposure, by = "subid")
 ```
 
-#### Flag test trials on which subject chose target of gaze on exposure 
+#### Flag test trials on which subject chose target of gaze on exposure and flag if subject made a response on exposure (vs. running out of time) 
 
-```{r expt2 flag test trials chose gaze target}
-df_expt2 %<>%
-    filter(trial_cat == "exposure") %>%
-    mutate(correct_exposure = faceIdx == chosenIdx,
-           rt_exposure = rt) %>%
-    select(subids, itemNum, correct_exposure, rt_exposure) %>%
-    left_join(x = df_expt2, y = ., by = c("subids", "itemNum"))
+```{r expt4 flag test trials chose gaze target}
+df_expt4 %<>%
+  filter(trial_category == "exposure") %>%
+  mutate(correct_exposure = correct, rt_exposure = rt,
+         answer_type_exposure = answer_type) %>%
+  select(subid, itemNum, correct_exposure, rt_exposure, answer_type_exposure) %>%
+  left_join(x = df_expt4, y = ., by = c("subid", "itemNum"))
 ```
 
-```{r expt2 expo filters}
+```{r expt4 expo filters}
 # just RT filter
-df_expo_expt2 <- filter(df_expt2,
+df_expo_expt4 <- filter(df_expt4,
                         include_good_rt == "include",
-                        condition_trial == "social",
-                        trial_cat == "exposure")
+                        gaze_trial == "Gaze",
+                        trial_category == "exposure")
 
 # RT, subject level and trial level filter 
-df_expo_expt2_filt <- filter(df_expt2,
-                             trial_cat == "exposure",
-                             condition_trial == "social" & mean_acc_exp > 0.25,
+df_expo_expt4_filt <- filter(df_expt4,
+                             trial_category == "exposure",
+                             gaze_trial == "Gaze" & mean_acc_exp > 0.25,
                              include_good_rt == "include")
 
 # filter that gets both social/no-social trials
-df_expo_expt2_analysis <- df_expt2 %>%
-    filter(trial_cat == "exposure",
-           mean_acc_exp > 0.25,
-           correct_exposure = T | condition_trial == "no-social",
-           include_good_rt == "include")
+df_expo_expt4_analysis <- df_expt4 %>%
+  filter(trial_category == "exposure",
+         mean_acc_exp > 0.25,
+         correct_exposure == T | gaze_trial == "No-Gaze",
+         include_good_rt == "include")
 ```
 
 Get the number of subjects filtered out by the subject level filter.
 
-```{r expt2 nsubs filtered}
-df_n_expt2 <- df_expo_expt2 %>%
-    group_by(condition) %>%
-    summarise(n_subs = n_distinct(subids))
+```{r expt4 nsubs filtered}
+df_n_expt4 <- df_expo_expt4 %>%
+  group_by(social_cond) %>%
+  summarise(n_subs = n_distinct(subid))
 
-df_n_expt2_filt <- df_expo_expt2_filt %>%
-    group_by(condition) %>%
-    summarise(n_subs_filt = n_distinct(subids)) %>%
-    select(n_subs_filt)
+df_n_expt4_filt <- df_expo_expt4_filt %>%
+  group_by(social_cond) %>%
+  summarise(n_subs_filt = n_distinct(subid)) %>%
+  select(n_subs_filt)
 
-nsubs_expt2 <- cbind(df_n_expt2, df_n_expt2_filt)
+nsubs_expt4 <- cbind(df_n_expt4, df_n_expt4_filt)
 
-nsubs_expt2
+## print the number of ss removed in each condition
+nsubs_expt4 %>% 
+  group_by(social_cond) %>% 
+  summarise(subs_removed = n_subs - n_subs_filt)
 ```
 
 Test trial filters.
 
-```{r expt2 test filters}
+```{r expt4 test filters}
 # just RT filter
-df_test_expt2 <- df_expt2 %>%
-    filter(trial_cat == "test",
-           include_good_rt == "include")
+df_test_expt4 <- df_expt4 %>%
+  filter(trial_category == "test", include_good_rt == "include")
 
 # RT, subject level and trial level filter 
-df_test_expt2_filt <- df_expt2 %>%
-    filter(trial_cat == "test",
-           mean_acc_exp > 0.25 ,
-           include_good_rt == "include",
-           correct_exposure == T | condition_trial == "no-social")
+df_test_expt4_filt <- df_expt4 %>%
+  filter(trial_category == "test",
+         mean_acc_exp > 0.25 ,
+         include_good_rt == "include",
+         correct_exposure == T | gaze_trial == "No-Gaze",
+         answer_type_exposure != "timed_out")
 ```
 
-#### Save clean Expt. 2 dataset
+#### Save clean Expt. 4 dataset
 
-```{r save final dataset expt2}
-df_expt2_analysis_final <- df_test_expt2_filt %>% 
-    dplyr::bind_rows(df_expo_expt2_analysis) %>% 
-    dplyr::arrange(subids) 
+```{r save final dataset expt4}
+# join exposure and test trials
+df_expt4_analysis_final <- df_test_expt4_filt %>% 
+  dplyr::bind_rows(df_expo_expt4_analysis) %>% 
+  dplyr::arrange(subid) 
 
-write.csv(x = df_expt2_analysis_final, 
-          "../../data/final-processed/soc-xsit-expt2-finalData.csv",
+write.csv(x = df_expt4_analysis_final, 
+          "3_final-processed/soc-xsit-expt4-finalData.csv",
           row.names = F)
 ```

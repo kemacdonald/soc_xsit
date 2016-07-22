@@ -7,19 +7,19 @@ document-params: "authoryear, review"
 journal: "Cognitive Psychology"
 
 author-information:
-    # Group authors per affiliation:
-    - \author[km]{\corref{cor}Kyle MacDonald}
-    - \cortext[cor]{Corresponding author}
-    - \ead{kyle.macdonald@stanford.edu}
-    - \author[dy]{Daniel Yurovsky}
-    - \author[mcf]{Michael C. Frank}
-    - \address{Department of Psychology, Stanford University, United States}
+# Group authors per affiliation:
+- \author[km]{\corref{cor}Kyle MacDonald}
+- \cortext[cor]{Corresponding author}
+- \ead{kyle.macdonald@stanford.edu}
+- \author[dy]{Daniel Yurovsky}
+- \author[mcf]{Michael C. Frank}
+- \address{Department of Psychology, Stanford University, United States}
 
 abstract: 
-    "Because children hear language in environments that contain many things to talk about, learning the meaning of even the simplest word requires making inferences under uncertainty. A cross-situational statistical learner can aggregate across naming events to form stable word-referent mappings, but this approach neglects an important source of information that can reduce referential uncertainty: social cues from speakers. In three large-scale experiments with adults, we test the effects of varying referential uncertainty in cross-situational word learning using social cues. Social cues shifted learners away from tracking multiple hypotheses and towards storing only a single hypothesis (Experiments 1 and 2). In addition, learners were sensitive to graded changes in the strength of a social cue, and when it became less reliable, they were more likely to store multiple hypotheses (Experiment 3). Our data suggest that the representations underlying cross-situational word learning are quite flexible: In conditions of greater uncertainty, learners tend to store a broader range of information."
-    
+"Because children hear language in environments that contain many things to talk about, learning the meaning of even the simplest word requires making inferences under uncertainty. A cross-situational statistical learner can aggregate across naming events to form stable word-referent mappings, but this approach neglects an important source of information that can reduce referential uncertainty: social cues from speakers. In three large-scale experiments with adults, we test the effects of varying referential uncertainty in cross-situational word learning using social cues. Social cues shifted learners away from tracking multiple hypotheses and towards storing only a single hypothesis (Experiments 1 and 2). In addition, learners were sensitive to graded changes in the strength of a social cue, and when it became less reliable, they were more likely to store multiple hypotheses (Experiment 3). Our data suggest that the representations underlying cross-situational word learning are quite flexible: In conditions of greater uncertainty, learners tend to store a broader range of information."
+
 keywords:
-    "statistical learning, social cues, word learning, language acquisition"
+"statistical learning, social cues, word learning, language acquisition"
 ---
 
 ```{r global_options, include=FALSE}
@@ -29,8 +29,8 @@ knitr::opts_chunk$set(fig.width=4.5, fig.height=5, fig.crop = F, fig.path='figs/
 ```
 
 ```{r libraries}
-#devtools::install_github("kemacdonald/kmr") # uncomment to install, necessary for knitting
-source("../analysis/helpers/useful.R")
+#devtools::install_github("kemacdonald/kmr") # uncomment to install kmr package need it to knit
+source("../analysis/useful.R")
 library(kmr)
 library(lme4)
 library(dplyr)
@@ -41,9 +41,10 @@ library(xtable)
 ```
 
 ```{r data}
-df_expt1 <- read.csv("../data/3_final-processed/soc-xsit-expt1-finalData.csv")
-df_expt2 <- read.csv("../data/3_final-processed/soc-xsit-expt2-finalData.csv")
-df_expt3 <- read.csv("../data/3_final-processed/soc-xsit-expt3-finalData.csv")
+df_expt1 <- read.csv("../data/3_final-processed/soc-xsit-expt1-finalData.csv", stringsAsFactors = F)
+df_expt2 <- read.csv("../data/3_final-processed/soc-xsit-expt2-finalData.csv", stringsAsFactors = F)
+df_expt3 <- read.csv("../data/3_final-processed/soc-xsit-expt3-finalData.csv", stringsAsFactors = F)
+df_expt4 <- read.csv("../data/3_final-processed/soc-xsit-expt4-finalData.csv", stringsAsFactors = F)
 ```
 
 ```{r chance_functions}
@@ -59,17 +60,15 @@ test.chance <- function(data,groups,formula,row=1) {
                                family="binomial", data = .)))
   
   chance.tests$betas<- sapply(chance.tests$chance.lm,
-                                function(x) {x$coefficients[row,1]})
+                              function(x) {x$coefficients[row,1]})
   chance.tests$zs <- sapply(chance.tests$chance.lm,
                             function(x) {x$coefficients[row,3]})
   chance.tests$ps <- sapply(chance.tests$chance.lm,
                             function(x) {x$coefficients[row,4]})
   
   return(select(chance.tests, -chance.lm))
-  }
-```
+}
 
-```{r stars}
 ## get stars for significance testing
 getstars <- function(x) {
   if (x > .1) {return("")}
@@ -82,32 +81,38 @@ getstars <- function(x) {
 ```{r descriptives}
 # experiment 1
 nsubs_expt1 <- df_expt1 %>%
-    group_by(condition, intervalNum, numPicN, dataset) %>%
-    summarise(n_subs = n_distinct(subids)) %>% 
-    mutate(n_excluded = ifelse(condition == "Social" & numPicN == 4, 
-                               100 - n_subs, 
-                               50 - n_subs))
+  group_by(condition, intervalNum, numPicN, dataset) %>%
+  summarise(n_subs = n_distinct(subids)) %>% 
+  mutate(n_excluded = ifelse(condition == "Social" & numPicN == 4, 
+                             100 - n_subs, 
+                             50 - n_subs))
 
 final_n_expt1 <- sum(nsubs_expt1$n_subs)
 nsubs_excluded_expt1 <- sum(nsubs_expt1$n_excluded)
 
 # experiment 2
 nsubs_expt2 <- df_expt2 %>% 
-    group_by(condition, interval) %>%
-    summarise(n_subs = n_distinct(subids)) %>% 
-    mutate(n_excluded = 100 - n_subs)
+  group_by(condition, interval) %>%
+  summarise(n_subs = n_distinct(subids)) %>% 
+  mutate(n_excluded = 100 - n_subs)
 
 final_n_expt2 <- sum(nsubs_expt2$n_subs)
 nsubs_excluded_expt2 <- sum(nsubs_expt2$n_excluded)
 
 # experiment 3
 nsubs_expt3 <- df_expt3 %>%
-    group_by(prop_cond_clean) %>%
-    summarise(n_subs = n_distinct(subids)) %>% 
-    mutate(n_excluded = 150 - n_subs)
+  group_by(prop_cond_clean) %>%
+  summarise(n_subs = n_distinct(subids)) %>% 
+  mutate(n_excluded = 150 - n_subs)
 
 final_n_expt3 <- sum(nsubs_expt3$n_subs)
 nsubs_excluded_expt3 <- sum(nsubs_expt3$n_excluded)
+
+# experiment 4
+nsubs_expt4 <- df_expt4 %>%
+  group_by(social_cond, interval, inspection_cond) %>%
+  distinct(subid) %>% 
+  summarise(n_subs = n())
 ```
 
 # Introduction
@@ -167,10 +172,10 @@ grid::grid.raster(png::readPNG("figs/expt1.png"))
 
 ```{r expt1_chance_exposure}
 e1.chance.tests.exposure <- test.chance(data = filter(df_expt1, trial_category == "exposure", 
-                                       include_good_rt_exposure == "include", include_expo == "include",
-                                       condition == "Social"),
-                               groups = c("numPicN","intervalNum"),
-                               formula = as.formula("correct_exposure ~ 1")) %>%
+                                                      include_good_rt_exposure == "include", include_expo == "include",
+                                                      condition == "Social"),
+                                        groups = c("numPicN","intervalNum"),
+                                        formula = as.formula("correct_exposure ~ 1")) %>%
   mutate(stars = getstars(ps))
 ```
 
@@ -185,11 +190,11 @@ beta_gaze_referents <- round(summary(m1_rt_expt1)$coef[6], 2)
 
 ```{r expt1_exposure_means}
 ms_expo_expt1 <- df_expt1 %>% 
-    filter(trial_category == "exposure", 
-           include_good_rt_exposure == "include", 
-           condition == "Social") %>% 
-    group_by(numPicN) %>% 
-    summarise(prop_correct = mean(correct_exposure))
+  filter(trial_category == "exposure", 
+         include_good_rt_exposure == "include", 
+         condition == "Social") %>% 
+  group_by(numPicN) %>% 
+  summarise(prop_correct = mean(correct_exposure))
 ```
 
 To ensure that our referential cue manipulation was effective, we compare participant's accuracy on Exposure trials in the Gaze condition to a model of random behavior defined as a Binomial distribution with a probability of success $\frac{1}{Num Referents}$. Correct performance is defined as selecting the object that was the target of the speaker's gaze. Following @yurovsky2014algorithmic, we fit logistic regressions for each Gaze, Referent, and Interval combination specified as \texttt{Gaze Target $\sim$ 1 + offset(logit(1/Referents))}. The offset encodes the chance probability of success given the number of referents, and the coefficient for the intercept term shows on a log-odds scale how much more likely participants are to select the gaze target than would be expected if participants were selecting randomly. In all conditions participants used gaze to select referents on Exposure trials more often than expected by chance (smallest $\beta$ = `r round(sort(e1.chance.tests.exposure$betas)[1], 2)`, z = `r round(sort(e1.chance.tests.exposure$zs)[1], 2)`, p < .001).
@@ -200,9 +205,9 @@ We were also interested in differences in participants' response times across th
 
 ```{r expt1_chance}
 e1.chance.tests <- test.chance(data = filter(df_expt1, trial_category == "test", 
-                                       include_good_rt_test == "include",
-                                       include_expo == "include" | condition == "No-Social",
-                                       correct_exposure == T | condition == "No-Social"),
+                                             include_good_rt_test == "include",
+                                             include_expo == "include" | condition == "No-Social",
+                                             correct_exposure == T | condition == "No-Social"),
                                groups = c("trialType","numPicN","intervalNum"),
                                formula = as.formula("correct ~ 1")) %>%
   mutate(stars = getstars(ps))
@@ -210,7 +215,7 @@ e1.chance.tests <- test.chance(data = filter(df_expt1, trial_category == "test",
 
 ```{r expt1 glmer}
 m1_2way_acc_expt1 <- glmer(correct ~ (trialType + condition + log2(intervalNum + 1) + log2(numPicN))^2 + 
-                               (trialType | subids), offset = logit(1/numPicN), 
+                             (trialType | subids), offset = logit(1/numPicN), 
                            control=glmerControl(optimizer="bobyqa"),
                            family=binomial, 
                            nAGQ=0,
@@ -220,7 +225,7 @@ m1_2way_acc_expt1 <- glmer(correct ~ (trialType + condition + log2(intervalNum +
                                        correct_exposure == T | condition == "No-Social"))
 
 m1_3way_acc_expt1_filt <- glmer(correct ~ (trialType + condition + log2(intervalNum + 1) + log2(numPicN))^3 +
-                                (trialType | subids), offset = logit(1/numPicN),
+                                  (trialType | subids), offset = logit(1/numPicN),
                                 control=glmerControl(optimizer="bobyqa"),
                                 family=binomial, 
                                 nAGQ=0, 
@@ -228,8 +233,8 @@ m1_3way_acc_expt1_filt <- glmer(correct ~ (trialType + condition + log2(interval
                                             include_good_rt_test == "include", 
                                             include_expo == "include" | condition == "No-Social",
                                             correct_exposure == T | condition == "No-Social"))
-                                
-                                
+
+
 # two-way main effects
 beta_trialtype_acc <- round(summary(m1_2way_acc_expt1)$coef[2], 2)
 beta_gaze_acc <- round(summary(m1_2way_acc_expt1)$coef[3], 2)
@@ -268,19 +273,19 @@ e1.tab <- e1.tab[,c(5,1:4)]
 names(e1.tab)[4:5] <- c("$z$ value","$p$ value")
 
 e1.tab %<>% 
-    mutate(
-        stars = ifelse(`$p$ value` > .1, "", 
-                       ifelse(`$p$ value` < .001, "***",
-                              ifelse(`$p$ value` < .01, "**",
-                                     ifelse(`$p$ value` < .05, "*",
-                                            ifelse(`$p$ value` < .1, ".", "Error"))))),
-        `$p$ value` = ifelse(`$p$ value` > .1, round(`$p$ value`, 2), 
-                             ifelse(`$p$ value` < .001, "$<$ .001",
-                                    ifelse(`$p$ value` < .01, round(`$p$ value`, 2),
-                                           ifelse(`$p$ value` < .05, round(`$p$ value`, 2),
-                                                  ifelse(`$p$ value` < .1, round(`$p$ value`, 2), 
-                                                         "Error")))))
-    )
+  mutate(
+    stars = ifelse(`$p$ value` > .1, "", 
+                   ifelse(`$p$ value` < .001, "***",
+                          ifelse(`$p$ value` < .01, "**",
+                                 ifelse(`$p$ value` < .05, "*",
+                                        ifelse(`$p$ value` < .1, ".", "Error"))))),
+    `$p$ value` = ifelse(`$p$ value` > .1, round(`$p$ value`, 2), 
+                         ifelse(`$p$ value` < .001, "$<$ .001",
+                                ifelse(`$p$ value` < .01, round(`$p$ value`, 2),
+                                       ifelse(`$p$ value` < .05, round(`$p$ value`, 2),
+                                              ifelse(`$p$ value` < .1, round(`$p$ value`, 2), 
+                                                     "Error")))))
+  )
 
 names(e1.tab)[6] <- c("")
 
@@ -330,10 +335,10 @@ We followed the same analysis plan as in Experiment 1, first analyzing performan
 
 ```{r expt2_chance_exposure}
 e2.chance.tests.exposure <- test.chance(data = filter(df_expt2, trial_cat == "exposure", 
-                                       include_good_rt == "include", 
-                                       condition_trial == "social"),
-                               groups = c("numPicN","intervalNum"),
-                               formula = as.formula("correct_exposure ~ 1")) %>%
+                                                      include_good_rt == "include", 
+                                                      condition_trial == "social"),
+                                        groups = c("numPicN","intervalNum"),
+                                        formula = as.formula("correct_exposure ~ 1")) %>%
   mutate(stars = getstars(ps))
 ```
 
@@ -364,12 +369,12 @@ e2.chance.tests <- test.chance(data = filter(df_expt2, trial_cat == "test"),
 
 ```{r expt 2 acc glmer}
 m1_acc_expt2 <- glmer(correct ~ (trialType + condition_trial + log2(intervalNum + 1))^2 +
-                          (trialType | subids), 
+                        (trialType | subids), 
                       nAGQ=0,
                       glmerControl(optimizer = "bobyqa"),
                       family=binomial,
                       data = filter(df_expt2, trial_cat == "test")
-                      )
+)
 
 beta_trialtype_expt2 <- round(summary(m1_acc_expt2)$coef[2], 2)
 beta_interval_expt2 <- round(summary(m1_acc_expt2)$coef[4], 2)
@@ -395,19 +400,19 @@ e2.tab <- e2.tab[,c(5,1:4)]
 names(e2.tab)[4:5] <- c("$z$ value","$p$ value")
 
 e2.tab %<>% 
-    mutate(
-        stars = ifelse(`$p$ value` > .1, "", 
-                       ifelse(`$p$ value` < .001, "***",
-                              ifelse(`$p$ value` < .01, "**",
-                                     ifelse(`$p$ value` < .05, "*",
-                                            ifelse(`$p$ value` < .1, ".", "Error"))))),
-        `$p$ value` = ifelse(`$p$ value` > .1, round(`$p$ value`, 2), 
-                             ifelse(`$p$ value` < .001, "$<$ .001",
-                                    ifelse(`$p$ value` < .01, round(`$p$ value`, 2),
-                                           ifelse(`$p$ value` < .05, round(`$p$ value`, 2),
-                                                  ifelse(`$p$ value` < .1, round(`$p$ value`, 2), 
-                                                         "Error")))))
-    )
+  mutate(
+    stars = ifelse(`$p$ value` > .1, "", 
+                   ifelse(`$p$ value` < .001, "***",
+                          ifelse(`$p$ value` < .01, "**",
+                                 ifelse(`$p$ value` < .05, "*",
+                                        ifelse(`$p$ value` < .1, ".", "Error"))))),
+    `$p$ value` = ifelse(`$p$ value` > .1, round(`$p$ value`, 2), 
+                         ifelse(`$p$ value` < .001, "$<$ .001",
+                                ifelse(`$p$ value` < .01, round(`$p$ value`, 2),
+                                       ifelse(`$p$ value` < .05, round(`$p$ value`, 2),
+                                              ifelse(`$p$ value` < .1, round(`$p$ value`, 2), 
+                                                     "Error")))))
+  )
 
 
 names(e2.tab)[6] <- c("")
@@ -453,8 +458,8 @@ Procedures were identical to those of Experiment 1 and 2. We modified our cross-
 e3.chance.tests.exposure <- test.chance(data = filter(df_expt3, trial_category == "exposure", 
                                                       block == "test", experiment == "replication", 
                                                       include_good_rt == "include"),
-                               groups = c("prop_cond_clean"),
-                               formula = as.formula("correct ~ 1")) %>%
+                                        groups = c("prop_cond_clean"),
+                                        formula = as.formula("correct ~ 1")) %>%
   mutate(stars = getstars(ps))
 ```
 
@@ -466,7 +471,7 @@ m1_expo_expt3 <- glmer(correct ~ reliability * rel_subj  + (1 | subids),
                        family = binomial,
                        data = filter(df_expt3, trial_category == "exposure", block == "test",
                                      experiment == "replication", include_good_rt == "include")
-                       )
+)
 
 beta_rel_exposure_expt3 <- round(summary(m1_expo_expt3)$coef[2], 2)
 beta_rel_subj_exposure_expt3 <- round(summary(m1_expo_expt3)$coef[3], 2)
@@ -478,12 +483,12 @@ beta_rel_subj_exposure_interaction_expt3_p <- round(summary(m1_expo_expt3)$coef[
 
 ```{r gaze following means}
 ms_expt3 <- df_expt3 %>% 
-    filter(trial_category == "test", block == "test", 
-           include_good_rt == "include", experiment == "replication") %>% 
-    group_by(prop_cond_clean) %>%
-    summarise(accuracy = mean(correct_exposure, na.rm=T),
-              ci_low = ci.low(correct_exposure),
-              ci_high = ci.high(correct_exposure))
+  filter(trial_category == "test", block == "test", 
+         include_good_rt == "include", experiment == "replication") %>% 
+  group_by(prop_cond_clean) %>%
+  summarise(accuracy = mean(correct_exposure, na.rm=T),
+            ci_low = ci.low(correct_exposure),
+            ci_high = ci.high(correct_exposure))
 ```
 
 Similar to Experiments 1 and 2, participants reliably chose the referent that was the target of gaze at rates greater than those that would be predicted by a guessing model (smallest $\beta$ = `r round(sort(e3.chance.tests.exposure$betas)[1], 2)`, z = `r round(sort(e2.chance.tests.exposure$zs)[1], 2)`, p < .001). To quantify the effect of reliability condition and participants' subjective reliability assessment, we fit a mixed effects logistic regression model predicting the probability of selecting the gaze target as follows: \texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + offset(logit(1/Referents)) + (1 | subject)}. We found significant main effects of both reliability condition ($\beta$ = `r beta_rel_exposure_expt3`, p < .05) and subjective reliability ($\beta$ = `r beta_rel_subj_exposure_expt3`, p < .001) such that when the gaze cue was more reliable and when subjective reliability assessments were higher participants were more likely to use the gaze cue. The interaction between speaker reliability and subjective reliability assessments was marginally significant ($\beta$ = `r beta_rel_subj_exposure_interaction_expt3`, p = `r beta_rel_subj_exposure_interaction_expt3_p`). This analysis provides evidence that participants were sensitive to the reliability manipulation both in how often they used the gaze cue during the task and in how they rated the speaker at the end of the task.
@@ -496,7 +501,7 @@ grid::grid.raster(png::readPNG("figs/expt3.png"))
 
 ```{r expt3_chance}
 e3.chance.tests <- test.chance(data = filter(df_expt3, trial_category == "test", block == "test",
-                                     experiment == "replication", include_good_rt == "include"),
+                                             experiment == "replication", include_good_rt == "include"),
                                groups = c("trialType","prop_cond_clean"),
                                formula = as.formula("correct ~ 1")) %>%
   mutate(stars = getstars(ps))
@@ -508,9 +513,9 @@ m1_expt3 <- glmer(correct ~ trialType * reliability + (trialType | subids),
                   nAGQ = 1,
                   family = binomial,
                   data = filter(df_expt3, trial_category == "test", block == "test",
-                                     experiment == "replication", include_good_rt == "include"),
-                       control = glmerControl(optimizer = "bobyqa")
-                  )
+                                experiment == "replication", include_good_rt == "include"),
+                  control = glmerControl(optimizer = "bobyqa")
+)
 
 beta_trialtype_int_expt3 <- round(summary(m1_expt3)$coef[3], 2)
 beta_rel_trialtype_int_expt3 <- round(summary(m1_expt3)$coef[4], 2)
@@ -524,8 +529,8 @@ m1_expt3_original <- glmer(correct ~ reliability * trialType + (trialType | subi
                            nAGQ = 1,
                            family = binomial,
                            data = filter(df_expt3, trial_category == "test", block == "test",
-                                experiment == "original", include_good_rt == "include")
-                           )
+                                         experiment == "original", include_good_rt == "include")
+)
 
 beta_rel_expt3_original <- round(summary(m1_expt3_original)$coef[2], 2)
 beta_rel_expt3_original <- round(summary(m1_expt3_original)$coef[3], 2)
@@ -540,7 +545,7 @@ m2_expt3 <- glmer(correct ~ total_exposure_correct * trialType + (trialType | su
                   family = binomial,
                   data = filter(df_expt3, trial_category == "test", block == "test",
                                 experiment == "replication", include_good_rt == "include")
-                  )
+)
 
 beta_totexpo_expt3 <- round(summary(m2_expt3)$coef[2], 2)
 beta_trialtype_expt3 <- round(summary(m2_expt3)$coef[3], 2)
@@ -554,8 +559,8 @@ m2_expt3_original <- glmer(correct ~ total_exposure_correct * trialType + (trial
                            nAGQ = 1,
                            family = binomial,
                            data = filter(df_expt3, trial_category == "test", block == "test",
-                                experiment == "original", include_good_rt == "include")
-                           )
+                                         experiment == "original", include_good_rt == "include")
+)
 
 beta_totexpo_expt3_original <- round(summary(m2_expt3_original)$coef[2], 2)
 beta_trialtype_expt3_original <- round(summary(m2_expt3_original)$coef[3], 2)
@@ -570,7 +575,7 @@ m3_expt3 <- glmer(correct ~ rel_subj * trialType + (trialType | subids),
                   family = binomial,
                   data = filter(df_expt3, trial_category == "test", block == "test",
                                 experiment == "replication", include_good_rt == "include")
-                  )
+)
 
 beta_rel_subj_expt3 <- round(summary(m3_expt3)$coef[2], 2)
 beta_trialtype_rel_subj_expt3 <- round(summary(m3_expt3)$coef[3], 2)
@@ -597,19 +602,19 @@ e3.tab <- e3.tab[,c(5,1:4)]
 names(e3.tab)[4:5] <- c("$z$ value","$p$ value")
 
 e3.tab %<>% 
-    mutate(
-        stars = ifelse(`$p$ value` > .1, "", 
-                       ifelse(`$p$ value` < .001, "***",
-                              ifelse(`$p$ value` < .01, "**",
-                                     ifelse(`$p$ value` < .05, "*",
-                                            ifelse(`$p$ value` < .1, ".", "Error"))))),
-        `$p$ value` = ifelse(`$p$ value` > .1, round(`$p$ value`, 2), 
-                             ifelse(`$p$ value` < .001, "$<$ .001",
-                                    ifelse(`$p$ value` < .01, round(`$p$ value`, 2),
-                                           ifelse(`$p$ value` < .05, round(`$p$ value`, 2),
-                                                  ifelse(`$p$ value` < .1, round(`$p$ value`, 2), 
-                                                         "Error")))))
-    )
+  mutate(
+    stars = ifelse(`$p$ value` > .1, "", 
+                   ifelse(`$p$ value` < .001, "***",
+                          ifelse(`$p$ value` < .01, "**",
+                                 ifelse(`$p$ value` < .05, "*",
+                                        ifelse(`$p$ value` < .1, ".", "Error"))))),
+    `$p$ value` = ifelse(`$p$ value` > .1, round(`$p$ value`, 2), 
+                         ifelse(`$p$ value` < .001, "$<$ .001",
+                                ifelse(`$p$ value` < .01, round(`$p$ value`, 2),
+                                       ifelse(`$p$ value` < .05, round(`$p$ value`, 2),
+                                              ifelse(`$p$ value` < .1, round(`$p$ value`, 2), 
+                                                     "Error")))))
+  )
 
 
 names(e3.tab)[6] <- c("")
@@ -640,6 +645,28 @@ The strong interaction between frequency of gaze use and test trial performance 
 Taken together, these three analyses show that as the speaker's gaze became more reliable, participants were (a) more likely to use it, (b) more likely to rate the speaker as reliable, and (c) less likely to store multiple word-object links. These findings support and extend the results of Experiments 1 and 2 in several important ways. First, participants' performance on Same trials was again relatively unaffected by changes in performance on Switch trials. The selective effect of gaze on Switch trials provides converging evidence that the limitations on Same trials may be different than those regulating the distribution of attention on Switch trials. Second, learners' *use* of a referential cue was a stronger predictor of reduced memory for alternative word-object links compared to our reliability manipulation. Although we found a significant effect of reliability on participants' use of the gaze cue, participants' tendency to use the cue remained high. Consider that even in the 0% reliability condition the mean proportion of gaze following was still `r round(min(ms_expt3$accuracy),2)`. It is reasonable that participants would continue to use the gaze cue in our experiment since it was the only cue available and participants did not have a strong reason to think that the speaker would be deceptive. 
 
 The critical contribution of Experiment 3 is that learners respond to a *graded* manipulation of referential uncertainty, with the amount of information stored from the int ital exposure tracking with the reliability of the cue and participants' use of the cue. This graded accuracy performance shows that at the group-level learners stored alternative word-object links with different levels of fidelity depending on the amount of referential uncertainty present during learning. 
+
+
+
+
+
+# Experiment 4
+
+```{r expt4 test chance}
+e4.chance.tests <- test.chance(data = filter(df_expt4, trial_category == "test"),
+                               groups = c("trialType","inspection_cond","intervalNum"),
+                               formula = as.formula("correct ~ 1")) %>%
+  mutate(stars = getstars(ps))
+```
+
+```{r expt4 glmer}
+m1_acc_expt4 <- glmer(correct ~ (trialType + gaze_trial + log2(intervalNum + 1) + inspection_cond)^2 +
+                        (trialType | subid), 
+                      nAGQ=0,
+                      glmerControl(optimizer = "bobyqa"),
+                      family=binomial,
+                      data = filter(df_expt4, trial_category == "test"))
+```
 
 # General Discussion
 
@@ -683,5 +710,5 @@ We are grateful to Rose Schneider for helping record stimuli and to the members 
 
 ---
 nocite: | 
-  @smith2014unrealized
+@smith2014unrealized
 ...

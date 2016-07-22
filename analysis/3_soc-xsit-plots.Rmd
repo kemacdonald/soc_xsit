@@ -1,5 +1,5 @@
 ---
-title: "Soc-Xsit Vizualizations and Models"
+title: "Soc-Xsit Vizualizations"
 author: "Kyle MacDonald"
 date: "January 17, 2015"
 output: html_document
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(fig.width=10, fig.height=8, fig.crop = F, echo = F,
                       warning=FALSE, cache=F, message=FALSE, sanitize = T)
 ```
 
-This script creates visualizations and models for our Social Cross-situational Word Learning Project.
+This script creates visualizations for Social Cross-situational Word Learning Project. For the statistical models, see the .Rmd file for the manuscript.
 
 Clear workspace and set working directory 
 
@@ -30,11 +30,13 @@ Read in data from all 3 Experiments:
 * Experiment 1: Large scale experiment manipulating attention and memory demands
 * Experiment 2: Replication of Experiment 1 with more ecologically valid stimulus set
 * Experiment 3: Parametric manipulation of cue reliablity
+* Experiment 4: Fixed inspection time for each exposure trial: manipulated length: short (6 sec) vs. long (9 sec)
 
 ```{r read data, echo=F, warning=F}
 df_expt1 <- read.csv("../data/3_final-processed/soc-xsit-expt1-finalData.csv")
 df_expt2 <- read.csv("../data/3_final-processed/soc-xsit-expt2-finalData.csv")
 df_expt3 <- read.csv("../data/3_final-processed/soc-xsit-expt3-finalData.csv")
+df_expt4 <- read.csv("../data/3_final-processed/soc-xsit-expt4-finalData.csv")
 ```
 
 ## Experiment 1
@@ -301,7 +303,7 @@ df_expo_expt2_analysis <- df_expt2 %>%
   mutate(rt = rt + 2000) %>% 
   filter(trial_cat == "exposure",
          mean_acc_exp > 0.25,
-         correct_exposure = T | condition_trial == "no-social",
+         correct_exposure == T | condition_trial == "no-social",
          include_good_rt == "include")
 ```
 
@@ -383,13 +385,13 @@ Plot RT differences
 
 ```{r expt2 rt expo plot, echo=F}
 # revalue social/no-social --> gaze/no-gaze
-ms_rt_expo_expt2$condition <- revalue(ms_rt_expo_expt2$condition,
+ms_rt_expo_expt2$condition <- revalue(ms_rt_expo_expt2$condition_trial,
                                       c("no-social" = "No-Gaze", "social" = "Gaze"))
 
 expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2, aes(x=as.factor(intervalNum), y=mean, 
-                                                   color = condition, group = condition)) + 
+                                                   color = condition, group = condition_trial)) + 
   geom_line(size = 1) +
-  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = condition), 
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = condition_trial), 
                   fill = "white", stroke = 2, size= 1.3, fatten = 3) +
   scale_shape_manual(values = c(21, 19)) +
   scale_y_continuous(limits=c(3000,6500)) +
@@ -413,7 +415,7 @@ expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2, aes(x=as.factor(intervalNum), y=m
         strip.text = element_text(size=16))
 ```
 
-## Analyze test trials
+### Analyze test trials
 
 Get means and CIs for each condition.
 
@@ -445,9 +447,9 @@ ms_test_expt2_filt$condition_trial <- revalue(ms_test_expt2_filt$condition_trial
                                               c("no-social" = "No-Gaze", 
                                                 "social" = "Gaze"))
 
-## todo: fix geom_line to connect the correct points
 expt2.acc.test <- ggplot(data=ms_test_expt2_filt, aes(x=as.factor(intervalNum), 
                                                       y=mean, colour = condition_trial)) + 
+  geom_line(aes(group=interaction(trialType, condition_trial), linetype = trialType)) +
   geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = condition_trial), 
                   fill = "white", stroke = 1.5, size= 1.3, fatten = 2.8,
                   position = position_jitter(width=.2)) +
@@ -468,7 +470,6 @@ expt2.acc.test <- ggplot(data=ms_test_expt2_filt, aes(x=as.factor(intervalNum),
         axis.text.y = element_text(colour="grey20",size=18,
                                    angle=0,hjust=0.5,vjust=0,face="plain"),
         axis.title.y = element_text(colour="black",size=22,face="plain"),
-        #legend.position=c(0.80,0.88),
         legend.text = element_text(size=20),
         legend.title = element_text(size=22, face="bold"),
         plot.title = element_text(lineheight=1, face="bold", size = 24),
@@ -744,3 +745,70 @@ df_inspect <- df_expt3 %>%
   select(subids, itemNum, inspection_time_exposure = rt) %>% 
   left_join(filter(df_expt3, trial_category == "test"), by = c("subids", "itemNum")) 
 ```
+
+
+
+## Experiment 4
+
+```{r expt4 nsubs}
+nsubs_expt4 <- df_expt4 %>% 
+  group_by(social_cond, interval, inspection_cond) %>%
+  summarise(n_subs = n_distinct(subid))
+
+knitr::kable(nsubs_expt4)
+```
+
+Get the number of trials on which participants did not make a response before the timer ran out.
+
+```{r}
+df_expt4 %>% 
+  group_by(answer_type, inspection_cond) %>% 
+  summarise(count = n()) 
+```
+
+Get means and CIs for each condition (interval X trial type X inspection time).
+
+```{r}
+ms_e4 <- df_expt4 %>% 
+  filter(trial_category == "test", 
+         answer_type_exposure == "participant_response") %>%
+  group_by(subid, inspection_cond, intervalNum, trialType, gaze_trial) %>% 
+  summarise(mean_correct = mean(correct)) %>% 
+  group_by(inspection_cond, intervalNum, trialType, gaze_trial) %>% 
+  multi_boot_standard(column = "mean_correct")
+```
+
+Now plot.
+
+```{r}
+ms_e4$inspection_cond <- factor(ms_e4$inspection_cond, levels = c("short", "long"))
+
+ggplot(data=ms_e4, aes(x=as.factor(intervalNum), y=mean, colour = gaze_trial)) + 
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), 
+                  fill = "white", stroke = 1.5, size= 1.3, fatten = 2.8,
+                  position = position_jitter(width=.1)) +
+  geom_line(aes(group=interaction(trialType, gaze_trial), linetype = trialType)) +
+  facet_wrap(~inspection_cond) +
+  scale_shape_manual(values = c(21, 19)) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1.1)) +
+  scale_colour_manual(values=c("#e34a33", "#2c7fb8")) +
+  xlab("Interval Between Exposure and Test") +
+  ylab("Proportion Correct") +
+  labs(colour = "Condition") +
+  labs(linetype = "Trial Type") +
+  guides(linetype=F, shape=F) +
+  ggtitle("Accuracy on Test Trials") +
+  theme(axis.title.x = element_text(colour="black",size=22,
+                                    angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.x = element_text(colour="grey20",size=18,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.text.y = element_text(colour="grey20",size=18,
+                                   angle=0,hjust=0.5,vjust=0,face="plain"),
+        axis.title.y = element_text(colour="black",size=22,face="plain"),
+        legend.text = element_text(size=20),
+        legend.title = element_text(size=22, face="bold"),
+        plot.title = element_text(lineheight=1, face="bold", size = 24),
+        strip.text = element_text(size=16))
+```
+
