@@ -22,6 +22,7 @@ library(directlabels)
 * Experiment 1: Large scale experiment manipulating attention and memory demands
 * Experiment 2: Replication of Experiment 1 with more ecologically valid stimulus set
 * Experiment 3: Parametric manipulation of cue reliablity
+* Experiment 4: Manipulation of a fixed inspection time for exposure trials
 
 ```{r read data, warning=F}
 df_expt1 <- read.csv("../../data/final-raw/soc_xsit_expt1_master_clean.csv")

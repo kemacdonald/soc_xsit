@@ -87,14 +87,6 @@ df_final$approval_time <- parse_date_time(
   "Ymd hms"
 )
 
-#### add variable to track trial number
-trial_numbers <- seq(1:num_trials_exp)
-
-df_final <- ddply(df_final, .(workerid), function(x) {
-  x$trial_num <- trial_numbers
-  x
-  }
-)
 
 #### drop subs who have more than 36 trials
 drop.subs <- ddply(df_final,.(workerid), function(x) {nrow(x) > num_trials_exp}) %>% 
@@ -104,14 +96,24 @@ drop.subs <- ddply(df_final,.(workerid), function(x) {nrow(x) > num_trials_exp})
 drop.subs <- df_final %>% 
   filter(trial_category == "example") %>% 
   mutate(include_exclude_examples = ifelse(trial_num %in% c(1,2) & chosen == "squirrel", "include",
-                                  ifelse(trial_num %in% c(3,4) & chosen == "tomato", "include", 
-                                 "exclude"))) %>% 
+                                           ifelse(trial_num %in% c(3,4) & chosen == "tomato", "include", 
+                                                  "exclude"))) %>% 
   select(workerid, include_exclude_examples) %>% 
   distinct() %>% 
   left_join(drop.subs, ., by = "workerid")
-  
 
 df_final <- left_join(df_final, drop.subs, by = "workerid")
+
+df_final %<>% filter(include_exclude_repeat == "include")
+
+#### add variable to track trial number
+trial_numbers <- seq(1:num_trials_exp)
+
+df_final <- ddply(df_final, .(workerid), function(x) {
+  x$trial_num <- trial_numbers
+  x
+}
+)
 
 #### clean-up variables
 df_final <- df_final %>% 
@@ -127,7 +129,7 @@ df_final <- df_final %>%
 ## flag first test trials for subjects 
 df_final$first.trial <- FALSE
 df_final$first.trial[(df_final$interval=="Zero" & df_final$trial_num==5) |
-                        (df_final$interval=="Three" & df_final$trial_num==9)] <- TRUE
+                       (df_final$interval=="Three" & df_final$trial_num==9)] <- TRUE
 
 ## flag correct vs. incorrect
 

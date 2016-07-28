@@ -647,9 +647,6 @@ Taken together, these three analyses show that as the speaker's gaze became more
 The critical contribution of Experiment 3 is that learners respond to a *graded* manipulation of referential uncertainty, with the amount of information stored from the int ital exposure tracking with the reliability of the cue and participants' use of the cue. This graded accuracy performance shows that at the group-level learners stored alternative word-object links with different levels of fidelity depending on the amount of referential uncertainty present during learning. 
 
 
-
-
-
 # Experiment 4
 
 ```{r expt4 test chance}
