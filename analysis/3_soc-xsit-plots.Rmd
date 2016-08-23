@@ -28,21 +28,18 @@ library(directlabels)
 ```{r custom plotting theme, include = FALSE}
 theme_soc_xsit <- theme_set(theme_bw())
 theme_soc_xsit <- theme_update(
-  axis.title.x = element_text(colour="black",size=22,
-                              angle=0,hjust=0.5,vjust=0,face="plain"),
-  axis.text.x = element_text(colour="grey20",size=18,
-                             angle=0,hjust=0.5,vjust=0,face="plain"),
-  axis.text.y = element_text(colour="grey20",size=18,
-                             angle=0,hjust=0.5,vjust=0,face="plain"),
-  axis.title.y = element_text(colour="black",size=22,face="plain"),
-  legend.position=c(0.08,0.2),
+  title = element_text(size=16, face="bold"),
+  axis.title.x = element_text(colour="black",size=18, margin=margin(15,0,0,0),face="plain"),
+  axis.text.x = element_text(colour="grey20",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
+  axis.text.y = element_text(colour="grey20",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
+  axis.title.y = element_text(colour="black",size=18,margin=margin(0,15,0,0),face="plain"),
+  legend.position="top",
   legend.text = element_text(size=18),
-  legend.title = element_text(size=20, face="bold"),
-  strip.text = element_text(size=16),
+  legend.title = element_text(size=18, face="bold"),
+  strip.text = element_text(size=14),
   panel.grid.minor = element_blank(),
   panel.grid.major = element_line(colour = "gray88", linetype = "solid"),
-  panel.margin = unit(1, "lines")
-)
+  panel.margin = unit(1, "lines"))
 ```
 
 Read in data from all 4 Experiments:
@@ -61,12 +58,12 @@ df_expt4 <- read.csv("../data/3_final-processed/soc-xsit-expt4-finalData.csv")
 
 ## Experiment 1
 
-### Get the number of subjects in each condition.  
+### Get N for each condition.  
 
 ```{r describe data, tidy=TRUE}
 nsubs <- df_expt1 %>%
   group_by(condition, intervalNum, numPicN) %>%
-  summarise(n_subs = n_distinct(subids))
+  summarise(n_subs = n_distinct(subid))
 
 knitr::kable(nsubs)
 ```
@@ -91,7 +88,7 @@ df_test_expt1 <- df_expt1 %>%
 # subject and trial level filter
 df_test_expt1_filt <- df_expt1 %>% 
   filter(trial_category == "test") %>% 
-  filter(include_good_rt_test == "include", 
+  filter(include_good_rt_test == "include", include_good_rt_exposure == "include",
          include_expo == "include" | condition == "No-Social") %>%
   filter(correct_exposure == T | condition == "No-Social")
 
@@ -107,11 +104,11 @@ Get the number of subjects filtered out
 ```{r expt1 nsubs filtered}
 df_n <- df_test_expt1 %>%
   group_by(condition) %>%
-  summarise(n_subs = n_distinct(subids))
+  summarise(n_subs = n_distinct(subid))
 
 df_n_filt <- df_test_expt1_filt %>%
   group_by(condition) %>%
-  summarise(n_subs_filt = n_distinct(subids)) %>%
+  summarise(n_subs_filt = n_distinct(subid)) %>%
   select(n_subs_filt)
 
 df_n <- cbind(df_n, df_n_filt)
@@ -126,7 +123,7 @@ Get means and CIs for each combination of number of referents and interval
 ```{r expt1 accuracy on exposure trials}
 ms_expo_expt1 <-  df_expo_expt1 %>%
   filter(condition == "Social") %>%
-  group_by(numPic, intervalNum, subids) %>%
+  group_by(numPic, intervalNum, subid) %>%
   summarise(accuracy_exposure = mean(correct_exposure, na.rm = T)) %>% 
   group_by(numPic, intervalNum) %>%
   multi_boot_standard("accuracy_exposure")
@@ -148,8 +145,7 @@ ggplot(data=ms_expo_expt1, aes(x=intervalNum, y=mean)) +
   ylab("Prop. Chose Gaze Target") +
   labs(colour = "Condition") +
   labs(linetype = "Trial Type") +
-  guides(linetype=FALSE) +
-  theme_soc_xsit
+  guides(linetype=FALSE) 
 ```
 
 ### RT on exposure trials 
@@ -159,73 +155,69 @@ levels of attention and memory demands.
 
 ```{r expt1 rt on exposure trials}
 ms_expo_rt_expt1 <-  df_expo_expt1_analysis %>%
-  mutate(rt = rt + 2000) %>% 
-  group_by(numPic, intervalNum, condition, subids) %>%
-  summarise(mean_rt = mean(rt)) %>% 
+  mutate(rt = rt + 2000,
+         rt_sec = rt / 1000) %>% 
+  group_by(numPic, intervalNum, condition, subid) %>%
+  summarise(mean_rt = mean(rt_sec)) %>% 
   group_by(numPic, intervalNum, condition) %>%
   multi_boot_standard("mean_rt")
 ```
 
-Clean up the variable names for plotting.
+Clean up the variable names for plotting and plot
 
-```{r expt1 rt labels, echo=F}
+```{r expt1 plot rt on exposure trials, echo=F}}
 ms_expo_rt_expt1$condition <- revalue(ms_expo_rt_expt1$condition,
                                       c("No-Social" = "No-Gaze","Social" = "Gaze"))
 
 ms_expo_rt_expt1$intervalNum <- as.factor(ms_expo_rt_expt1$intervalNum)
 ms_expo_rt_expt1$numPic <- paste(ms_expo_rt_expt1$numPic, "-Referents", sep="")
-```
+y_axis_labs <- c("3.0", "4.0", "5.0", "6.0", "7.0")
 
-Now we plot mean reaction times for each condition.
-
-```{r expt1 plot rt on exposure trials, echo=F}
 exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1, 
                                 aes(x=intervalNum, y=mean, color = condition, 
                                     group = condition)) + 
-  geom_smooth(method = "loess", se = F, span = 5, alpha = 0.6) +
+  geom_smooth(method = "loess", se = F, span = 4, size = 1) +
   geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), size = 1) +
   geom_point(color = "white", size = 2.5, data = 
                filter(ms_expo_rt_expt1, condition == "No-Gaze")) +
-  scale_y_continuous(limits=c(3000,7500)) +
+  scale_y_continuous(limits=c(3,7.5), breaks = c(3,4,5,6,7), labels = y_axis_labs) +
   scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
   facet_grid( ~ numPic) + 
-  xlab("Interval Between Exposure and Test") + 
-  ylab("Reponse Time (ms)") +
-  labs(colour = "Condition") +
-  labs(linetype = "Trial Type") +
-  guides(linetype=FALSE, color=F) +
-  theme_soc_xsit
+  xlab(NULL) + 
+  ylab("RT (sec)") +
+  labs(colour = "Condition",linetype = "Trial Type") +
+  guides(linetype=F) 
 ```
 
 ### Accuracy on test trials 
 
 ```{r expt1 acc test}
 ms_test_expt1 <- df_test_expt1  %>%
-  group_by(condition, intervalNum, numPic, trialType, subids) %>%
-  summarise(accuracy = mean(correct), exclusionary_criteria = "Trial Level") %>% 
+  group_by(condition, intervalNum, numPic, trialType, subid) %>%
+  summarise(accuracy = mean(correct), 
+            exclusionary_criteria = "Trial Level") %>% 
   group_by(condition, intervalNum, numPic, trialType) %>%
   multi_boot_standard("accuracy")
 
 ms_test_filt_expt1 <- df_test_expt1_filt  %>%
-  group_by(condition, intervalNum, numPic, trialType, subids) %>%
-  summarise(accuracy = mean(correct), exclusionary_criteria = "Subject and Trial level") %>%
+  group_by(condition, intervalNum, numPic, trialType, subid) %>%
+  summarise(accuracy = mean(correct), 
+            exclusionary_criteria = "Subject and Trial level") %>%
   group_by(condition, intervalNum, numPic, trialType) %>%
   multi_boot_standard("accuracy")
 
 ms_test_all_expt1 <- rbind(ms_test_expt1, ms_test_filt_expt1)
 ```
 
-```{r expt1 acc test plot revalue, echo=F}
-ms_test_expt1$condition <- revalue(ms_test_expt1$condition,
+```{r expt1 acc test plot, echo=F}
+ms_test_filt_expt1$condition <- revalue(ms_test_filt_expt1$condition,
                                    c("No-Social" = "No-Gaze","Social" = "Gaze"))
-ms_test_expt1 %<>%
+ms_test_filt_expt1 %<>%
   ungroup() %>% 
   mutate(intervalNum = as.factor(intervalNum),
          numPic_name = as.factor(paste(ms_test_expt1$numPic, "-Referents", sep="")))
-```
 
-```{r expt1 acc test plot, echo=F}
-expt1.acc.test <- ggplot(data=ms_test_expt1, aes(x=intervalNum, 
+expt1.acc.test <- ggplot(data=ms_test_filt_expt1, aes(x=intervalNum, 
                                                  y=mean,colour = condition, 
                                                  lineType = trialType)) + 
   geom_smooth(aes(group=interaction(trialType, condition), linetype = trialType), 
@@ -239,11 +231,10 @@ expt1.acc.test <- ggplot(data=ms_test_expt1, aes(x=intervalNum,
   scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
   facet_wrap(~ numPic_name, ncol = 4) + 
   xlab("Interval Between Exposure and Test") + 
-  ylab("Proportion Correct") +
+  ylab("Prop. Correct") +
   labs(colour = "Condition") +
   labs(linetype = "Trial Type") +
-  guides(linetype=F, shape = F, color = F) +
-  theme_soc_xsit
+  guides(linetype=F, shape = F, color = F)
 ```
 
 ```{r}
@@ -253,17 +244,7 @@ grid.arrange(exp1_rt_exposure_plot, expt1.acc.test, ncol=1)
 ## Experiment 2
 
 In Experiment 2, we chose a subset of the referent/interval conditions: 
-numPic = 4, and interval = 0 and 3.
-
-Get the number of subjects in each condition.
-
-```{r expt2 nsubs}
-nsubs_expt2 <- df_expt2 %>% 
-  group_by(condition, interval) %>%
-  summarise(n_subs = n_distinct(subids))
-
-knitr::kable(nsubs_expt2)
-```
+numPic = 4, and interval = 0 or 3.
 
 ### Set up filters
 
@@ -274,18 +255,18 @@ Exposure trials.
 df_expo_expt2 <- filter(df_expt2,
                         include_good_rt == "include",
                         condition_trial == "social",
-                        trial_cat == "exposure")
+                        trial_category == "exposure")
 
 # RT, subject level and trial level filter 
 df_expo_expt2_filt <- filter(df_expt2,
-                             trial_cat == "exposure",
+                             trial_category == "exposure",
                              condition_trial == "social" & mean_acc_exp > 0.25,
                              include_good_rt == "include")
 
 # filter that gets both social/no-social trials
 df_expo_expt2_analysis <- df_expt2 %>%
   mutate(rt = rt + 2000) %>% 
-  filter(trial_cat == "exposure",
+  filter(trial_category == "exposure",
          mean_acc_exp > 0.25,
          correct_exposure == T | condition_trial == "no-social",
          include_good_rt == "include")
@@ -296,11 +277,11 @@ Get the number of subjects filtered out by the subject level filter.
 ```{r expt2 nsubs filtered}
 df_n_expt2 <- df_expo_expt2 %>%
   group_by(condition) %>%
-  summarise(n_subs = n_distinct(subids))
+  summarise(n_subs = n_distinct(subid))
 
 df_n_expt2_filt <- df_expo_expt2_filt %>%
   group_by(condition) %>%
-  summarise(n_subs_filt = n_distinct(subids)) %>%
+  summarise(n_subs_filt = n_distinct(subid)) %>%
   select(n_subs_filt)
 
 nsubs_expt2_filt <- cbind(df_n_expt2, df_n_expt2_filt)
@@ -313,12 +294,12 @@ Test trial filters.
 ```{r expt2 test filters}
 # just RT filter
 df_test_expt2 <- df_expt2 %>%
-  filter(trial_cat == "test",
+  filter(trial_category == "test",
          include_good_rt == "include")
 
 # RT, subject level and trial level filter 
 df_test_expt2_filt <- df_expt2 %>%
-  filter(trial_cat == "test",
+  filter(trial_category == "test",
          mean_acc_exp > 0.25 ,
          include_good_rt == "include",
          correct_exposure == T | condition_trial == "no-social")
@@ -331,7 +312,7 @@ Accuracy, selecting target of gaze.
 ```{r expt2 acc expo}
 # unfiltered
 ms_expo_expt2 <- df_expo_expt2 %>%
-  group_by(intervalNum, subids) %>%
+  group_by(intervalNum, subid) %>%
   summarise(accuracy_exposure = mean(correct)) %>% 
   group_by(intervalNum) %>% 
   multi_boot_standard("accuracy_exposure") %>% 
@@ -339,7 +320,7 @@ ms_expo_expt2 <- df_expo_expt2 %>%
 
 # filtered
 ms_expo_expt2_filt <- df_expo_expt2_filt %>%
-  group_by(intervalNum, subids) %>%
+  group_by(intervalNum, subid) %>%
   summarise(accuracy_exposure = mean(correct)) %>% 
   group_by(intervalNum) %>% 
   multi_boot_standard("accuracy_exposure") %>% 
@@ -348,43 +329,15 @@ ms_expo_expt2_filt <- df_expo_expt2_filt %>%
 ms_expo_all_expt2 <- rbind(ms_expo_expt2, ms_expo_expt2_filt)
 ```
 
-```{r}
-df_expo_expt2_analysis %>% 
-  group_by(condition_trial) %>% 
-  summarise(median_rt = median(rt),
-            mean_rt = mean(rt))
-```
-
 RT on exposure trials.
 
 ```{r expt2 rt expo}
 ms_rt_expo_expt2 <- df_expo_expt2_analysis %>%
-  group_by(condition_trial, intervalNum, subids) %>%
-  summarise(rt_exposure = mean(rt)) %>% 
+  group_by(condition_trial, intervalNum, subid) %>%
+  mutate(rt_sec = rt / 1000) %>% 
+  summarise(rt_exposure = mean(rt_sec)) %>% 
   group_by(condition_trial, intervalNum) %>%
   multi_boot_standard("rt_exposure")
-```
-
-Plot RT differences
-
-```{r expt2 rt expo plot, echo=F}
-# revalue social/no-social --> gaze/no-gaze
-ms_rt_expo_expt2$condition <- revalue(ms_rt_expo_expt2$condition_trial,
-                                      c("no-social" = "No-Gaze", "social" = "Gaze"))
-
-expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2, aes(x=as.factor(intervalNum), y=mean, 
-                                                   color = condition, group = condition_trial)) + 
-  geom_line(size = 1) +
-  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = condition_trial), 
-                  fill = "white", stroke = 1.5, size= 1.3, fatten = 2) +
-  scale_shape_manual(values = c(21, 19)) +
-  scale_y_continuous(limits=c(3000,6500)) +
-  scale_colour_manual(values=c("#e34a33", "#2c7fb8")) +
-  xlab("Interval Between Exposure and Test") +
-  ylab("Response Time (ms)") +
-  guides(shape=F, color=F) +
-  ggtitle("Study Time on Exposure Trials") + 
-  theme_soc_xsit
 ```
 
 ### Analyze test trials
@@ -394,7 +347,7 @@ Get means and CIs for each condition.
 ```{r expt2 acc test aggregate}
 # unfiltered
 ms_test_expt2 <- df_test_expt2 %>%
-  group_by(trialType, condition_trial, intervalNum, subids) %>%
+  group_by(trialType, condition_trial, intervalNum, subid) %>%
   summarise(accuracy = mean(correct)) %>% 
   group_by(trialType, condition_trial, intervalNum) %>% 
   multi_boot_standard("accuracy") %>% 
@@ -402,7 +355,7 @@ ms_test_expt2 <- df_test_expt2 %>%
 
 # filtered (subject level)
 ms_test_expt2_filt <- df_test_expt2_filt %>%
-  group_by(trialType, condition_trial, intervalNum, subids) %>%
+  group_by(trialType, condition_trial, intervalNum, subid) %>%
   summarise(accuracy = mean(correct)) %>% 
   group_by(trialType, condition_trial, intervalNum) %>% 
   multi_boot_standard("accuracy") %>% 
@@ -411,59 +364,61 @@ ms_test_expt2_filt <- df_test_expt2_filt %>%
 ms_test_all_expt2 <- rbind(ms_test_expt2, ms_test_expt2_filt)
 ```
 
-Now plot accuracy for test trials.
+#### Now plot inspection time for exposure trials with the accuracy on test trials.
 
-```{r expt2 acc test plot, echo=F, fig.width = 4, fig.height = 4}
-# revalue social/no-social --> gaze/no-gaze
+```{r expt2 final plot, echo=F, fig.width = 4, fig.height = 4}
+## inspection time plot
+ms_rt_expo_expt2$condition <- revalue(ms_rt_expo_expt2$condition_trial,
+                                      c("no-social" = "No-Gaze", "social" = "Gaze"))
+
+y_axis_labs_2 <- c("3.0", "4.0", "5.0", "6.0")
+
+expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2, 
+                        aes(x=as.factor(intervalNum), 
+                            y=mean, color = condition, 
+                            group = condition_trial)) + 
+  geom_line(size = 1) +
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = condition_trial), 
+                  fill = "white", stroke = 1.5, size= 1.3, fatten = 3) +
+  scale_shape_manual(values = c(21, 19)) +
+  scale_y_continuous(limits=c(3,6.5), breaks = c(3,4,5,6), labels = y_axis_labs_2) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  guides(shape=F, color=F) +
+  labs(title = "Inspection Time (Exposure)",
+       x = "Intervening Trials",
+       y = "RT (sec)") +
+  theme(plot.margin = margin(t = 20, r = 20, b = 20, l = 20, unit = "pt")) 
+
+## accuracy plot
 ms_test_expt2_filt$condition_trial <- revalue(ms_test_expt2_filt$condition_trial,
                                               c("no-social" = "No-Gaze", 
                                                 "social" = "Gaze"))
 
-expt2.acc.test.line <- ggplot(data=ms_test_expt2_filt, aes(x=as.factor(intervalNum), 
-                                                           y=mean, colour = condition_trial)) + 
-  geom_line(aes(group=interaction(trialType, condition_trial),  linetype = trialType), size = 1) +
+expt2.acc.test.line <- ggplot(data=ms_test_expt2_filt, 
+                              aes(x=as.factor(intervalNum), 
+                                  y=mean, colour = condition_trial)) + 
+  geom_line(aes(group=interaction(trialType, condition_trial),
+                linetype = trialType), size = 1) +
   geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = condition_trial), 
-                  fill = "white", stroke = 2, size= 1.3, fatten = 2,
-                  position = position_jitter(width = 0.15)) +
+                  fill = "white", stroke = 2, size= 1.3, fatten = 3,
+                  position = position_jitter(width = 0.1)) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
   scale_shape_manual(values = c(21, 19)) +
-  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
   scale_y_continuous(limits=c(0,1)) +
-  scale_colour_manual(values=c("#e34a33", "#2c7fb8")) +
-  xlab("Interval Between Exposure and Test") +
-  ylab("Proportion Correct") +
-  labs(colour = "Condition") +
-  labs(linetype = "Trial Type") +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  labs(title = "Accuracy (Test)",
+       x = "Intervening Trials",
+       y = "Prop. Correct",
+       colour = "Condition", 
+       linetype = "Trial Type") +
   guides(linetype=FALSE, shape=F, color = F) +
-  ggtitle("Accuracy on Test Trials (Experiment 2)") +
+  theme(plot.margin = margin(t = 20, r = 20, b = 20, l = 20, unit = "pt")) +
   annotate("text", x = 2.35, y = 0.7, label = "Same", color = "black", size = 6) +
-  annotate("text", x = 2.35, y = 0.3, label = "Switch", color = "black", size = 6) +
-  theme_soc_xsit
-
-expt2.acc.test.line
-```
-
-Accuracy barplots
-
-```{r barplot expt2}
-expt2.acc.test <- ggplot(data=ms_test_expt2_filt, 
-                         aes(x=as.factor(intervalNum), y=mean, 
-                             fill = condition_trial)) +
-  geom_bar(stat = "identity", position = position_dodge()) +
-  facet_wrap(~trialType) +
-  geom_linerange(aes(ymin=ci_lower, ymax=ci_upper), position = position_dodge(width = 0.9)) +
-  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-  scale_y_continuous(limits=c(0,1)) +
-  scale_fill_manual(values=c("#e34a33", "#2c7fb8")) +
-  xlab("Interval Between Exposure and Test") +
-  ylab("Proportion Correct") +
-  guides(fill = F) +
-  labs(fill = "Condition") +
-  ggtitle("Accuracy on Test Trials") +
-  theme_soc_xsit
+  annotate("text", x = 2.35, y = 0.3, label = "Switch", color = "black", size = 6) 
 ```
 
 ```{r expt2 final plot, fig.height=5, fig.width = 8}
-grid.arrange(expt2.rt.expo, expt2.acc.test, ncol=2, widths = 1:2)
+grid.arrange(expt2.rt.expo, expt2.acc.test.line, ncol=2)
 ```
 
 ## Experiment 3
@@ -477,7 +432,7 @@ df_expt3 <- filter(df_expt3, experiment == "replication")
 ```{r expt3 get number of subs}
 n_subs_expt3 <- df_expt3 %>%
   group_by(prop_cond_clean, experiment) %>%
-  summarise(n_subs = n_distinct(subids))
+  summarise(n_subs = n_distinct(subid))
 
 knitr::kable(n_subs_expt3)
 ```
@@ -488,187 +443,67 @@ df_expt3$prop_cond_clean <- factor(df_expt3$prop_cond_clean,
                                    levels = c("0%", "25%", "50%", "75%", "100%"))
 ```
 
-### Analyze performance on test block
+### Analyze performance at Test
 
-```{r expt3 acc fam trials in test block}
-# Accuracy on familiarization trials in test block
-ms_expo_test <- df_expt3 %>%
-  filter(trial_category == "exposure", block == "test", 
-         include_good_rt == "include", experiment == "replication") %>% 
-  group_by(prop_cond_clean, subids) %>%
-  summarise(accuracy = mean(correct_exposure, na.rm=T),
-            mean_rel = mean(rel_subj, na.rm=T)) %>% 
-  group_by(prop_cond_clean) %>% 
-  multi_boot_standard("accuracy")
-```
+As a function of reliability condition, inspection time, number of trials using gaze, and subjective reliability judgment.
 
-Plot proportion of participants who chose target of gaze as a function of condition.
-
-```{r chose gaze target plot, include=F}
-ggplot(ms_expo_test, 
-       aes(x=prop_cond_clean, y=mean, group=1)) +
-  geom_smooth(method="lm", se=F, color="black") +
-  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), size=1, color = "black") +
-  geom_hline(yintercept=0.25, linetype = "dashed") +
-  scale_y_continuous(limits=c(0,1)) +
-  xlab("Level of Reliablity") + 
-  ylab("Prop. Chose Target of Gaze") + 
-  theme_soc_xsit
-```
-
-```{r expt3 acc on test trials test block}
+```{r expt3 summarizing}
 # Accuracy on familiarization trials in test block
 ms_test_test <- df_expt3 %>%
   filter(trial_category == "test", block == "test", 
          include_good_rt == "include") %>% 
-  group_by(prop_cond_clean, trialType, subids) %>%
-  summarise(accuracy = mean(correct)) %>% 
+  group_by(prop_cond_clean, trialType, subid) %>%
+  summarise(accuracy = mean(correct, na.rm = T)) %>% 
   group_by(prop_cond_clean, trialType) %>% 
-  multi_boot_standard("accuracy")
-```
+  multi_boot_standard("accuracy", na.rm=T)
 
-```{r subjective reliablity analysis 1}
 # Analyze subject reported reliablity
 ms_test_subj_rel <- df_expt3 %>%
   filter(experiment == "replication") %>% 
   mutate(rel_subj = as.numeric(as.character(rel_subj))) %>% 
-  group_by(prop_cond_clean, subids) %>%
+  group_by(prop_cond_clean, subid) %>%
   summarise(subjective_reliability = mean(rel_subj, na.rm=T)) %>% 
   group_by(prop_cond_clean) %>% 
   multi_boot_standard("subjective_reliability", na.rm = T)
-```
 
-Plot relationship between reliablity condition and subjective reliabiltiy judgments.
-
-```{r, include = F}
-qplot(x = prop_cond_clean, y = mean,
-      group=1, data=ms_test_subj_rel) + 
-  ylim(c(0,1)) +
-  geom_smooth(method="lm", se=T) +
-  xlab("Reliablity Condition") +
-  ylab("Subjective Reliablity Judgment") +
-  theme_soc_xsit
-```
-
-```{r expt3 summarise subjective reliablity}
 # Analyze subject reported reliablity
 mss_subj_rel <- df_expt3 %>% 
   filter(experiment == "replication", is.na(rel_subj) == F) %>% 
-  select(subids, rel_subj, prop_cond_clean, total_exposure_correct, 
+  select(subid, rel_subj, prop_cond_clean, total_exposure_correct, 
          same_accuracy, switch_accuracy, experiment) %>% 
   distinct()
-```
 
-```{r subjective reliablity analysis 3}
 # Reported reliability vs. number correct on exposure - means.
 ms_test_subj_rel <- df_expt3 %>%
   filter(experiment == "replication", include_good_rt == "include", 
          is.na(rel_subj) == F) %>% 
-  group_by(prop_cond_clean, total_exposure_correct, subids) %>%
+  group_by(prop_cond_clean, total_exposure_correct, subid) %>%
   summarise(subj = mean(rel_subj, na.rm=TRUE)) %>% 
   group_by(prop_cond_clean, total_exposure_correct) %>% 
   multi_boot_standard("subj")
-```
 
-Plot subjective reliability as a function of choosing the gaze target.
-
-```{r expt3 subj rel plot, include =F}
-qplot(total_exposure_correct, mean, col = prop_cond_clean, 
-      ymin = ci_lower, ymax = ci_upper,
-      geom="pointrange",
-      position=position_dodge(width=.1),
-      data=ms_test_subj_rel, ylab="Subjective reliability", 
-      xlab="Num Trials Chose Gaze Target") + 
-  geom_smooth(method="lm", se=FALSE) +
-  scale_color_discrete(name="Reliability Level") +
-  theme_soc_xsit
-```
-
-```{r expt3 subj reliablity munging}
 # Relationship between subjective reliability, reliablity condition, and test trial performance
-
 gather_mss_rel_subj <- mss_subj_rel %>% 
   gather(key = trialType, value = sub_mean_accuracy, 5:6) %>% 
-  arrange(subids)
+  arrange(subid)
 
 gather_mss_rel_subj$rel_bin <- cut(gather_mss_rel_subj$rel_subj, breaks = 5, 
-                                   labels = c("0.0-0.2", "0.2-0.4", "0.4-0.6", 
-                                              "0.6-0.8", "0.8-1.0" ))
+                                   labels = c("0-.2", ".2-.4", ".4-.6", 
+                                              ".6-.8", ".8-1"))
 
 ms_rel_subj <- gather_mss_rel_subj %>% 
-  group_by(rel_bin, trialType, subids) %>% 
+  group_by(rel_bin, trialType, subid) %>% 
   summarise(mean_accuracy = mean(sub_mean_accuracy, na.rm = T)) %>% 
   group_by(rel_bin, trialType) %>% 
   multi_boot_standard("mean_accuracy", na.rm =T)
-```
 
-```{r expt3 acc test by acc exposure plot, echo=F}
 ms_acc_exp_test_expt3 <- df_expt3 %>%
   filter(trial_category == "test", block == "test",
          include_good_rt == "include", experiment == "replication") %>% 
-  group_by(trialType, total_exposure_correct, subids) %>%
+  group_by(trialType, total_exposure_correct, subid) %>%
   summarise(correct = mean(correct)) %>% 
   group_by(trialType, total_exposure_correct) %>% 
   multi_boot_standard("correct")
-```
-
-### Final plot 
-
-```{r expt3 acc test, echo=F, fig.width=9}
-expt3_acc_test <- ggplot(data=ms_test_test, 
-                         aes(x=prop_cond_clean, y=mean, group=trialType,
-                             color=trialType, label = trialType)) + 
-  geom_smooth(method='lm', se=F) +
-  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = trialType), 
-                  fill = "white", stroke = 1.8, size= 1.3, fatten = 2.8) +
-  scale_shape_manual(values = c(21, 19)) +
-  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-  scale_y_continuous(limits=c(0,1)) +
-  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-  xlab("Reliability of Gaze") + 
-  ylab("Proportion Correct") +
-  labs(color = "Trial Type") +
-  guides(color=FALSE,shape=F) +
-  theme_soc_xsit
-
-expt3_acc_test_chose_gazetar <- ggplot(data=ms_acc_exp_test_expt3, 
-                                       aes(x=total_exposure_correct, y=mean,
-                                           group=trialType, color=trialType, 
-                                           label = trialType)) + 
-  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = trialType), 
-                  fill = "white", stroke = 1.8, size= 1.3, fatten = 2.8) +
-  scale_shape_manual(values = c(21, 19)) +
-  geom_smooth(method='lm', se=F) +
-  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-  scale_x_continuous(limits=c(0,8), breaks=c(0:8)) +
-  scale_y_continuous(limits=c(0,1)) +
-  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-  xlab("Num. Trials Used Gaze") + 
-  ylab("") +
-  labs(color = "Trial Type") +
-  guides(color=FALSE,shape=F) +
-  theme_soc_xsit
-
-expt3_subj_rel_test_plot <- ggplot(data=ms_rel_subj, 
-                                   aes(x=rel_bin, y=mean, group=trialType,
-                                       color=trialType, label = trialType)) + 
-  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = trialType), 
-                  fill = "white", stroke = 1.8, size= 1.3, fatten = 2.8) +
-  scale_shape_manual(values = c(21, 19)) +
-  geom_smooth(method='lm', se=F) +
-  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-  scale_y_continuous(limits=c(0,1)) +
-  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-  xlab("Subjective Reliability Judgment") + 
-  ylab("") +
-  labs(color = "Trial Type") +
-  guides(color=FALSE,shape=F) +
-  theme_soc_xsit
-```
-
-```{r expt3 final plot, fig.width=10}
-gridExtra::grid.arrange(expt3_acc_test, expt3_acc_test_chose_gazetar,
-                        expt3_subj_rel_test_plot, ncol = 3)
 ```
 
 ### Inspection time analysis
@@ -679,9 +514,97 @@ First we need to get RT on exposure for each test trial
 
 ```{r}
 df_inspect <- df_expt3 %>% 
-  filter(trial_category == "exposure") %>% 
-  select(subids, itemNum, inspection_time_exposure = rt) %>% 
-  left_join(filter(df_expt3, trial_category == "test"), by = c("subids", "itemNum")) 
+  filter(trial_category == "exposure", include_good_rt == "include") %>% 
+  select(subid, itemNum, inspection_time_exposure = rt) %>% 
+  mutate(inspection_time_exposure_sec = inspection_time_exposure / 1000) %>% 
+  left_join(filter(df_expt3, trial_category == "test", block == "test"), 
+            by = c("subid", "itemNum")) 
+
+df_inspect %<>% mutate(exposure_bin = cut(inspection_time_exposure_sec, 5, 
+                                          labels = c("0.0-2.5", "2.5-4.7", "4.7-6.9", 
+                                              "6.9-9.1", "9.1-11.4" )))
+
+ms_inspect <- df_inspect %>% 
+  group_by(trialType, exposure_bin, subid) %>% 
+  summarise(mean_ss = mean(correct, na.rm = T)) %>% 
+  group_by(trialType, exposure_bin) %>% 
+  multi_boot_standard(column = "mean_ss", na.rm = T)
+```
+
+### Experiment 3: final plot 
+
+```{r expt3 final plot, fig.width=10}
+expt3_acc_test <- ggplot(data=ms_test_test, 
+                         aes(x=prop_cond_clean, y=mean, group=trialType,
+                             color=trialType, label = trialType)) + 
+  geom_smooth(method='loess', se=F, span = 4) +
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = trialType), 
+                  fill = "white", stroke = 1.8, size= 1.3, fatten = 1.5) +
+  scale_shape_manual(values = c(21, 19)) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  xlab("Reliability of Gaze") + 
+  ylab("Prop. Correct") +
+  labs(color = "Trial Type") +
+  guides(color=FALSE,shape=F) +
+  theme(axis.text.x = element_text(size = 14),
+        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, unit = "pt"))
+
+expt3_acc_test_chose_gazetar <- ggplot(data=ms_acc_exp_test_expt3, 
+                                       aes(x=total_exposure_correct, y=mean,
+                                           group=trialType, color=trialType, 
+                                           label = trialType)) + 
+  geom_smooth(method='loess', se=F, span = 4) +
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = trialType), 
+                  fill = "white", stroke = 1.8, size= 1.3, fatten = 1.5) +
+  scale_shape_manual(values = c(21, 19)) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+  scale_x_continuous(limits=c(0,8), breaks=c(0:8)) +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  xlab("Num. Trials Used Gaze") + 
+  ylab(NULL) +
+  labs(color = "Trial Type") +
+  guides(color=FALSE,shape=F) +
+  theme(axis.text.x = element_text(size = 14),
+        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, unit = "pt"))
+
+expt3_subj_rel_test_plot <- ggplot(data=ms_rel_subj, 
+                                   aes(x=rel_bin, y=mean, group=trialType,
+                                       color=trialType, label = trialType)) + 
+  geom_smooth(method='loess', se=F, span = 4) +
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = trialType), 
+                  fill = "white", stroke = 1.8, size= 1.3, fatten = 1.5) +
+  scale_shape_manual(values = c(21, 19)) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  labs(color = "Trial Type", y = NULL, x = "Subjective Reliability") +
+  guides(color=FALSE,shape=F) +
+  theme(axis.text.x = element_text(size = 12),
+        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, unit = "pt"))
+
+expt3_inspect_plot <- ggplot(data=ms_inspect, 
+       aes(x=exposure_bin, y=mean, group=trialType,
+           color=trialType, label = trialType)) + 
+  geom_smooth(method='loess', se=F, span = 4) +
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = trialType), 
+                  fill = "white", stroke = 1.8, size= 1.3, fatten = 1.5) +
+  scale_shape_manual(values = c(21, 19)) +
+  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
+  scale_y_continuous(limits=c(0,1)) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  xlab("Inspection Time (Exposure)") + 
+  ylab(NULL) +
+  labs(color = "Trial Type") +
+  guides(color=FALSE,shape=F) +
+  theme(axis.text.x = element_text(size = 14),
+        plot.margin = margin(t = 20, r = 20, b = 20, l = 20, unit = "pt"))
+
+gridExtra::grid.arrange(expt3_acc_test,
+                        expt3_acc_test_chose_gazetar, 
+                        expt3_subj_rel_test_plot, ncol = 3)
 ```
 
 ## Experiment 4
@@ -694,10 +617,33 @@ nsubs_expt4 <- df_expt4 %>%
 knitr::kable(nsubs_expt4)
 ```
 
+Set up filter
+
+```{r exp4 filter}
+df_expt4_filtered <- df_expt4 %>% 
+  filter(trial_category == "test", answer_type_exposure == "participant_response",
+         correct_exposure == T | gaze_trial == "No-Gaze",
+         mean_acc_exp > 0.25, include_good_rt == "include")
+```
+
+```{r exp4 ss removed}
+df_n_expt4 <- df_expt4 %>%
+  group_by(interval, inspection_cond) %>%
+  summarise(n_subs = n_distinct(subid))
+
+df_n_expt4_filt <- df_expt4_filtered %>%
+  group_by(interval, inspection_cond) %>%
+  summarise(n_subs_filt = n_distinct(subid)) %>%
+  select(n_subs_filt)
+
+nsubs_expt4_filt <- cbind(df_n_expt4, df_n_expt4_filt)
+
+knitr::kable(nsubs_expt4_filt)
+```
+
 ```{r}
 # Get means and CIs for each condition (interval X trial type X inspection time)
-ms_e4 <- df_expt4 %>% 
-  filter(trial_category == "test", answer_type_exposure == "participant_response") %>%
+ms_e4 <- df_expt4_filtered %>%
   group_by(subid, inspection_cond, intervalNum, trialType, gaze_trial) %>% 
   summarise(mean_correct = mean(correct)) %>% 
   group_by(inspection_cond, intervalNum, trialType, gaze_trial) %>% 
@@ -709,28 +655,29 @@ ms_e4$inspection_cond <- factor(ms_e4$inspection_cond, levels = c("short", "long
 Now plot.
 
 ```{r}
-ggplot(data=ms_e4, aes(x=as.factor(intervalNum), y=mean, colour = gaze_trial)) + 
+ggplot(data=ms_e4, aes(x=as.factor(intervalNum), y=mean, 
+                       colour = gaze_trial, shape = gaze_trial)) + 
+  geom_line(aes(group=interaction(trialType, gaze_trial), 
+                linetype = trialType), size = 1) +
   geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), 
                   fill = "white", stroke = 1.5, size= 1.3, fatten = 2.8,
-                  position = position_jitter(width=.1)) +
-  geom_line(aes(group=interaction(trialType, gaze_trial), linetype = trialType)) +
+                  position = position_jitter(width=.05)) +
+  scale_shape_manual(values = c(19, 21)) +
   facet_wrap(~inspection_cond) +
-  scale_shape_manual(values = c(21, 19)) +
   geom_hline(aes(yintercept=1/4), linetype = "dashed") +
   scale_y_continuous(limits=c(0,1)) +
   scale_colour_manual(values=c("#e34a33", "#2c7fb8")) +
-  xlab("Interval Between Exposure and Test") +
-  ylab("Proportion Correct") +
+  xlab("Intervening Trials") +
+  ylab("Prop. Correct") +
   labs(colour = "Condition") +
   labs(linetype = "Trial Type") +
   guides(linetype=F, shape=F) +
-  ggtitle("Accuracy on Test Trials") +
-  theme_soc_xsit
+  annotate("text", x = 2.35, y = 0.6, label = "Same", color = "black", size = 6) +
+  annotate("text", x = 2.35, y = 0.3, label = "Switch", color = "black", size = 6)
 ```
 
 ```{r}
-ms_e4_2 <- df_expt4 %>% 
-  filter(trial_category == "test", answer_type_exposure == "participant_response") %>%
+ms_e4_2 <- df_expt4_filtered %>% 
   group_by(subid, intervalNum, trialType, gaze_trial) %>% 
   summarise(mean_correct = mean(correct)) %>% 
   group_by(intervalNum, trialType, gaze_trial) %>% 
@@ -742,26 +689,25 @@ ms_e4_2$gaze_trial <- factor(ms_e4_2$gaze_trial, levels = c("No-Gaze", "Gaze"))
 Now the same plot, but collapsed across inspection conditions.
 
 ```{r, fig.width = 4, fig.height = 4}
-expt4.acc.test.line <- ggplot(data=ms_e4_2, aes(x=as.factor(intervalNum), y=mean, 
-                                                colour = gaze_trial, shape = gaze_trial)) + 
-  geom_line(aes(group=interaction(trialType, gaze_trial), linetype = trialType),  size = 1) +
+expt4.acc.test.line <- ggplot(data=ms_e4_2, 
+                              aes(x=as.factor(intervalNum), y=mean, 
+                                  colour = gaze_trial,shape = gaze_trial)) +
+  geom_line(aes(group=interaction(trialType, gaze_trial), 
+                linetype = trialType), size = 1) +
   geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), 
                   fill = "white", stroke = 1.5, size= 1.3, fatten = 2.8,
-                  position = position_jitter(width=.1)) +
+                  position = position_jitter(width=.05)) +
   scale_shape_manual(values = c(21, 19)) +
   geom_hline(aes(yintercept=1/4), linetype = "dashed") +
   scale_y_continuous(limits=c(0,1)) +
-  scale_colour_manual(values=c("#e34a33", "#2c7fb8")) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
   xlab("Interval Between Exposure and Test") +
-  ylab("Proportion Correct") +
+  ylab("Prop. Correct") +
   labs(colour = "Condition") +
   labs(linetype = "Trial Type") +
   guides(linetype=F, shape=F) +
-  ggtitle("Accuracy on Test Trials (Inspection)") +
   annotate("text", x = 2.35, y = 0.6, label = "Same", color = "black", size = 6) +
-  annotate("text", x = 2.35, y = 0.3, label = "Switch", color = "black", size = 6) +
-  theme_soc_xsit +
-  theme(legend.position=c(.85, .8))
+  annotate("text", x = 2.35, y = 0.3, label = "Switch", color = "black", size = 6)
 
 expt4.acc.test.line 
 ```
@@ -773,34 +719,3 @@ grid.arrange(expt2.acc.test.line, expt4.acc.test.line,  ncol = 2)
 ```
 
 Overall, we see a similar pattern of data. Interval affects same trials more than switch trials. Same trials are easier than switch trials. And participants in the no-gaze condition do better on switch trials. 
-
-But maybe some tricky things to interpret here? One, it looks like adding fixed inspection time made the task harder overall. Two, there is a small difference on Same trials, with better performance in the Gaze condition. And three, inspection time seems to affect switch trial performance in the no-gaze condition more than the gaze condition. Why? 
-
-
-Now the same plot, but as a bar graph.
-
-```{r expt4 barplot}
-ggplot(data=ms_e4_2, aes(x=as.factor(intervalNum), y=mean, fill = gaze_trial)) +
-  geom_bar(stat = "identity", position = position_dodge()) +
-  facet_wrap(~trialType) +
-  geom_linerange(aes(ymin=ci_lower, ymax=ci_upper), position = position_dodge(width = 0.9)) +
-  geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-  scale_y_continuous(limits=c(0,1)) +
-  scale_fill_manual(values=c("#e34a33", "#2c7fb8")) +
-  xlab("Interval Between Exposure and Test") +
-  ylab("Proportion Correct") +
-  guides(fill = F) +
-  labs(fill = "Condition") +
-  ggtitle("Accuracy on Test Trials") +
-  theme_soc_xsit
-```
-
-
-```{r}
-m1 <- glmer(correct ~ (log2(intervalNum) + trialType + gaze_trial + inspection_cond)^3 + 
-              (gaze_trial * trialType | subid), 
-            family = binomial,
-            data = filter(df_expt4, trial_category == "test"),
-            nAGQ = 0)
-
-```

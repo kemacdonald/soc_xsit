@@ -90,7 +90,7 @@ all.data$day.and.time <- chron(dates = all.data$submit.date,
 
 all.data <- all.data[with(all.data,order(subid,day.and.time)),]
 
-# drop subs who have more than 20 trials (since they completed HIT more than once)
+# flag subs who have more than 20 trials (since they completed HIT more than once)
 drop.subs <- ddply(all.data,.(subid), function(x) {nrow(x) > 20}) 
 drop.subs %<>% rename(duplicate = V1) 
 

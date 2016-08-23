@@ -83,7 +83,6 @@ all.data %>%
   distinct(subid) %>% 
   summarise(count = n())
   
-
 ##### CLEAN DATASET #####
 
 # computes day/time of each hit for excluding multiples
@@ -176,7 +175,7 @@ flag_trial_cat_fun <- function(d) {
   d
 }
 
-# get ss who did not compl
+# get ss who completed more than 36 trials
 drops <- all.data %>% 
   group_by(subid) %>% 
   summarise(trials = n())

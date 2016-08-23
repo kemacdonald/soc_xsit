@@ -32,6 +32,9 @@ all.data <- data.frame()
 ## also flags test and exposure trials
 
 for(f in 1:length(all_results)) {
+  # print loop progress
+  print(paste("Dataset number", f))
+  
   data <- read.table(paste(all_results[f], sep=""), sep="\t", 
                      header=TRUE, stringsAsFactors=FALSE)
   long.data <- as.data.frame(matrix(ncol = 0, nrow = num_trials*nrow(data)))
@@ -74,12 +77,24 @@ for(f in 1:length(all_results)) {
       c <- c + 1
     }
   }
+  # check if orginal experiment or replication 
+  if(str_detect(all_results[f], "replication")) {
+    long.data$experiment <- "replication" 
+  } else {
+    long.data$experiment <- "original"
+  }
+  # bind data to full dataframe
+  all.data <- bind_rows(all.data, long.data)
 }  
 
-# sanity check: make sure we have all 500 ss
-length(unique(long.data$subid))
+# sanity check: make sure we have all 500 ss from the original and the replication
+length(unique(all.data$subid))
 
-all.data <- long.data
+all.data %>% 
+  select(condition, experiment, subid) %>% 
+  distinct() %>% 
+  group_by(condition, experiment) %>% 
+  summarise(n())
 
 ##### CLEAN DATASET #####
 
@@ -90,7 +105,7 @@ all.data$day.and.time <- chron(dates = all.data$submit.date,
 
 all.data <- all.data[with(all.data,order(subid,day.and.time)),]
 
-# drop subs who have more than 36 trials
+# drop subs who have more than 34 trials
 drop.subs <- ddply(all.data,.(subid), function(x) {nrow(x) > 34}) 
 
 # grabs subs who participated more than once
@@ -168,5 +183,5 @@ df_final_clean <- select(df_final_clean, -subid) %>%
 
 ##### SAVE OUTPUT  #####
 
-write.csv(df_final_clean, paste(write_path, "e3_soc_xsit_reliabiliy_parametric_replication.csv", sep=""),
+write.csv(df_final_clean, paste(write_path, "e3_soc_xsit_reliabiliy_parametric.csv", sep=""),
           row.names=FALSE)
