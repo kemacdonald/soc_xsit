@@ -27,11 +27,11 @@ library(directlabels)
 ```{r}
 df_expt1 <- read.csv("2_raw_compiled/e1_soc_xsit_schematic.csv", stringsAsFactors = F)
 df_expt2 <- read.csv("2_raw_compiled/e2_soc_xsit_live_within.csv", stringsAsFactors = F)
-df_expt3 <- read.csv("2_raw_compiled/e3_soc_xsit_reliabiliy_parametric.csv", stringsAsFactors = F)
+df_expt3 <- read.csv("2_raw_compiled/e3_soc_xsit_reliability_parametric.csv", stringsAsFactors = F)
 df_expt4 <- read.csv("2_raw_compiled/e4_soc_xsit_inspection.csv", stringsAsFactors = F)
 ```
 
-## Experiment 1 
+## Experiment 1
 
 ### Data cleaning 
 
@@ -246,11 +246,8 @@ df_expt3$prop_cond_clean <- revalue(df_expt3$condition,
 # change order of condition factor for plotting
 df_expt3$prop_cond_clean <- factor(df_expt3$prop_cond_clean,
                                    levels = c("0%", "25%", "50%", "75%", "100%"))
-```
 
-#### Create continuous variable for reliability
-
-```{r}
+# Create continuous variable for reliability
 df_expt3$reliability[df_expt3$prop_cond_clean=="0%"] <- .00
 df_expt3$reliability[df_expt3$prop_cond_clean=="25%"] <- .25
 df_expt3$reliability[df_expt3$prop_cond_clean=="50%"] <- .50
@@ -258,7 +255,7 @@ df_expt3$reliability[df_expt3$prop_cond_clean=="75%"] <- .75
 df_expt3$reliability[df_expt3$prop_cond_clean=="100%"] <- 1.00
 ```
 
-#### Clean up RTs.
+#### Clean up RTs
 
 ```{r expt3 clean RTs}
 df_expt3 <- df_expt3 %>%
@@ -314,7 +311,7 @@ write.csv(x = df_expt3,
           row.names = F)
 ```
 
-## Experiment 4: Inspection Time
+## Experiment 4
 
 ### Data cleaning
 

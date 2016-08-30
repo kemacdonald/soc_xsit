@@ -168,6 +168,15 @@ keep.data$numPicN <- as.numeric(keep.data$numPic)
 # create block variable
 keep.data$block <- ifelse(keep.data$itemNum <= 7, "familiarization", "test")
 
+# flag correct/incorrect for original experiment since this was not tracked in js
+keep.data %<>% 
+  mutate(correct = ifelse(experiment == "replication", correct, 
+                          ifelse(trial_category == "exposure" & block == "test", chosen == gaze_target, 
+                                 ifelse(trial_category == "test", chosen == kept,
+                                        NA)))) 
+           
+         
+
 ##### Anonymize workerids before moving to version control #######
 
 # grab worker ids and create anonymous id number
@@ -183,5 +192,5 @@ df_final_clean <- select(df_final_clean, -subid) %>%
 
 ##### SAVE OUTPUT  #####
 
-write.csv(df_final_clean, paste(write_path, "e3_soc_xsit_reliabiliy_parametric.csv", sep=""),
+write.csv(df_final_clean, paste(write_path, "e3_soc_xsit_reliability_parametric.csv", sep=""),
           row.names=FALSE)

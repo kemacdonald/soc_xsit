@@ -16,7 +16,7 @@ author-information:
     - \address{Department of Psychology, Stanford University, United States}
 
 abstract:
-    "Because children hear language in environments that contain many things to talk about, learning the meaning of even the simplest word requires making inferences under uncertainty. A cross-situational statistical learner can aggregate across naming events to form stable word-referent mappings, but this approach neglects an important source of information that can reduce referential uncertainty: social cues from speakers (e.g., eye gaze). In four large-scale experiments with adults, we test the effects of varying referential uncertainty in cross-situational word learning using social cues. Social cues shifted learners away from tracking multiple hypotheses and towards storing only a single hypothesis (Experiments 1 and 2). In addition, learners were sensitive to graded changes in the strength of a social cue, and when it became less reliable, they were more likely to store multiple hypotheses (Experiment 3). Finally, learners were more likely to store a single hypothesis in the presence of a social cue even if inspection time was fixed across the social and non-social conditions (Experiment 4). Our data suggest that the representations underlying cross-situational word learning are quite flexible: In conditions of greater uncertainty, learners tend to store a broader range of information."
+    "Because children hear language in environments that contain many things to talk about, learning the meaning of even the simplest word requires making inferences under uncertainty. A cross-situational statistical learner can aggregate across naming events to form stable word-referent mappings, but this approach neglects an important source of information that can reduce referential uncertainty: social cues from speakers (e.g., eye gaze). In four large-scale experiments with adults, we test the effects of varying referential uncertainty in cross-situational word learning using social cues. Social cues shifted learners away from tracking multiple hypotheses and towards storing only a single hypothesis (Experiments 1 and 2). In addition, learners were sensitive to graded changes in the strength of a social cue, and when it became less reliable, they were more likely to store multiple hypotheses (Experiment 3). Finally, learners were more likely to store a single hypothesis in the presence of a social cue even when inspection times were equivalent to learning events where a social cue was not present (Experiment 4). Our data suggest that the representations underlying cross-situational word learning are quite flexible: In conditions of greater uncertainty, learners tend to store a broader range of information."
 
 keywords: 
     "statistical learning, social cues, word learning, language acquisition"
@@ -79,48 +79,11 @@ getstars <- function(x) {
   return(".")}
 ```
 
-```{r descriptives}
-# experiment 1
-nsubs_expt1 <- df_expt1 %>%
-  group_by(condition, intervalNum, numPicN) %>%
-  summarise(n_subs = n_distinct(subid)) %>% 
-  mutate(n_excluded = ifelse(condition == "Social" & numPicN == 4, 
-                             100 - n_subs, 
-                             50 - n_subs))
-
-final_n_expt1 <- sum(nsubs_expt1$n_subs)
-nsubs_excluded_expt1 <- sum(nsubs_expt1$n_excluded)
-
-# experiment 2
-nsubs_expt2 <- df_expt2 %>% 
-  group_by(condition, interval) %>%
-  summarise(n_subs = n_distinct(subids)) %>% 
-  mutate(n_excluded = 100 - n_subs)
-
-final_n_expt2 <- sum(nsubs_expt2$n_subs)
-nsubs_excluded_expt2 <- sum(nsubs_expt2$n_excluded)
-
-# experiment 3
-nsubs_expt3 <- df_expt3 %>%
-  group_by(prop_cond_clean) %>%
-  summarise(n_subs = n_distinct(subids)) %>% 
-  mutate(n_excluded = 150 - n_subs)
-
-final_n_expt3 <- sum(nsubs_expt3$n_subs)
-nsubs_excluded_expt3 <- sum(nsubs_expt3$n_excluded)
-
-# experiment 4
-nsubs_expt4 <- df_expt4 %>%
-  group_by(social_cond, interval, inspection_cond) %>%
-  distinct(subid) %>% 
-  summarise(n_subs = n())
-```
-
 # Introduction
 
 Learning the meaning of a new word should be hard. Consider that even concrete nouns are often used in complex contexts with multiple possible referents, which in turn have many conceptually natural properties that a speaker could talk about. This ambiguity creates the potential for an (in principle) unlimited amount of referential uncertainty in the learning task.^[This problem is a simplified version of Quine's \textit{indeterminacy of reference} [@quine19600]: That there are many possible meanings for a word ("Gavigai") that include the referent ("Rabbit") in their extension, e.g., "white," "rabbit," "dinner." Quine's broader philosophical point was that different meanings ("rabbit" and "undetached rabbit parts") could actually be extensionally identical and thus impossible to tease apart.] Remarkably, word learning proceeds despite this uncertainty, with estimates of adult vocabularies ranging between 50,000 to 100,000 distinct words [@bloom2002children]. How do learners infer and retain such a large variety of word meanings from data with this kind of ambiguity?
 
-Statistical learning theories offer a solution to this learning problem by aggregating cross-situational statistics across labeling events to identify underlying word meanings [@yu2007rapid; @siskind1996computational]. Recent experimental work shows that both adults and young infants can use word-object co-occurrence statistics to learn words from individually ambiguous naming events [@smith2008infants; @vouloumanos2008fine]. For example, @smith2008infants taught 12-month-olds three novel words simply by repeating consistent novel word-object pairings across 10 ambiguous exposure trials. Moreover, computational models suggest that cross-situational learning can scale up to learn adult-sized lexicons, even under conditions of considerable referential uncertainty [@smith2011cross].
+Statistical learning theories offer a solution to this problem by aggregating cross-situational statistics across labeling events to identify underlying word meanings [@yu2007rapid; @siskind1996computational]. Recent experimental work shows that both adults and young infants can use word-object co-occurrence statistics to learn words from individually ambiguous naming events [@smith2008infants; @vouloumanos2008fine]. For example, @smith2008infants taught 12-month-olds three novel words simply by repeating consistent novel word-object pairings across 10 ambiguous exposure trials. Moreover, computational models suggest that cross-situational learning can scale up to learn adult-sized lexicons, even under conditions of considerable referential uncertainty [@smith2011cross].
 
 Although all cross-situational learning models agree that the input is the co-occurrence between words and objects and the output is stable word-object mappings, they disagree about how closely learners approximate the input distribution (for review, see Smith, Suanda, & Yu 2014). One approach is to model learning as a process of updating connection strengths between multiple word-object links [@mcmurray2012word], while other approaches argue that learners store only a single word-object hypothesis [@trueswell2013propose]. Recent experimental and modeling work by @yurovsky2014algorithmic suggests an integrative explanation: Learners allocate a fixed amount of their attention to one hypothesis, and the rest gets distributed evenly among the remaining alternatives. As the set of alternatives grows, the amount allocated to each object approaches zero.
 
@@ -130,20 +93,40 @@ Thus, representations in cross-situational word learning can appear distribution
 
 Social-pragmatic theories of language acquisition emphasize the importance of social cues for word learning [@bloom2002children; @clark2009first; @hollich2000breaking]. Experimental work shows that even children as young as 16 months are sophisticated intention-readers, preferring to map novel words to objects that are the target of a speaker’s gaze and not their own [@baldwin1993infants]. In naturalistic observations, learners tend to retain labels that are accompanied with clear referential cues that are concurrent with visual access [@yu2012embodied]. And correlational data show strong links between early intention-reading skills (e.g., gaze following) and later vocabulary growth [@brooks2005development; @brooks2008infant; @carpenter1998social]. Moreover, research outside the domain of language acquisition shows that the presence of social cues: (a) produces better spatial learning of audiovisual events [@wu2011infants], (b) boosts recognition of a cued object [@cleveland2007joint], and (c) leads to preferential encoding of an object’s featural information [@yoon2008communication]. Together, the evidence suggests that social cues could help learners by allowing for efficient allocation of attention to the relevant statistics in the input, and thus change the representations stored in memory. 
 
-In the studies reported here, we ask whether the presence of a valid social cue, a speaker's gaze, changes the representations underlying cross-situational word learning. We use a modified version of @yurovsky2014algorithmic's paradigm, which we describe in greater depth below, to provide a direct measure of memory for alternative word-object links during cross-situational learning. In Experiment 1, we manipulate the presence of a referential cue at different levels of attention and memory demands. At all levels of difficulty, learners tracked a strong single hypothesis, but learners were less likely to track multiple word-object links when a referential cue was present. In Experiment 2, we replicate the findings from Experiment 1 with a more ecologically valid social cue. In Experiment 3, we show that learners are sensitive to graded changes in the reliability of a referential cue and will flexibly increase the number of word-object links they store in response to changes in the quality of the input. In sum, the data suggest that cross-situational word learners are quite flexible, storing representations with different levels of fidelity depending on the amount of ambiguity present during learning.	
-
+In the studies reported here, we ask whether the presence of a valid social cue, a speaker's gaze, changes the representations underlying cross-situational word learning. We use a modified version of @yurovsky2014algorithmic's paradigm, which we describe in greater depth below, to provide a direct measure of memory for alternative word-object links during cross-situational learning. In Experiment 1, we manipulate the presence of a referential cue at different levels of attention and memory demands. At all levels of difficulty, learners tracked a strong single hypothesis, but learners were less likely to track multiple word-object links when a referential cue was present. In Experiment 2, we replicate the findings from Experiment 1 using a more ecologically valid social cue. In Experiment 3, we show that learners are sensitive to graded changes in the reliability of a referential cue and flexibly increase the number of word-object links they stored in response to changes in the quality of the input. Finally, in Experiment 4, we show that there is an effect of selective encoding in the presence of social cues over and above the reduction in time spent inspecting referents during learning. In sum, the data suggest that cross-situational word learners are quite flexible, storing representations with different levels of fidelity depending on the amount of ambiguity present during learning.	
 
 # Experiment 1 
 
-We set out to test the effect of a referential cue on the representations underlying cross-situational word learning. We use a version of @yurovsky2014algorithmic's paradigm where we manipulate the ambiguity of the learning context by including a gaze cue from a schematic, female interlocutor. Participants saw a series of ambiguous exposure trials where they heard one novel word that was either paired with a gaze cue or not and selected the object they thought went with each word. In subsequent test trials, participants heard the novel word again, this time paired with a new set of novel objects. One of the objects in this set was either the participant's initial guess (Same test trials) or one of the objects was *not* their initial guess (Switch test trials). Performance on Switch trials provides a direct measure of whether referential cues influenced the number of alternative word-object links that learners stored in memory. If learners perform worse on Switch trials after an exposure trial with gaze, this suggests that they stored fewer additional objects from the less ambiguous initial learning context.
+We set out to test the effect of a referential cue on the representations underlying cross-situational word learning. We used a version of @yurovsky2014algorithmic's paradigm where we manipulate the ambiguity of the learning context by including a gaze cue from a schematic, female interlocutor. Participants saw a series of ambiguous exposure trials where they heard one novel word that was either paired with a gaze cue or not and selected the object they thought went with each word. In subsequent test trials, participants heard the novel word again, this time paired with a new set of novel objects. One of the objects in this set was either the participant's initial guess (Same test trials) or one of the objects was *not* their initial guess (Switch test trials). Performance on Switch trials provided a direct measure of whether referential cues influenced the number of alternative word-object links that learners stored in memory. If learners performed worse on Switch trials after an exposure trial with gaze, this suggests that they stored fewer additional objects from the initial learning context.
 
 ## Method
 
 ### Participants
 
-We posted a set of Human Intelligence Tasks (HITs) to Amazon Mechanical Turk. Only participants with US IP addresses and a task approval rate above 95% were allowed to participate, and each HIT paid 30 cents. 50-100 HITs were posted for each of the 32 between-subjects conditions. Data were excluded if participants completed the task more than once or if participants did not respond correctly on familiar object trials (`r nsubs_excluded_expt1` HITs). The final sample consisted of 1,523 participants. 
+```{r e1 participants}
+# experiment 1
+nsubs_expt1 <- df_expt1 %>%
+  group_by(condition, intervalNum, numPicN) %>%
+  summarise(n_subs = n_distinct(subid)) 
 
-```{r stimuli, fig.pos = "tb", fig.width=5.5, fig.height=4.5, fig.cap = "Screenshots of exposure and test trials from Experiment 1 (schematic gaze cue) and Experiments 2, 3 \\& 4 (human actress gaze cue). Participants saw exposure trials with or without a gaze cue depending on condition assignment. All participants saw both types of test trials: Same and Switch. On Same trials the object that participants chose during exposure appeared with a new novel object. On Switch trials the object that participants did not choose appeared with a new novel object."}
+final_n_expt1 <- sum(nsubs_expt1$n_subs)
+
+# get exlcuded participants for duplicates (we kept the first HIT)
+n_excluded_e1_dups <- df_expt1 %>% 
+  filter(duplicate == T) %>% 
+  distinct(subid) %>% 
+  summarise(n_excluded = n_distinct(subid))
+
+# get exlcuded participants for failing to follow gaze
+n_excluded_e1_acc_exp <- df_expt1 %>% 
+  filter(mean_acc_exp < 0.25) %>% 
+  summarise(n_excluded = n_distinct(subid))
+```
+
+We posted a set of Human Intelligence Tasks (HITs) to Amazon Mechanical Turk. Only participants with US IP addresses and a task approval rate above 95% were allowed to participate, and each HIT paid 30 cents. 50-100 HITs were posted for each of the 32 between-subjects conditions. Data were excluded if participants completed the task more than once or if participants did not respond correctly on familiar object trials (`r n_excluded_e1_dups` HITs). The final sample consisted of `r final_n_expt1 - n_excluded_e1_dups`  participants. 
+
+
+```{r stimuli, fig.pos = "tb", fig.width=5.5, fig.height=4.5, fig.cap = "Screenshots of exposure and test trials from Experiment 1 (schematic gaze cue) and Experiments 2, 3 \\& 4 (human actress gaze cue). Participants saw exposure trials with or without a gaze cue depending on condition assignment. All participants saw both types of test trials: Same and Switch. On Same trials the object that participants chose during exposure appeared with a new novel object. On Switch trials the object that participants did not choose appeared with a new novel object. Participants saw either 2, 4, 6, or 8 referents depending on their condition assignment."}
 
 grid::grid.raster(png::readPNG("figs/stimuli.png"))
 ```
@@ -158,21 +141,31 @@ Participants saw a total of 16 trials: eight exposure trials and eight test tria
 
 After the practice trials, participants were told that they would now hear novel words and see novel objects, and that their task was to select the referent that "goes with each word." Over the course of the experiment, participants heard eight novel words two times, with one exposure trial and one test trial for each word. Four of the test trials were *Same* trials in which the object that participants selected on the exposure trial was shown with a set of new novel objects. The other four test trials were *Switch* trials in which one of the objects was chosen at random from the set of objects that the participant did not select on exposure. 
 
-Participants were randomly assigned to one of the 32 between-subjects conditions (4 Referents X 4 Intervals X 2 Gaze). Participants either saw 2, 4, 6, or 8 referents on the screen and test trials occurred at different intervals after exposure trials: either 0, 1, 3, or 7 trials from the initial exposure to a word. For example, in the 0-interval condition the test trial for that word would occur immediately following the exposure trial, but in the 3-interval condition participants saw three other exposure trials before getting the test trial for that word.
+Participants were randomly assigned to one of the 32 between-subjects conditions (4 Referents X 4 Intervals X 2 Gaze). Participants either saw 2, 4, 6, or 8 referents on the screen and test trials occurred at different intervals after exposure trials: either 0, 1, 3, or 7 trials from the initial exposure to a word. For example, in the 0-interval condition, the test trial for that word would occur immediately following the exposure trial, but in the 3-interval condition, participants would see three additional exposure trials for other novel words before seeing the test trial for the initial word. The interval conditions modulated the time delay between learning and test, and the number of referent conditions modulated the amount of information present during learning. 
 
-Participants were assigned to the Gaze or No-gaze conditions. In the Gaze condition, gaze was directed towards one of the objects on exposure trials; in the No-gaze condition, gaze was always directed straight ahead (see Figure 1 for examples of these trial types). At test, gaze was never informative. To show participants that their response had been recorded, a red box appeared around the selected object for one second. This box always appeared around the selected object, even if participants' selections were incorrect.
+Participants were assigned to either the Gaze or No-gaze condition. In the Gaze condition, gaze was directed towards one of the objects on exposure trials; in the No-gaze condition, gaze was always directed straight ahead (see Figure 1 for examples). At test, gaze was never informative. To show participants that their response had been recorded, a red box appeared around the selected object for one second. This box always appeared around the selected object, even if participants' selections were incorrect.
 
 ## Results and Discussion
 
 ### Analysis plan
 
-The structure of our analysis plan is parallel across all four experiments. First, we examine performance on Exposure trials to provide evidence that learners were (a) sensitive to our experimental manipulation and (b) altered their allocation of attention in response to changes in contextual ambiguity. Then we examine performance on Test trials to show that learners' memory for alternative word-object links changes depending on the ambiguity of the learning context. The key behavioral prediction of our hypothesis is that the presence of gaze will result in reduced memory for multiple word-object links, operationalized as a decrease in performance on Switch test trials after seeing Exposure trials with a gaze cue. To quantify participants' behavior, we use mixed effects regression models with the maximal random effects structure justified by our experimental design: by-subject intercepts and slopes for each trial type. All mixed-effects models were fit using the lme4 package in R [@bates2013lme4], and all of our data, processing, and analysis code can be viewed in the version control repository for this paper at: https://github.com/kemacdonald/soc_xsit.
+The structure of our analysis plan is parallel across all four experiments. First, we examine performance on Exposure trials to provide evidence that learners were (a) sensitive to our experimental manipulation and (b) altered their allocation of attention in response to the presence of a social cue. Next, we examine accuracy on Test trials to show that learners' memory for alternative word-object links changes depending on the ambiguity of the learning context. Accuracy on exposure trials is defined as selecting the referent that was the target of gaze in the Gaze condition (note that there was no "correct" behavior for exposure trials in the No-Gaze condition). Accuracy on test trials (both Same and Switch) is defined as selecting the referent that was present during the Exposure trial for that word.
 
-```{r expt1-plot, fig.pos = "tb", fig.width=4.8, fig.height=6, fig.cap = "Experiment 1 results. Panel A shows response times on exposure trials across all experimental conditions: Gaze and No-gaze, Referents (2, 4, 6, and 8), and Intervening trials (0, 1, 3, and 7). Panel B shows accuracy on test trials for Same and Switch trials across all conditions. The horizontal dashed lines represent chance performance for each condition. Colored lines are linear model fits and error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap."}
+The key behavioral prediction of our hypothesis is that the presence of gaze will result in reduced memory for multiple word-object links, operationalized as a decrease in accuracy on Switch test trials after seeing exposure trials with a gaze cue. To quantify participants' behavior, we used mixed effects regression models with the maximal random effects structure justified by our experimental design: by-subject intercepts and slopes for each trial type. We limited all models to include only two-way interactions because the critical test of our hypothesis was the interaction between Gaze condition and Trial Type, and we did not have any theoretical predictions for possible three-way or four-way interactions. All mixed-effects models were fit using the lme4 package in R [@bates2013lme4], and all of our data, processing, and analysis code can be viewed in the version control repository for this paper at: https://github.com/kemacdonald/soc_xsit.
+
+```{r expt1-plot, fig.pos = "tb", fig.width=5, fig.height=5, fig.cap = "Experiment 1 results. The top row shows inspection times on exposure trials across all experimental conditions. Each panel represents a different number of referents condition and both color and fill represent the Gaze and No-gaze conditions. The bottow row shows accuracy on test trials across all conditions. The horizontal dashed lines represent chance performance for each condition, and the type of line (solid vs. dashed) represents the different test trial types (Same vs. Switch). Error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap."}
 grid::grid.raster(png::readPNG("figs/expt1.png"))
 ```
 
 ### Exposure trials
+
+```{r expt1 get inspection times on exposure}
+df_expt1 %<>% 
+  filter(trial_category == "exposure", include_good_rt_exposure == "include") %>% 
+  select(subid, itemNum, inspection_time_exposure = rt) %>% 
+  mutate(inspection_time_exposure_sec = inspection_time_exposure / 1000) %>% 
+  left_join(df_expt1, by = c("subid", "itemNum")) 
+```
 
 ```{r expt1_chance_exposure}
 e1.chance.tests.exposure <- test.chance(data = filter(df_expt1, trial_category == "exposure", 
@@ -185,12 +178,27 @@ e1.chance.tests.exposure <- test.chance(data = filter(df_expt1, trial_category =
 ```
 
 ```{r rt exposure expt1 lmer}
-m1_rt_expt1 <- lmer(rt ~ condition * log2(intervalNum + 1) * log2(numPicN) + (1|subid), 
-                    data=filter(df_expt1, trial_category == "exposure", 
-                                include_good_rt_exposure == "include"))
+m1_rt_expt1 <- lmer(log2(inspection_time_exposure_sec) ~ 
+                      (condition + log2(intervalNum + 1) + log2(numPicN))^2 + (1|subid), 
+                    data=filter(df_expt1, 
+                                trial_category == "exposure", 
+                                include_good_rt_exposure == "include",
+                                include_expo == "include"))
 
-beta_referents <- round(summary(m1_rt_expt1)$coef[4], 2)
-beta_gaze_referents <- round(summary(m1_rt_expt1)$coef[6], 2)
+
+# use normal distribution to approximate p-value
+e1_rt_coefs <- data.frame(coef(summary(m1_rt_expt1)))
+e1_rt_coefs$p.z <- 2 * (1 - pnorm(abs(e1_rt_coefs$t.value)))
+
+# exctract betas and p-vals
+beta_referents <- round(e1_rt_coefs[4,1], 2)
+p_referents <- ifelse(round(e1_rt_coefs[4,4], 3) == 0, "p < .001", round(e1_rt_coefs[4,4], 3))
+
+beta_gaze_interval <- round(e1_rt_coefs[5,1], 2)
+p_gaze_interval <- ifelse(round(e1_rt_coefs[5,4], 3) == 0, "p < .001", round(e1_rt_coefs[5,4], 3))
+
+beta_gaze_referents <- round(e1_rt_coefs[6,1], 2)
+p_gaze_referents <- ifelse(round(e1_rt_coefs[6,4], 3) == 0, "p < .001", round(e1_rt_coefs[6,4], 3))
 ```
 
 ```{r expt1_exposure_means}
@@ -210,9 +218,9 @@ ms_expo_expt1_collapsed <- df_expt1 %>%
 m_follow_gaze_expt1 <- round(ms_expo_expt1_collapsed$prop_correct, 2)
 ```
 
-To ensure that our referential cue manipulation was effective, we compared participant's accuracy on Exposure trials in the Gaze condition to a model of random behavior defined as a Binomial distribution with a probability of success $\frac{1}{Num Referents}$. Correct performance is defined as selecting the object that was the target of the speaker's gaze. Following @yurovsky2014algorithmic, we fit logistic regressions for each Gaze, Referent, and Interval combination specified as \texttt{Gaze Target $\sim$ 1 + offset(logit(1/Referents))}. The offset encodes the chance probability of success given the number of referents, and the coefficient for the intercept term shows on a log-odds scale how much more likely participants are to select the gaze target than would be expected if participants were selecting randomly. In all conditions participants used gaze to select referents on Exposure trials more often than expected by chance (Overall mean = `r m_follow_gaze_expt1`, smallest $\beta$ = `r round(sort(e1.chance.tests.exposure$betas)[1], 2)`, z = `r round(sort(e1.chance.tests.exposure$zs)[1], 2)`, p < .001).
+To ensure that our referential cue manipulation was effective, we compared participants' accuracies on Exposure trials in the Gaze condition to a model of random behavior defined as a Binomial distribution with a probability of success $\frac{1}{Num Referents}$. Correct performance is defined as selecting the object that was the target of the speaker's gaze. Following @yurovsky2014algorithmic, we fit logistic regressions for each Gaze, Referent, and Interval combination specified as \texttt{Gaze Target $\sim$ 1 + offset(logit(1/Referents))}. The offset encodes the chance probability of success given the number of referents, and the coefficient for the intercept term shows on a log-odds scale how much more likely participants are to select the gaze target than would be expected if participants were selecting randomly. In all conditions participants used gaze to select referents on Exposure trials more often than expected by chance (Overall mean = `r m_follow_gaze_expt1`, smallest $\beta$ = `r round(sort(e1.chance.tests.exposure$betas)[1], 2)`, z = `r round(sort(e1.chance.tests.exposure$zs)[1], 2)`, p < .001).
 
-We were also interested in differences in participants' response times across the experimental conditions. Since these trials were self-paced, participants could choose how much time to spend studying the referents on the screen, thus providing an index of participants' attention. To quantify the effects of gaze, interval, and number of referents, we fit a linear mixed effects model predicting participants' response times as follows: \texttt{RT $\sim$ Gaze Condition * Log(Interval) * Log(Referents) + (1 | subject)}. We found a significant main effect of referents ($\beta$ = `r beta_referents`, p < .001) with slower responses as the number of referents increased, and a significant two-way interaction between Gaze condition and number of referents ($\beta$ = `r beta_gaze_referents`, p < .001) such that responses were faster in the Gaze condition, especially as the number of referents increased. The interaction between Gaze condition and number of referents is shown in Panel A of Figure 2. Faster response times on Exposure trials with gaze provides preliminary evidence that the presence of a referential cue focused participants' attention on the gaze target and away from alternative word-object links. 
+We were also interested in differences in participants' response times across the experimental conditions. Since these trials were self-paced, participants could choose how much time to spend inspecting the referents on the screen, thus providing an index of participants' attention. To quantify the effects of gaze, interval, and number of referents, we fit a linear mixed effects model predicting participants' response times as follows: \texttt{Log(Inspection time) $\sim$ Gaze * Log(Interval) + Gaze * Log(Referents) + (1 | subject)}. We found: a significant main effect of referents ($\beta$ = `r beta_referents`, `r p_referents`) with longer inspection times as the number of referents increased, a significant two-way interaction between gaze condition and the referents ($\beta$ = `r beta_gaze_referents`, `r p_gaze_referents`) such that inspection times were longer in the No-Gaze condition, especially as the number of referents increased, and a significant two-way interaction between gaze condition and interval ($\beta$ = `r beta_gaze_interval`, `r p_gaze_interval`) such that inspection times were slower in the No-gaze condition, especially as the number of intervening trials increased. The interactions between gaze condition and referents/interval are shown in the top row of Figure 2. Shorter inspection times on exposure trials with gaze provides evidence that the presence of a referential cue focused participants' attention on the a single referent and away from alternative word-object links. 
 
 ### Test trials
 
@@ -224,14 +232,6 @@ e1.chance.tests <- test.chance(data = filter(df_expt1, trial_category == "test",
                                groups = c("trialType","numPicN","intervalNum"),
                                formula = as.formula("correct ~ 1")) %>%
   mutate(stars = getstars(ps))
-```
-
-```{r expt1 get inspection times on exposure}
-df_expt1 %<>% 
-  filter(trial_category == "exposure", include_good_rt_exposure == "include") %>% 
-  select(subid, itemNum, inspection_time_exposure = rt) %>% 
-  mutate(inspection_time_exposure_sec = inspection_time_exposure / 1000) %>% 
-  left_join(df_expt1, by = c("subid", "itemNum")) 
 ```
 
 ```{r expt1 glmer}
@@ -246,53 +246,41 @@ m1_2way_acc_expt1 <- glmer(correct ~ (trialType + condition + log2(intervalNum +
                                        include_expo == "include" | condition == "No-Social",
                                        correct_exposure == T | condition == "No-Social"))
 
-m1_2way_acc_expt1_inspect <- glmer(correct ~ (trialType + condition + log2(intervalNum + 1) +
-                                        log2(numPicN) + log2(inspection_time_exposure_sec))^2 + 
-                             (trialType | subid), offset = logit(1/numPicN), 
-                           control=glmerControl(optimizer="bobyqa"),
-                           family=binomial, 
-                           nAGQ=0,
-                           data=filter(df_expt1, trial_category == "test", 
-                                       include_good_rt_test == "include",
-                                       include_expo == "include" | condition == "No-Social",
-                                       correct_exposure == T | condition == "No-Social"))
 
-# get the beta and pvalue for inspection time 
-beta_inspect_expt1 <- round(summary(m1_2way_acc_expt1_inspect)$coef[13], 2)
-p_inspect_expt1 <- round(summary(m1_2way_acc_expt1_inspect)$coef[13,4], 3)
+# get coefs and convert p.vals to .001 if below .001
+m1_2way_coefs <- as.data.frame(coef(summary(m1_2way_acc_expt1)))
+m1_2way_coefs %<>% 
+  mutate(predictor = row.names(.),
+         p.vals = ifelse(`Pr(>|z|)` < .001, "< .001", round(`Pr(>|z|)`, 3)),
+         Estimate = round(Estimate, 2)) %>% 
+  select(predictor, everything())
 
-# now fit the 3way model
-m1_3way_acc_expt1_filt <- glmer(correct ~ (trialType + condition + 
-                                             log2(intervalNum + 1) +
-                                             log2(numPicN)+
-                                             log2(inspection_time_exposure_sec))^3 +
-                                  (trialType | subid), offset = logit(1/numPicN),
-                                control=glmerControl(optimizer="bobyqa"),
-                                family=binomial, 
-                                nAGQ=0, 
-                                data=filter(df_expt1, trial_category == "test", 
-                                            include_good_rt_test == "include", 
-                                            include_expo == "include" | condition == "No-Social",
-                                            correct_exposure == T | condition == "No-Social"))
+# two-way main effects betas
+beta_trialtype_acc <- m1_2way_coefs$Estimate[2]
+beta_gaze_acc <- m1_2way_coefs$Estimate[3]
+beta_interval_acc <- m1_2way_coefs$Estimate[4]
+beta_referents_acc <- m1_2way_coefs$Estimate[5]
 
-
-# two-way main effects
-beta_trialtype_acc <- round(summary(m1_2way_acc_expt1)$coef[2], 2)
-beta_gaze_acc <- round(summary(m1_2way_acc_expt1)$coef[3], 2)
-beta_interval_acc <- round(summary(m1_2way_acc_expt1)$coef[4], 2)
-beta_referents_acc <- round(summary(m1_2way_acc_expt1)$coef[5], 2)
+# two-way main effects p.vals
+p_trialtype_acc <- m1_2way_coefs$p.vals[2]
+p_gaze_acc <- m1_2way_coefs$p.vals[3]
+p_interval_acc <- m1_2way_coefs$p.vals[4]
+p_referents_acc <- m1_2way_coefs$p.vals[5]
 
 # two-way interactions
-beta_gaze_trialtype_int <- round(summary(m1_2way_acc_expt1)$coef[6], 2)
-beta_trialtype_interval_int <- round(summary(m1_2way_acc_expt1)$coef[7], 2)
-beta_trialtype_referents_int <- round(summary(m1_2way_acc_expt1)$coef[8], 2)
-beta_gaze_referents_int <- round(summary(m1_2way_acc_expt1)$coef[10], 2)
+beta_gaze_trialtype_int <- m1_2way_coefs$Estimate[6]
+beta_trialtype_interval_int <- m1_2way_coefs$Estimate[7]
+beta_trialtype_referents_int <- m1_2way_coefs$Estimate[8]
+beta_gaze_referents_int <- m1_2way_coefs$Estimate[10]
 
-# three-way interaction
-beta_gaze_trialtype_3way_int <- round(summary(m1_3way_acc_expt1_filt)$coef[12], 2)
+# two-way interactions p.vals
+p_gaze_trialtype_int <- m1_2way_coefs$p.vals[6]
+p_trialtype_interval_int <- m1_2way_coefs$p.vals[7]
+p_trialtype_referents_int <- m1_2way_coefs$p.vals[8]
+p_gaze_referents_int <- m1_2way_coefs$p.vals[10]
 ```
 
-Panel B of Figure 2 shows participants' accuracies in identifying the referent for each word in all conditions for both kinds of trials (Same and Switch). We first compared the distribution of correct responses made by each participant to the distribution expected if participants were selecting randomly defined as a Binomial distribution with a probability of success $\frac{1}{Num Referents}$. We fit the same logistic regressions as we did for Exposure trials: \texttt{Correct $\sim$ 1 + offset(logit(1/Referents))}. On 31 out of the 32 conditions for both Same and Switch trials, participants chose the correct target more often than would be expected by chance (smallest $\beta$ = `r round(sort(e1.chance.tests$betas)[2], 2)`, z = `r round(sort(e1.chance.tests$zs)[2], 2)`, p = `r round(sort(e1.chance.tests$ps, decreasing = T)[2], digits = 2)`). On Switch trials in the 8 referent, 3 interval condition, participants' responses were not significantly different from chance ($\beta$ = `r round(sort(e1.chance.tests$betas)[1], 2)`, z = `r round(sort(e1.chance.tests$zs)[1], 2)`, p = `r round(sort(e1.chance.tests$ps, decreasing = T)[1], digits = 2)`). Participants' success on Switch trials replicates the findings from @yurovsky2014algorithmic and provides direct evidence that learners encoded more than a single hypothesis in ambiguous word learning situations, even under high attentional and memory demands, and even in the presence of a referential cue.
+The bottom row of Figure 2 shows participants' accuracies in identifying the referent for each word in all conditions for both kinds of test trials (Same and Switch). We first compared the distribution of correct responses made by each participant to the distribution expected if participants were selecting randomly defined as a Binomial distribution with a probability of success $\frac{1}{Num Referents}$. Correct performance is defined as selecting the object that was present on the exposure trial for that word. We fit the same logistic regressions as we did for exposure trials: \texttt{Correct $\sim$ 1 + offset(logit(1/Referents))}. In 31 out of the 32 conditions for both Same and Switch trials, participants chose the correct object more often than would be expected by chance (smallest $\beta$ = `r round(sort(e1.chance.tests$betas)[2], 2)`, $z$ = `r round(sort(e1.chance.tests$zs)[2], 2)`, $p$ = `r round(sort(e1.chance.tests$ps, decreasing = T)[2], digits = 2)`). On Switch trials in the 8-referent, 3-interval condition, participants' responses were not significantly different from chance ($\beta$ = `r round(sort(e1.chance.tests$betas)[1], 2)`, z = `r round(sort(e1.chance.tests$zs)[1], 2)`, p = `r round(sort(e1.chance.tests$ps, decreasing = T)[1], digits = 2)`). Participants' success on Switch trials replicates the findings from @yurovsky2014algorithmic and provides direct evidence that learners encoded more than a single hypothesis in ambiguous word learning situations even under high attentional and memory demands and even in the presence of a referential cue.
 
 ```{r expt1-table, echo = F, results = 'asis'}
 e1.tab <- as.data.frame(summary(m1_2way_acc_expt1)$coef)
@@ -341,11 +329,55 @@ print(xtable(e1.tab,
       comment = F)
 ```
 
-To quantify the effect of each predictor on the probability of a correct response, we fit the following mixed-effects logistic regression model to a filtered dataset, removing participants who were not reliably selecting the referent that was the target of gaze on exposure trials:\footnote{We did not predict that there would be a subset of participants who would not follow the gaze cue, thus this filtering criteria was developed post-hoc. However, we believe the filter is theoretically motivated because we would only expect to see an effect of gaze if participants were actually using the gaze cue. The filter removes 90 participants who did not reliably select the gaze target on exposure trials. The key inferences from the data do not depend on this filtering criteria.} \texttt{Correct $\sim$ Trial Type * Gaze + Trial Type * Log(Interval) + Trial Type * Log(Referents) + \\ offset(logit($^1/_{Referents}$)) + (TrialType | subject)}. 
+```{r e1 inspection model}
+m1_2way_acc_expt1_inspect <- glmer(correct ~ (trialType + condition + log2(intervalNum + 1) +
+                                        log2(numPicN) + log2(inspection_time_exposure_sec))^2 + 
+                             (trialType | subid), offset = logit(1/numPicN), 
+                           control=glmerControl(optimizer="bobyqa"),
+                           family=binomial, 
+                           nAGQ=0,
+                           data=filter(df_expt1, trial_category == "test", 
+                                       include_good_rt_test == "include",
+                                       include_expo == "include" | condition == "No-Social",
+                                       correct_exposure == T | condition == "No-Social"))
 
-We follow @yurovsky2014algorithmic's analysis plan and coded interval and number of referents as continuous predictors and transformed these variables to the log scale. We limited the model to include only two-way interactions because the critical test of our hypothesis is the interaction between Gaze condition and Trial Type, and we did not have any theoretical predictions for possible three-way interactions. \footnote{If we allow for three-way interactions in the model, there is a significant interaction between Gaze condition, Trial Type, and Interval ($\beta = `r beta_gaze_trialtype_3way_int`$, p $<$ .01). The two-way interaction between Gaze condition and Trial Type remains significant in this more complex model. A model including four-way interactions did not sufficiently improve model fit in order to justify the added complexity.} We also included participants' inspection times on exposure trials in the model to provide a measure of the effect of attention on the probability of a correct response. 
+# get the beta and pvalue for inspection time 
+beta_inspect_expt1 <- round(summary(m1_2way_acc_expt1_inspect)$coef[6], 2)
+p_inspect_expt1 <- round(summary(m1_2way_acc_expt1_inspect)$coef[6,4], 2)
+```
 
-Table 1 shows the output of the logistic regression. We found significant main effects of Referents ($\beta = `r beta_referents_acc`$, p < .001) and Interval ($\beta = `r beta_interval_acc`$, p < .001), such that as each of these factors increased, accuracy on test trials decreased. We also found significant main effects of Trial Type ($\beta = `r beta_trialtype_acc`$, p < .001), with worse overall performance on Switch trials. There were significant interactions between Trial Type and Interval ($\beta = `r beta_trialtype_interval_int`$, p < .001), Trial Type and Referents ($\beta = `r beta_trialtype_referents_int`$, p < .001), and Gaze condition and Referents ($\beta = `r beta_gaze_referents_int`$, p < .05). These interactions can be interpreted as (a) the interval between exposure and test affecting Same trials more than Switch trials, (b) the number of referents affecting Switch trials more than Same trials, and (c) participants performing slightly better at higher number of referents in the Gaze condition (see Panel B of Figure 2). The interactions between Gaze condition and Referents and between Referents and Interval were not significant. Importantly, we found the predicted interaction between Trial Type and Gaze condition ($\beta = `r beta_gaze_trialtype_int`$, p < .001), with participants in the Gaze condition performing worse on Switch trials. This interaction provides direct evidence that the presence of a referential cue selectively reduced participants' memory for alternative word-object links. 
+```{r e1 3way model}
+# now fit the 3way model
+m1_3way_acc_expt1 <- glmer(correct ~ (trialType + condition + 
+                                             log2(intervalNum + 1) +
+                                             log2(numPicN))^3 +
+                                  (trialType | subid), offset = logit(1/numPicN),
+                                control=glmerControl(optimizer="bobyqa"),
+                                family=binomial, 
+                                nAGQ=0, 
+                                data=filter(df_expt1, trial_category == "test", 
+                                            include_good_rt_test == "include", 
+                                            include_expo == "include" | condition == "No-Social",
+                                            correct_exposure == T | condition == "No-Social"))
+
+# key two-way interaction between trial type and gaze
+beta_gaze_trialtype_int_2way <- round(summary(m1_3way_acc_expt1)$coef[6], 2)
+p_gaze_trialtype_int_2way <- round(summary(m1_3way_acc_expt1)$coef[6,4], 3)
+
+# three-way interaction
+beta_gaze_trialtype_3way_int <- round(summary(m1_3way_acc_expt1)$coef[12], 2)
+p_gaze_trialtype_3way_int <- round(summary(m1_3way_acc_expt1)$coef[12,4], 3)
+```
+
+To quantify the effect of each predictor on the probability of a correct response, we fit the following mixed-effects logistic regression model to a filtered dataset, removing participants who were not reliably selecting the referent that was the target of gaze on exposure trials: ^[We did not predict that there would be a subset of participants who would not follow the gaze cue, thus this filtering criteria was developed post-hoc. However, we believe the filter is theoretically motivated because we would only expect to see an effect of gaze if participants were actually using the gaze cue. The filter removes 94 participants who did not reliably select the gaze target on exposure trials. The key inferences from the data do not depend on this filtering criteria.] \texttt{Correct $\sim$ Trial Type * Gaze + Trial Type * Log(Interval) + Trial Type * Log(Referents) + \\ offset(logit($^1/_{Referents}$)) + (TrialType | subject)}. 
+
+We follow @yurovsky2014algorithmic's analysis plan and coded interval and number of referents as continuous predictors and transformed these variables to the log scale. We limited the model to include only two-way interactions because the critical test of our hypothesis is the interaction between Gaze condition and Trial Type, and we did not have any theoretical predictions for possible three-way interactions. \footnote{If we allow for three-way interactions in the model, there is a marginally significant interaction between Gaze condition, Trial Type, and Interval ($\beta = `r beta_gaze_trialtype_3way_int`$, p = `r p_gaze_trialtype_3way_int`). The two-way interaction between Gaze condition and Trial Type remains significant in this more complex model ($\beta = `r beta_gaze_trialtype_int_2way`$, p = `r p_gaze_trialtype_int_2way`). A model including four-way interactions did not sufficiently improve model fit in order to justify the added complexity.} 
+
+Table 1 shows the output of the logistic regression. We found significant main effects of referents ($\beta = `r beta_referents_acc`$, p < .001) and interval ($\beta = `r beta_interval_acc`$, p < .001), such that as each of these factors increased, accuracy on test trials decreased. We also found significant main effects of Trial Type ($\beta = `r beta_trialtype_acc`$, p < .001), with worse overall performance on Switch trials. There were significant interactions between Trial Type and Interval ($\beta = `r beta_trialtype_interval_int`$, p < .001), Trial Type and Referents ($\beta = `r beta_trialtype_referents_int`$, p < .001), and Gaze condition and Referents ($\beta = `r beta_gaze_referents_int`$, p < .05). These interactions can be interpreted as (a) the interval between exposure and test affecting Same trials more than Switch trials, (b) the number of referents affecting Switch trials more than Same trials, and (c) participants performing slightly better at higher number of referents in the Gaze condition (see Panel B of Figure 2). The interactions between Gaze condition and Referents and between Referents and Interval were not significant. Importantly, we found the predicted interaction between Trial Type and Gaze condition ($\beta = `r beta_gaze_trialtype_int`$, p < .001), with participants in the Gaze condition performing worse on Switch trials. This interaction provides direct evidence that the presence of a referential cue selectively reduced participants' memory for alternative word-object links. 
+
+
+We also included participants' inspection times on exposure trials in the model to provide a measure of the effect of attention on the probability of a correct response. 
+
 
 Taken together, the response time and accuracy analyses provide evidence that the presence of a referential cue modulated learners' attention during learning, and in turn made them less likely to track multiple word-object links. We did not see strong evidence that reduced tracking of alternatives resulted in an increase in performance on Same trials. This finding suggests that the limitations on Same trials may be different than those regulating the distribution of attention on Switch trials, since the presence of a referential cue selectively reduced learners tracking of alternatives but apparently did not lead learners to form a stronger memory of their single candidate hypothesis. 
 
@@ -359,7 +391,13 @@ In Experiment 2, we attempt to replicate the findings from Experiment 1 using a 
 
 ### Participants
 
-```{r expt2 exclusions}
+```{r e2 participants}
+# experiment 2
+nsubs_expt2 <- df_expt2 %>% 
+  group_by(condition, interval) %>%
+  summarise(n_subs = n_distinct(subid)) %>% 
+  mutate(n_excluded = 100 - n_subs)
+
 n_hits_e2 <- 400
 n_excluded_e2 <- sum(nsubs_expt2$n_excluded)
 ```
@@ -381,7 +419,7 @@ We followed the same analysis plan as in Experiment 1, first analyzing performan
 ### Exposure trials
 
 ```{r expt2_chance_exposure}
-e2.chance.tests.exposure <- test.chance(data = filter(df_expt2, trial_cat == "exposure", 
+e2.chance.tests.exposure <- test.chance(data = filter(df_expt2, trial_category == "exposure", 
                                                       include_good_rt == "include", 
                                                       condition_trial == "social"),
                                         groups = c("numPicN","intervalNum"),
@@ -390,8 +428,8 @@ e2.chance.tests.exposure <- test.chance(data = filter(df_expt2, trial_cat == "ex
 ```
 
 ```{r expt2 lmer rt}
-m1_rt_expt2 <- lmer(rt ~ condition_trial * log2(intervalNum + 1) + (1|subids), 
-                    data=filter(df_expt2, trial_cat == "exposure"))
+m1_rt_expt2 <- lmer(rt ~ condition_trial * log2(intervalNum + 1) + (1|subid), 
+                    data=filter(df_expt2, trial_category == "exposure"))
 
 beta_gaze_rt_expt2 <- round(summary(m1_rt_expt2)$coef[2], 2)
 beta_interval_rt_expt2 <- round(summary(m1_rt_expt2)$coef[3], 2)
@@ -408,7 +446,7 @@ grid::grid.raster(png::readPNG("figs/expt2.png"))
 ### Test trials
 
 ```{r expt2_chance}
-e2.chance.tests <- test.chance(data = filter(df_expt2, trial_cat == "test"),
+e2.chance.tests <- test.chance(data = filter(df_expt2, trial_category == "test"),
                                groups = c("trialType","numPicN","intervalNum"),
                                formula = as.formula("correct ~ 1")) %>%
   mutate(stars = getstars(ps))
@@ -416,11 +454,11 @@ e2.chance.tests <- test.chance(data = filter(df_expt2, trial_cat == "test"),
 
 ```{r expt 2 acc glmer}
 m1_acc_expt2 <- glmer(correct ~ (trialType + condition_trial + log2(intervalNum + 1))^2 +
-                        (trialType | subids), 
+                        (trialType | subid), 
                       nAGQ=0,
                       glmerControl(optimizer = "bobyqa"),
                       family=binomial,
-                      data = filter(df_expt2, trial_cat == "test"))
+                      data = filter(df_expt2, trial_category == "test"))
 
 beta_trialtype_expt2 <- round(summary(m1_acc_expt2)$coef[2], 2)
 beta_interval_expt2 <- round(summary(m1_acc_expt2)$coef[4], 2)
@@ -484,17 +522,30 @@ Thus far we have shown that people store different amounts of information in res
 
 # Experiment 3
 
-In Experiment 3, we explore whether learners will allocate attention and memory flexibly in response to *graded* changes in the referential uncertainty present during learning. To test this hypothesis, we move beyond a categorical manipulation of the presence/absence of gaze, and we parametrically vary the strength of the referential cue. We manipulate cue strength by including a block of familiarization trials where we vary the proportion of Same and Switch trials. If participants saw more Switch trials, this provides evidence that the speaker's gaze was an unreliable cue to reference. This design was inspired by a growing body of experimental work showing that even young children are sensitive to the prior reliability of speakers and will use this information when deciding whom to learn novel words from [@koenig2004trust]. 
+In Experiment 3, we explored whether learners would allocate attention and memory flexibly in response to *graded* changes in the referential uncertainty present during learning. To test this hypothesis, we moved beyond a categorical manipulation of the presence/absence of gaze, and we parametrically varied the strength of the referential cue. We manipulated cue strength by including a block of familiarization trials where we varied the proportion of Same and Switch trials. If participants saw more Switch trials, this provided evidence that the speaker's gaze was an unreliable cue to reference. This design was inspired by a growing body of experimental work showing that even young children are sensitive to the prior reliability of speakers and will use this information when deciding whom to learn novel words from [@koenig2004trust]. 
 
 ## Method
 
 ### Participants
 
-Participant recruitment, and inclusionary/exclusionary criteria were identical to those of Experiment 1 and 2 (excluded 4 HITs). 100 HITs were posted for each reliability level (0%, 25%, 50%, 75%, and 100%) for total of 500 paid HITs.  
+```{r e3 participants}
+# experiment 3
+e4_nhits <- 100
+nsubs_expt3 <- df_expt3 %>%
+  filter(experiment == "replication") %>% 
+  group_by(prop_cond_clean) %>%
+  summarise(n_subs = n_distinct(subid)) %>% 
+  mutate(n_excluded = e4_nhits - n_subs)
+
+final_n_expt3 <- sum(nsubs_expt3$n_subs)
+nsubs_excluded_expt3 <- sum(nsubs_expt3$n_excluded)
+```
+
+Participant recruitment and inclusionary/exclusionary criteria were identical to those of Experiment 1 and 2 (excluded `r nsubs_excluded_expt3` HITs). 100 HITs were posted for each reliability level (0%, 25%, 50%, 75%, and 100%) for total of 500 paid HITs.  
 
 ### Design and Procedure
 
-Procedures were identical to those of Experiment 1 and 2. We modified our cross-situational learning paradigm to include a block of 16 familiarization trials (8 exposure trials and 8 test trials), which established the reliability of the speaker. To establish reliability, we varied the proportion of Same/Switch trials that occurred during this familiarization block. Recall that on Switch trials the gaze target does not show up at test, thus providing evidence that this speaker's gaze might not be a reliable cue to reference. Gaze reliability was a between-subjects manipulation, with participants either seeing 0, 2, 4, 6, or 8 Switch trials. After the familiarization block, participants completed another block of 16 trials (8 exposure trials and 8 test trials). Since we were no longer testing the effect of the presence or absence of a referential cue, all exposure trials in Experiment 3 included gaze, but this cue was more or less reliable depending on which familiarization block participants saw. Finally, at the end of the task we asked participants to assess the reliability of the speaker on a continuous scale from "completely unreliable" to "completely reliable." 
+Procedures were identical to those of Experiment 1 and 2. We modified our cross-situational learning paradigm to include a block of 16 familiarization trials (8 exposure trials and 8 test trials), which established the reliability of the speaker. To establish reliability, we varied the proportion of Same/Switch trials that occurred during this familiarization block. Recall that on Switch trials the gaze target does not show up at test, providing evidence that the speaker's gaze might not be a reliable cue to reference. Gaze reliability was a between-subjects manipulation, with participants either seeing 0, 2, 4, 6, or 8 Switch trials in the familiarization block. After the familiarization trials, participants completed another block of 16 trials (8 exposure trials and 8 test trials). Since we were no longer testing the effect of the presence or absence of a referential cue, all exposure trials in Experiment 3 included gaze, but this cue was more or less reliable depending on which familiarization block participants saw. Finally, at the end of the task we asked participants to assess the reliability of the speaker on a continuous scale from "completely unreliable" to "completely reliable." 
 
 ## Results and Discussion
 
@@ -510,16 +561,18 @@ e3.chance.tests.exposure <- test.chance(data = filter(df_expt3, trial_category =
 ```
 
 ```{r expt3 lmer acc expo test block}
-m1_expo_expt3 <- glmer(correct ~ reliability * rel_subj  + (1 | subids), 
+m1_expo_expt3 <- glmer(correct ~ reliability * rel_subj  + (1 | subid), 
                        offset = logit(1/numPicN),
                        nAGQ = 1,
                        control = glmerControl(optimizer = "bobyqa"),
                        family = binomial,
                        data = filter(df_expt3, trial_category == "exposure", block == "test",
-                                     experiment == "replication", include_good_rt == "include")
-)
+                                     experiment == "replication", include_good_rt == "include"))
 
+# coefs
 beta_rel_exposure_expt3 <- round(summary(m1_expo_expt3)$coef[2], 2)
+p_rel_exposure_expt3 <- round(summary(m1_expo_expt3)$coef[2, 4], 2)
+
 beta_rel_subj_exposure_expt3 <- round(summary(m1_expo_expt3)$coef[3], 2)
 beta_rel_subj_exposure_interaction_expt3 <- round(summary(m1_expo_expt3)$coef[4], 2)
 
@@ -532,66 +585,62 @@ ms_expt3 <- df_expt3 %>%
   filter(trial_category == "test", block == "test", 
          include_good_rt == "include", experiment == "replication") %>% 
   group_by(prop_cond_clean) %>%
-  summarise(accuracy = mean(correct_exposure, na.rm=T),
-            ci_low = ci.low(correct_exposure),
-            ci_high = ci.high(correct_exposure))
+  summarise(accuracy = mean(correct_exposure, na.rm=T))
 ```
 
-Similar to Experiments 1 and 2, participants reliably chose the referent that was the target of gaze at rates greater than those that would be predicted by a guessing model (smallest $\beta$ = `r round(sort(e3.chance.tests.exposure$betas)[1], 2)`, z = `r round(sort(e2.chance.tests.exposure$zs)[1], 2)`, p < .001). To quantify the effect of reliability condition and participants' subjective reliability assessment, we fit a mixed effects logistic regression model predicting the probability of selecting the gaze target as follows: \texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + offset(logit(1/Referents)) + (1 | subject)}. We found significant main effects of both reliability condition ($\beta$ = `r beta_rel_exposure_expt3`, p < .05) and subjective reliability ($\beta$ = `r beta_rel_subj_exposure_expt3`, p < .001) such that when the gaze cue was more reliable and when subjective reliability assessments were higher participants were more likely to use the gaze cue. The interaction between speaker reliability and subjective reliability assessments was marginally significant ($\beta$ = `r beta_rel_subj_exposure_interaction_expt3`, p = `r beta_rel_subj_exposure_interaction_expt3_p`). This analysis provides evidence that participants were sensitive to the reliability manipulation both in how often they used the gaze cue during the task and in how they rated the speaker at the end of the task.
+Similar to Experiments 1 and 2, participants reliably chose the referent that was the target of gaze at rates greater than those that would be predicted by a guessing model (smallest $\beta$ = `r round(sort(e3.chance.tests.exposure$betas)[1], 2)`, z = `r round(sort(e2.chance.tests.exposure$zs)[1], 2)`, p < .001). To quantify the effect of reliability condition and participants' subjective reliability assessment, we fit a mixed effects logistic regression model predicting the probability of selecting the gaze target as follows: \texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + offset(logit(1/Referents)) + (1 | subject)}. We found significant main effects of both reliability condition ($\beta$ = `r beta_rel_exposure_expt3`, $p$ = `r p_rel_exposure_expt3`) and subjective reliability ($\beta$ = `r beta_rel_subj_exposure_expt3`, p < .001) such that when the gaze cue was more reliable and when subjective reliability assessments were higher participants were more likely to use the gaze cue. The interaction between speaker reliability and subjective reliability assessments was marginally significant ($\beta$ = `r beta_rel_subj_exposure_interaction_expt3`, $p$= `r beta_rel_subj_exposure_interaction_expt3_p`). This analysis provides evidence that participants were sensitive to the reliability manipulation both in how often they used the gaze cue and in how they rated the reliability of the speaker at the end of the task.
 
-```{r expt3-plot, fig.pos = "tb", fig.width=4.8, fig.height=6, fig.cap = "Accuracy on test trials in Experiment 3 for both Same and switch trial types. Panel A shows accuracy as a function of the speaker's reliability. Panel B shows accuracy as a function of participants' gaze following on exposure trials. Panel C shows accuracy as a function of participants' subjective reliability judgments, grouped into five equally spaced bins. The horizontal dashed line represents the expected performance if participants were selecting randomly. The colored lines are linear model fits and error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap."}
-grid::grid.raster(png::readPNG("figs/expt3.png"))
+```{r e3-main-plot, fig.pos = "tb", fig.width=5, fig.height=4, fig.cap = "Accuracy on Same (solid lines) and Switch (dashed lines) test trials in Experiment 3 as a function of gaze reliability. The blue lines with open points represent test trials where participants did not follow gaze on exposure trials. The red lines with filled points represent trials where participants did follow gaze on exposure trials. Error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap."}
+grid::grid.raster(png::readPNG("figs/expt3_main_plot.png"))
 ```
 
 ### Test trials
 
 ```{r expt3_chance}
-e3.chance.tests <- test.chance(data = filter(df_expt3, trial_category == "test", block == "test",
-                                             experiment == "replication", include_good_rt == "include"),
+e3.chance.tests <- test.chance(data = filter(df_expt3, trial_category == "test",
+                                             block == "test",
+                                             experiment == "replication", 
+                                             include_good_rt == "include"),
                                groups = c("trialType","prop_cond_clean"),
                                formula = as.formula("correct ~ 1")) %>%
   mutate(stars = getstars(ps))
 ```
 
+Figure 4 shows performance on test trials in Experiment 3. Across all conditions for both Trial Types participants selected the correct referent at rates greater than chance (smallest $\beta$ = `r round(sort(e3.chance.tests$betas)[1], 2)`, z = `r round(sort(e3.chance.tests$zs)[1], 2)`, p < .001). Our primary prediction in this experiment was an interaction between reliability and test trial type, with higher levels of reliability leading to less attention and memory allocated to alternative word-object links. To test this prediction, we performed three complementary analyses of test trial performance using three different predictors: reliability condition, participants' use of gaze, and participants' subjective reliability assessments. 
+
+```{r expt3-sub-plots, fig.pos = "tb", fig.width=4.8, fig.height=4, fig.cap = "Accuracy on test trials in Experiment 3 for both Same and switch trial types. Panel A shows accuracy as a function of the speaker's reliability. Panel B shows accuracy as a function of participants' gaze following on exposure trials. Panel C shows accuracy as a function of participants' subjective reliability judgments, grouped into five equally spaced bins. The horizontal dashed line represents the expected performance if participants were selecting randomly. The colored lines are linear model fits and error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap."}
+grid::grid.raster(png::readPNG("figs/expt3_sub_plot.png"))
+```
+
+#### Reliability condition analysis
+
 ```{r glmer condition expt3}
-m1_expt3 <- glmer(correct ~ trialType * reliability + (trialType | subids), 
+m1_expt3 <- glmer(correct ~ (trialType + reliability)^2 + (trialType | subid), 
                   offset = logit(1/numPicN),
                   nAGQ = 1,
                   family = binomial,
                   data = filter(df_expt3, trial_category == "test", block == "test",
-                                experiment == "replication", include_good_rt == "include"),
-                  control = glmerControl(optimizer = "bobyqa")
-)
+                                include_good_rt == "include"),
+                  control = glmerControl(optimizer = "bobyqa"))
 
+beta_trialtype_expt3 <- round(summary(m1_expt3)$coef[2], 2)
 beta_trialtype_int_expt3 <- round(summary(m1_expt3)$coef[3], 2)
 beta_rel_trialtype_int_expt3 <- round(summary(m1_expt3)$coef[4], 2)
 beta_rel_trialtype_int_p_expt3 <- round(summary(m1_expt3)$coef[4,4], 2)
 ```
 
-```{r glmer original condition expt3}
-m1_expt3_original <- glmer(correct ~ reliability * trialType + (trialType | subids),
-                           offset = logit(1/numPicN),
-                           control = glmerControl(optimizer = "bobyqa"),
-                           nAGQ = 1,
-                           family = binomial,
-                           data = filter(df_expt3, trial_category == "test", block == "test",
-                                         experiment == "original", include_good_rt == "include")
-)
+Panel A of Figure 4 shows participants' accuracy on both types of test trials as a function of the reliability manipulation. We fit a mixed-effects logistic regression model predicting accuracy using reliability condition as a predictor and found a significant main effect of trial type ($\beta = `r beta_trialtype_expt3`$, p < .001), with lower accuracy on Switch trials. We found a significant interaction between Reliability condition and Trial Type ($\beta = `r beta_rel_trialtype_int_expt3`$, p = `r beta_rel_trialtype_int_p_expt3`), providing evidence for our key prediction. The interaction between Reliability condition and accuracy was relatively weak, however, and -- similar to Experiment 1 -- there was substantial variability across conditions (see the 50% reliable condition in Panel A of Figure 4). To provide additional support for our hypothesis, we conducted two follow-up analyses. 
 
-beta_rel_expt3_original <- round(summary(m1_expt3_original)$coef[2], 2)
-beta_rel_expt3_original <- round(summary(m1_expt3_original)$coef[3], 2)
-beta_rel_trialtype_int_expt3_original <- round(summary(m1_expt3_original)$coef[4], 2)
-```
+#### Gaze use analysis
 
 ```{r glmer total exposure correct expt3}
-m2_expt3 <- glmer(correct ~ total_exposure_correct * trialType + (trialType | subids),
+m2_expt3 <- glmer(correct ~ total_exposure_correct * trialType + (trialType | subid),
                   offset = logit(1/numPicN),
                   control = glmerControl(optimizer = "bobyqa"),
                   nAGQ = 1,
                   family = binomial,
                   data = filter(df_expt3, trial_category == "test", block == "test",
-                                experiment == "replication", include_good_rt == "include")
-)
+                                experiment == "replication", include_good_rt == "include"))
 
 beta_totexpo_expt3 <- round(summary(m2_expt3)$coef[2], 2)
 beta_trialtype_expt3 <- round(summary(m2_expt3)$coef[3], 2)
@@ -599,120 +648,49 @@ beta_totexpo_trialtype_int_expt3 <- round(summary(m2_expt3)$coef[4], 2)
 ```
 
 ```{r glmer original total exposure correct expt3}
-m2_expt3_original <- glmer(correct ~ total_exposure_correct * trialType + (trialType | subids),
+m2_expt3_original <- glmer(correct ~ total_exposure_correct * trialType + (trialType | subid),
                            offset = logit(1/numPicN),
                            control = glmerControl(optimizer = "bobyqa"),
                            nAGQ = 1,
                            family = binomial,
                            data = filter(df_expt3, trial_category == "test", block == "test",
-                                         experiment == "original", include_good_rt == "include")
-)
+                                         experiment == "original", include_good_rt == "include"))
 
 beta_totexpo_expt3_original <- round(summary(m2_expt3_original)$coef[2], 2)
 beta_trialtype_expt3_original <- round(summary(m2_expt3_original)$coef[3], 2)
 beta_totexpo_trialtype_int_expt3_original <- round(summary(m2_expt3_original)$coef[4], 2)
 ```
 
+
+We would only expect to see a strong interaction between reliability and trial type if learners chose to use the gaze cue during exposure trials. To test this hypothesis, we fit a mixed effects logistic regression model with the same specifications, but substituting accuracy on exposure trials for reliability condition as a predictor. We found a robust two-way interaction between accuracy on exposure trials and Trial Type ($\beta = `r beta_totexpo_trialtype_int_expt3`$, p < .001) such that participants who were more likely to use the gaze cue performed worse on Switch trials, but not Same trials. ^[We found this interaction while performing exploratory data analysis on a previous version of this study with an independent sample (N = 250, $\beta = `r beta_totexpo_trialtype_int_expt3_original`$, p < .001). The results reported here are from a follow-up study where testing this interaction was a planned analysis.] Panel B of Figure 4 shows this interaction. 
+
+#### Subjective reliability analysis 
+
 ```{r glmer subjective reliability expt 3}
-m3_expt3 <- glmer(correct ~ rel_subj * trialType + (trialType | subids),
+m3_expt3 <- glmer(correct ~ rel_subj * trialType + (trialType | subid),
                   control = glmerControl(optimizer = "bobyqa"), 
                   offset = logit(1/numPicN),
                   nAGQ = 1,
                   family = binomial,
                   data = filter(df_expt3, trial_category == "test", block == "test",
-                                experiment == "replication", include_good_rt == "include")
-)
+                                experiment == "replication", include_good_rt == "include"))
 
 beta_rel_subj_expt3 <- round(summary(m3_expt3)$coef[2], 2)
 beta_trialtype_rel_subj_expt3 <- round(summary(m3_expt3)$coef[3], 2)
 beta_rel_subj_trialtype_int_expt3 <- round(summary(m3_expt3)$coef[4], 2)
-
-beta_rel_subj_trialtype_int_expt3_p <- round(summary(m3_expt3)$coef[4,4], 2)
+p_rel_subj_trialtype_int_expt3 <- round(summary(m3_expt3)$coef[4,4], 2)
 ```
 
-Figure 4 shows performance on test trials in Experiment 3. Across all conditions for both Trial Types participants selected the correct referent at rates greater than chance (smallest $\beta$ = `r round(sort(e3.chance.tests$betas)[1], 2)`, z = `r round(sort(e3.chance.tests$zs)[1], 2)`, p < .001). Our primary prediction in this experiment is an interaction between reliability and test trial type, with higher levels of reliability leading to less attention and memory allocated to alternative word-object links. To test this prediction, we performed three complementary analyses of test trial performance using three different predictors: reliability condition, participants' use of gaze, and participants' subjective reliability assessment. 
 
-```{r expt3-table, echo = F, results = 'asis'}
-e3.condition <- as.data.frame(summary(m1_expt3)$coef)[4,]
-e3.exposure.correct <- as.data.frame(summary(m2_expt3)$coef)[4,]
-e3.subj.rel <- as.data.frame(summary(m3_expt3)$coef)[4,]
-
-e3.tab <- bind_rows(e3.condition, e3.exposure.correct, e3.subj.rel)
-
-e3.tab$Predictor <- c("Gaze*Reliablity Condition",
-                      "Gaze*Gaze Following on Exposure",
-                      "Gaze*Subjective Reliability")
-
-rownames(e3.tab) <- NULL
-e3.tab <- e3.tab[,c(5,1:4)]
-names(e3.tab)[4:5] <- c("$z$ value","$p$ value")
-
-e3.tab %<>% 
-  mutate(
-    stars = ifelse(`$p$ value` > .1, "", 
-                   ifelse(`$p$ value` < .001, "***",
-                          ifelse(`$p$ value` < .01, "**",
-                                 ifelse(`$p$ value` < .05, "*",
-                                        ifelse(`$p$ value` < .1, ".", "Error"))))),
-    `$p$ value` = ifelse(`$p$ value` > .1, round(`$p$ value`, 2), 
-                         ifelse(`$p$ value` < .001, "$<$ .001",
-                                ifelse(`$p$ value` < .01, round(`$p$ value`, 2),
-                                       ifelse(`$p$ value` < .05, round(`$p$ value`, 2),
-                                              ifelse(`$p$ value` < .1, round(`$p$ value`, 2), 
-                                                     "Error")))))
-  )
-
-
-names(e3.tab)[6] <- c("")
-
-# print(xtable(e3.tab,
-#              align = c("l","l","r","r","r","r","l"),
-#              label = "tab:exp3_reg",
-#              caption = "Interaction coefficient estimates with standard errors and significance information for the three logistic mixed-effects models predicting word learning in Experiment 3."),
-#       include.rownames=FALSE,hline.after=c(0,nrow(e3.tab)),
-#       sanitize.text.function=function(x){x},
-#       caption.placement = 'bottom', 
-#       table.placement = "tb",
-#       comment = F)
-```
-
-#### Reliability condition analysis
-
-Panel A of Figure 4 shows participants' accuracy on both types of test trials as a function of the reliability manipulation. We fit a mixed-effects logistic regression model predicting accuracy using reliability condition as a predictor and found a significant main effect of trial type ($\beta = `r beta_trialtype_expt3`$, p < .001), with lower accuracy on Switch trials. We found a significant interaction between Reliability condition and Trial Type ($\beta = `r beta_rel_trialtype_int_expt3`$, p = `r beta_rel_trialtype_int_p_expt3`), providing evidence for our key prediction. The interaction between Reliability condition and accuracy was relatively weak, however, and -- similar to Experiment 1 -- there was substantial variability across conditions (see the 50% reliable condition in Panel A of Figure 4). To provide additional support for our hypothesis, we conducted two follow-up analyses. 
-
-#### Gaze use analysis
-
-We would only expect to see a strong interaction between reliability and trial type if learners chose to use the gaze cue during exposure trials. To test this hypothesis, we fit a mixed effects logistic regression model with the same specifications, but substituting accuracy on exposure trials for reliability condition as a predictor. We found a robust two-way interaction between accuracy on exposure trials and Trial Type ($\beta = `r beta_totexpo_trialtype_int_expt3`$, p < .001) such that participants who were more likely to use the gaze cue performed worse on Switch trials, but not Same trials. ^[We found this interaction while performing exploratory data analysis on a previous version of this study with an independent sample (N = 250, $\beta = `r beta_totexpo_trialtype_int_expt3_original`$, p < .001). The results reported here are from a follow-up study where testing this interaction was a planned analysis.] Panel B of Figure 4 shows this interaction. 
-
-```{r expt3 test performance gaze-follow trial-level, include = F}
-ms_expt3_gf <- df_expt3 %>% 
-  filter(trial_category == "test", include_good_rt == "include",
-         block == "test") %>% 
-  group_by(subids, trialType, correct_exposure, reliability) %>% 
-  summarise(mean_ss = mean(correct)) %>%
-  group_by(trialType, correct_exposure, reliability) %>%
-  multi_boot_standard(column = "mean_ss")
-
-
-ggplot(aes(x = reliability, y = mean, color = correct_exposure), 
-       data = ms_expt3_gf) + 
-  geom_pointrange(aes(ymax = ci_upper, ymin = ci_lower), position = position_jitter(width=0.1)) +
-  geom_line(aes(group=interaction(trialType, correct_exposure), linetype = trialType)) +
-  scale_colour_manual(values=c("#1f78b4", "red")) 
-```
-
-#### Subjective reliability analysis 
-
-The strong interaction between frequency of gaze use and test trial performance suggests that participants' subjective experience of reliability in the experiment mattered. To quantify the effect of subjective reliability, we fit the same mixed effects logistic regression model, but substituted subjective reliability as a predictor of test trial performance. We found a significant interaction between Trial Type and participants' subjective reliability assessments ($\beta = `r beta_rel_subj_trialtype_int_expt3`$, p = `r beta_rel_subj_trialtype_int_expt3_p`) -- if participants thought the speaker was more reliable, then they performed worse on Switch, but not Same, trials. 
+The strong interaction between frequency of gaze use and test trial performance suggests that participants' subjective experience of reliability in the experiment mattered. To quantify the effect of subjective reliability, we fit the same mixed effects logistic regression model, but substituted subjective reliability as a predictor of test trial performance. We found a significant interaction between Trial Type and participants' subjective reliability assessments ($\beta = `r beta_rel_subj_trialtype_int_expt3`$, p = `r p_rel_subj_trialtype_int_expt3`) -- if participants thought the speaker was more reliable, then they performed worse on Switch, but not Same, trials. 
 
 Taken together, these three analyses show that as the speaker's gaze became more reliable, participants were (a) more likely to use it, (b) more likely to rate the speaker as reliable, and (c) less likely to store multiple word-object links. These findings support and extend the results of Experiments 1 and 2 in several important ways. First, participants' performance on Same trials was again relatively unaffected by changes in performance on Switch trials. The selective effect of gaze on Switch trials provides converging evidence that the limitations on Same trials may be different than those regulating the distribution of attention on Switch trials. Second, learners' *use* of a referential cue was a stronger predictor of reduced memory for alternative word-object links compared to our reliability manipulation. Although we found a significant effect of reliability on participants' use of the gaze cue, participants' tendency to use the cue remained high. Consider that even in the 0% reliability condition the mean proportion of gaze following was still `r round(min(ms_expt3$accuracy),2)`. It is reasonable that participants would continue to use the gaze cue in our experiment since it was the only cue available and participants did not have a strong reason to think that the speaker would be deceptive. 
 
 The critical contribution of Experiment 3 is that learners respond to a *graded* manipulation of referential uncertainty, with the amount of information stored from the int ital exposure tracking with the reliability of the cue and participants' use of the cue. This graded accuracy performance shows that at the group-level learners stored alternative word-object links with different levels of fidelity depending on the amount of referential uncertainty present during learning. 
 
-
 # Experiment 4
 
-```{r expt4-plot, fig.pos = "tb", fig.width=4.8, fig.height=6, fig.cap = "Experiment 4 results. Accuracy on Same and Switch test trials for both the Long and Short inspection time conditions. The dashed lines represent chance performance. Error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap. Color and line type indicate whether there was gaze present on exposure trials."}
+```{r expt4-plot, fig.pos = "tb", fig.width=4.5, fig.height=4, fig.cap = "Experiment 4 results. Accuracy on Same and Switch test trials for both the Long and Short inspection time conditions. The dashed lines represent chance performance. Error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap. Color and line type indicate whether there was gaze present on exposure trials."}
 grid::grid.raster(png::readPNG("figs/expt4.png"))
 ```
 
@@ -720,9 +698,36 @@ grid::grid.raster(png::readPNG("figs/expt4.png"))
 
 ### Participants
 
-```{r expt4 exclusions}
+```{r e4 nsubs}
+nsubs_expt4 <- df_expt4 %>% 
+  group_by(interval, inspection_cond) %>%
+  summarise(n_subs = n_distinct(subid))
+```
+
+Set up filter
+
+```{r e4 filter}
+df_expt4_filtered <- df_expt4 %>% 
+  filter(trial_category == "test", answer_type_exposure == "participant_response",
+         correct_exposure == T | gaze_trial == "No-Gaze",
+         mean_acc_exp > 0.25, include_good_rt == "include")
+```
+
+```{r exp4 ss removed}
+df_n_expt4 <- df_expt4 %>%
+  group_by(interval, inspection_cond) %>%
+  summarise(n_subs = n_distinct(subid))
+
+df_n_expt4_filt <- df_expt4_filtered %>%
+  group_by(interval, inspection_cond) %>%
+  summarise(n_subs_filt = n_distinct(subid)) %>%
+  select(n_subs_filt)
+
+nsubs_expt4_filt <- cbind(df_n_expt4, df_n_expt4_filt)
+
+# get number of excluded
 n_hits <- 400
-expt4_nsubs_excluded = n_hits - sum(nsubs_expt4$n_subs)
+expt4_nsubs_excluded = n_hits - sum(nsubs_expt4_filt$n_subs_filt)
 ```
 
 Participant recruitment and inclusionary/exclusionary criteria were identical to those of Experiments 1, 2, and 3. 100 HITs were posted for each condition (1 Referent X 2 Intervals X 2 Inspection Time conditions) for total of `r n_hits` paid HITs (excluded `r expt4_nsubs_excluded` HITs). 
@@ -734,12 +739,14 @@ Audio, picture, and video stimuli were identical to Experiment 2. To ensure that
 ### Design and Procedure
 
 Procedures were identical to those of Experiment 2. The experiment consisted of 32 trials broken down into 2 blocks of 16 trials. Each block consisted of 8 exposure trials and 8 test trials (4 Same trials and 4 Switch trials), and contained only Gaze or No-gaze exposure trials. The order of block was counterbalanced across participants. 
+
 The major design change was to equate the length of exposure trials in the Gaze and No-Gaze conditions, allowing us to test for the effect of social cues over and above inspection time. We randomly assigned participants to one of two inspection time conditions: Short (6 seconds) or Long (9 seconds). These times were selected based on participants' self-paced inspection times in the Gaze and No-Gaze conditions in Experiment 2. After pilot testing, we added three seconds to each condition to ensure that participants had enough time to respond before the experiment advanced.
 
 ## Results and Discussion
 
-```{r expt4 chance exposure}
-e3.chance.tests.exposure <- test.chance(data = filter(df_expt4, trial_category == "exposure", 
+```{r e4 chance exposure}
+e4.chance.tests.exposure <- test.chance(data = filter(df_expt4, 
+                                                      trial_category == "exposure", 
                                                       include_good_rt == "include", 
                                                       gaze_trial == "Gaze"),
                                         groups = c("inspection_cond","intervalNum"),
@@ -747,9 +754,10 @@ e3.chance.tests.exposure <- test.chance(data = filter(df_expt4, trial_category =
   mutate(stars = getstars(ps))
 ```
 
-```{r expt4 lmer rt}
-m1_rt_expt3 <- lmer(rt ~ condition_trial * log2(intervalNum + 1) + (1|subids), 
-                    data=filter(df_expt2, trial_cat == "exposure"))
+```{r e4 lmer rt}
+m1_rt_expt4 <- lmer(rt ~ condition_trial * log2(intervalNum + 1) + (1|subid), 
+                    data=filter(df_expt2, trial_category == "exposure", 
+                                include_good_rt == "include"))
 
 beta_gaze_rt_expt2 <- round(summary(m1_rt_expt2)$coef[2], 2)
 beta_interval_rt_expt2 <- round(summary(m1_rt_expt2)$coef[3], 2)
@@ -759,21 +767,23 @@ beta_interval_rt_expt2 <- round(summary(m1_rt_expt2)$coef[3], 2)
 
 ### Test Trials
 
-```{r expt4 test chance}
-e4.chance.tests <- test.chance(data = filter(df_expt4, trial_category == "test"),
+```{r e4 test chance}
+e4.chance.tests <- test.chance(data = filter(df_expt4_filtered, trial_category == "test"),
                                groups = c("trialType","inspection_cond","intervalNum"),
                                formula = as.formula("correct ~ 1")) %>%
   mutate(stars = getstars(ps))
 ```
 
-```{r expt4 glmer}
-m1_acc_expt4 <- glmer(correct ~ (trialType + gaze_trial + log2(intervalNum + 1))^2 +
+```{r e4 glmer}
+m1_acc_expt4 <- glmer(correct ~ (trialType + gaze_trial + 
+                                   log2(intervalNum + 1) + inspection_cond)^3 +
                         (trialType | subid), 
                       nAGQ=0,
                       glmerControl(optimizer = "bobyqa"),
                       family=binomial,
-                      data = filter(df_expt4, trial_category == "test"))
+                      data = df_expt4_filtered)
 ```
+
 
 
 # General Discussion
