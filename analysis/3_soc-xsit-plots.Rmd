@@ -505,7 +505,7 @@ Here we plot accuracy at test as a function of how long participants inspected t
 ```{r e4 inspection time and gaze following}
 ## correct as a fucntion of inspection time on exposure
 df_inspect <- df_expt3 %>% 
-  filter(trial_category == "exposure", include_good_rt == "include") %>% 
+  filter(trial_category == "exposure", block == "test", include_good_rt == "include") %>% 
   select(subid, itemNum, inspection_time_exposure = rt) %>% 
   mutate(inspection_time_exposure_sec = inspection_time_exposure / 1000) %>% 
   left_join(filter(df_expt3, trial_category == "test", block == "test"), 
@@ -523,7 +523,6 @@ ms_inspect <- df_inspect %>%
   multi_boot_standard(column = "mean_ss", na.rm = T)
 
 ## Correct as a function of following gaze
-
 ms_expt3_gf <- df_expt3 %>% 
   filter(trial_category == "test", include_good_rt == "include", block == "test") %>% 
   group_by(subid, trialType, correct_exposure, prop_cond_clean) %>% 

@@ -236,8 +236,8 @@ e1.chance.tests <- test.chance(data = filter(df_expt1, trial_category == "test",
 
 ```{r expt1 glmer}
 m1_2way_acc_expt1 <- glmer(correct ~ (trialType + condition + log2(intervalNum + 1) +
-                                        log2(numPicN))^2 + 
-                             (trialType | subid), offset = logit(1/numPicN), 
+                                        log2(numPicN))^2 + (trialType | subid), 
+                           offset = logit(1/numPicN), 
                            control=glmerControl(optimizer="bobyqa"),
                            family=binomial, 
                            nAGQ=0,
@@ -331,15 +331,16 @@ print(xtable(e1.tab,
 
 ```{r e1 inspection model}
 m1_2way_acc_expt1_inspect <- glmer(correct ~ (trialType + condition + log2(intervalNum + 1) +
-                                        log2(numPicN) + log2(inspection_time_exposure_sec))^2 + 
-                             (trialType | subid), offset = logit(1/numPicN), 
-                           control=glmerControl(optimizer="bobyqa"),
-                           family=binomial, 
-                           nAGQ=0,
-                           data=filter(df_expt1, trial_category == "test", 
-                                       include_good_rt_test == "include",
-                                       include_expo == "include" | condition == "No-Social",
-                                       correct_exposure == T | condition == "No-Social"))
+                                                log2(numPicN) + log2(inspection_time_exposure_sec))^2 + 
+                                     (trialType | subid), 
+                                   offset = logit(1/numPicN), 
+                                   control=glmerControl(optimizer="bobyqa"),
+                                   family=binomial, 
+                                   nAGQ=0,
+                                   data=filter(df_expt1, trial_category == "test", 
+                                               include_good_rt_test == "include",
+                                               include_expo == "include" | condition == "No-Social",
+                                               correct_exposure == T | condition == "No-Social"))
 
 # get the beta and pvalue for inspection time 
 beta_inspect_expt1 <- round(summary(m1_2way_acc_expt1_inspect)$coef[6], 2)
@@ -348,17 +349,16 @@ p_inspect_expt1 <- round(summary(m1_2way_acc_expt1_inspect)$coef[6,4], 2)
 
 ```{r e1 3way model}
 # now fit the 3way model
-m1_3way_acc_expt1 <- glmer(correct ~ (trialType + condition + 
-                                             log2(intervalNum + 1) +
-                                             log2(numPicN))^3 +
-                                  (trialType | subid), offset = logit(1/numPicN),
-                                control=glmerControl(optimizer="bobyqa"),
-                                family=binomial, 
-                                nAGQ=0, 
-                                data=filter(df_expt1, trial_category == "test", 
-                                            include_good_rt_test == "include", 
-                                            include_expo == "include" | condition == "No-Social",
-                                            correct_exposure == T | condition == "No-Social"))
+m1_3way_acc_expt1 <- glmer(correct ~ (trialType + condition + log2(intervalNum + 1) + log2(numPicN))^3 +
+                             (trialType | subid), 
+                           offset = logit(1/numPicN),
+                           control=glmerControl(optimizer="bobyqa"),
+                           family=binomial, 
+                           nAGQ=0, 
+                           data=filter(df_expt1, trial_category == "test", 
+                                       include_good_rt_test == "include", 
+                                       include_expo == "include" | condition == "No-Social",
+                                       correct_exposure == T | condition == "No-Social"))
 
 # key two-way interaction between trial type and gaze
 beta_gaze_trialtype_int_2way <- round(summary(m1_3way_acc_expt1)$coef[6], 2)
@@ -375,6 +375,8 @@ We follow @yurovsky2014algorithmic's analysis plan and coded interval and number
 
 Table 1 shows the output of the logistic regression. We found significant main effects of referents ($\beta = `r beta_referents_acc`$, p < .001) and interval ($\beta = `r beta_interval_acc`$, p < .001), such that as each of these factors increased, accuracy on test trials decreased. We also found significant main effects of Trial Type ($\beta = `r beta_trialtype_acc`$, p < .001), with worse overall performance on Switch trials. There were significant interactions between Trial Type and Interval ($\beta = `r beta_trialtype_interval_int`$, p < .001), Trial Type and Referents ($\beta = `r beta_trialtype_referents_int`$, p < .001), and Gaze condition and Referents ($\beta = `r beta_gaze_referents_int`$, p < .05). These interactions can be interpreted as (a) the interval between exposure and test affecting Same trials more than Switch trials, (b) the number of referents affecting Switch trials more than Same trials, and (c) participants performing slightly better at higher number of referents in the Gaze condition (see Panel B of Figure 2). The interactions between Gaze condition and Referents and between Referents and Interval were not significant. Importantly, we found the predicted interaction between Trial Type and Gaze condition ($\beta = `r beta_gaze_trialtype_int`$, p < .001), with participants in the Gaze condition performing worse on Switch trials. This interaction provides direct evidence that the presence of a referential cue selectively reduced participants' memory for alternative word-object links. 
 
+
+TODO: add a few lines about what happens when you put inspection time into the model
 
 We also included participants' inspection times on exposure trials in the model to provide a measure of the effect of attention on the probability of a correct response. 
 
@@ -455,7 +457,7 @@ e2.chance.tests <- test.chance(data = filter(df_expt2, trial_category == "test")
 ```{r expt 2 acc glmer}
 m1_acc_expt2 <- glmer(correct ~ (trialType + condition_trial + log2(intervalNum + 1))^2 +
                         (trialType | subid), 
-                      nAGQ=0,
+                      nAGQ=1,
                       glmerControl(optimizer = "bobyqa"),
                       family=binomial,
                       data = filter(df_expt2, trial_category == "test"))
@@ -522,7 +524,7 @@ Thus far we have shown that people store different amounts of information in res
 
 # Experiment 3
 
-In Experiment 3, we explored whether learners would allocate attention and memory flexibly in response to *graded* changes in the referential uncertainty present during learning. To test this hypothesis, we moved beyond a categorical manipulation of the presence/absence of gaze, and we parametrically varied the strength of the referential cue. We manipulated cue strength by including a block of familiarization trials where we varied the proportion of Same and Switch trials. If participants saw more Switch trials, this provided evidence that the speaker's gaze was an unreliable cue to reference. This design was inspired by a growing body of experimental work showing that even young children are sensitive to the prior reliability of speakers and will use this information when deciding whom to learn novel words from [@koenig2004trust]. 
+In Experiment 3, we explore whether learners would allocate attention and memory flexibly in response to *graded* changes in the referential uncertainty present during learning. To test this hypothesis, we moved beyond a categorical manipulation of the presence/absence of gaze, and we parametrically varied the strength of the referential cue. We manipulated cue strength by including a block of familiarization trials where we varied the proportion of Same and Switch trials. If participants saw more Switch trials, this provided evidence that the speaker's gaze was an unreliable cue to reference. This design was inspired by a growing body of experimental work showing that even young children are sensitive to the prior reliability of speakers and will use this information when deciding whom to learn novel words from [@koenig2004trust]. 
 
 ## Method
 
@@ -545,13 +547,13 @@ Participant recruitment and inclusionary/exclusionary criteria were identical to
 
 ### Design and Procedure
 
-Procedures were identical to those of Experiment 1 and 2. We modified our cross-situational learning paradigm to include a block of 16 familiarization trials (8 exposure trials and 8 test trials), which established the reliability of the speaker. To establish reliability, we varied the proportion of Same/Switch trials that occurred during this familiarization block. Recall that on Switch trials the gaze target does not show up at test, providing evidence that the speaker's gaze might not be a reliable cue to reference. Gaze reliability was a between-subjects manipulation, with participants either seeing 0, 2, 4, 6, or 8 Switch trials in the familiarization block. After the familiarization trials, participants completed another block of 16 trials (8 exposure trials and 8 test trials). Since we were no longer testing the effect of the presence or absence of a referential cue, all exposure trials in Experiment 3 included gaze, but this cue was more or less reliable depending on which familiarization block participants saw. Finally, at the end of the task we asked participants to assess the reliability of the speaker on a continuous scale from "completely unreliable" to "completely reliable." 
+Procedures were identical to those of Experiments 1 and 2. We modified our cross-situational learning paradigm to include a block of 16 familiarization trials (8 exposure trials and 8 test trials), which established the reliability of the speaker. To establish reliability, we varied the proportion of Same/Switch trials that occurred during this familiarization block. Recall that on Switch trials the gaze target does not show up at test, providing evidence that the speaker's gaze might not be a reliable cue to reference. Gaze reliability was a between-subjects manipulation, with participants either seeing 0, 2, 4, 6, or 8 Switch trials (0%, 25%, 50%, 75%, or 100% reliable) in the familiarization block. After the familiarization trials, participants completed another block of 16 trials (8 exposure trials and 8 test trials). Since we were no longer testing the effect of the presence or absence of a referential cue, all exposure trials in Experiment 3 included gaze, but this cue was more or less reliable depending on which familiarization block participants saw. Finally, at the end of the task we asked participants to assess the reliability of the speaker on a continuous scale from "completely unreliable" to "completely reliable." 
 
 ## Results and Discussion
 
 ### Exposure trials
 
-```{r expt3_chance_exposure}
+```{r e3 chance exposure test block}
 e3.chance.tests.exposure <- test.chance(data = filter(df_expt3, trial_category == "exposure", 
                                                       block == "test", experiment == "replication", 
                                                       include_good_rt == "include"),
@@ -560,9 +562,8 @@ e3.chance.tests.exposure <- test.chance(data = filter(df_expt3, trial_category =
   mutate(stars = getstars(ps))
 ```
 
-```{r expt3 lmer acc expo test block}
+```{r expt3 glmer accuracy exposure test block}
 m1_expo_expt3 <- glmer(correct ~ reliability * rel_subj  + (1 | subid), 
-                       offset = logit(1/numPicN),
                        nAGQ = 1,
                        control = glmerControl(optimizer = "bobyqa"),
                        family = binomial,
@@ -580,7 +581,7 @@ beta_rel_subj_exposure_interaction_expt3 <- round(summary(m1_expo_expt3)$coef[4]
 beta_rel_subj_exposure_interaction_expt3_p <- round(summary(m1_expo_expt3)$coef[4,4], 2)
 ```
 
-```{r gaze following means}
+```{r e3 gaze following means}
 ms_expt3 <- df_expt3 %>% 
   filter(trial_category == "test", block == "test", 
          include_good_rt == "include", experiment == "replication") %>% 
@@ -588,13 +589,13 @@ ms_expt3 <- df_expt3 %>%
   summarise(accuracy = mean(correct_exposure, na.rm=T))
 ```
 
-Similar to Experiments 1 and 2, participants reliably chose the referent that was the target of gaze at rates greater than those that would be predicted by a guessing model (smallest $\beta$ = `r round(sort(e3.chance.tests.exposure$betas)[1], 2)`, z = `r round(sort(e2.chance.tests.exposure$zs)[1], 2)`, p < .001). To quantify the effect of reliability condition and participants' subjective reliability assessment, we fit a mixed effects logistic regression model predicting the probability of selecting the gaze target as follows: \texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + offset(logit(1/Referents)) + (1 | subject)}. We found significant main effects of both reliability condition ($\beta$ = `r beta_rel_exposure_expt3`, $p$ = `r p_rel_exposure_expt3`) and subjective reliability ($\beta$ = `r beta_rel_subj_exposure_expt3`, p < .001) such that when the gaze cue was more reliable and when subjective reliability assessments were higher participants were more likely to use the gaze cue. The interaction between speaker reliability and subjective reliability assessments was marginally significant ($\beta$ = `r beta_rel_subj_exposure_interaction_expt3`, $p$= `r beta_rel_subj_exposure_interaction_expt3_p`). This analysis provides evidence that participants were sensitive to the reliability manipulation both in how often they used the gaze cue and in how they rated the reliability of the speaker at the end of the task.
-
-```{r e3-main-plot, fig.pos = "tb", fig.width=5, fig.height=4, fig.cap = "Accuracy on Same (solid lines) and Switch (dashed lines) test trials in Experiment 3 as a function of gaze reliability. The blue lines with open points represent test trials where participants did not follow gaze on exposure trials. The red lines with filled points represent trials where participants did follow gaze on exposure trials. Error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap."}
-grid::grid.raster(png::readPNG("figs/expt3_main_plot.png"))
-```
+Similar to Experiments 1 and 2, participants reliably chose the referent that was the target of gaze at rates greater than those that would be predicted by a guessing model (smallest $\beta$ = `r round(sort(e3.chance.tests.exposure$betas)[1], 2)`, z = `r round(sort(e2.chance.tests.exposure$zs)[1], 2)`, p < .001). To quantify the effect of gaze reliability and participants' subjective reliability assessment, we fit a mixed effects logistic regression model predicting the probability of selecting the gaze target as follows: \texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + (1 | subject)}. We found significant main effects of both reliability condition ($\beta$ = `r beta_rel_exposure_expt3`, $p$ = `r p_rel_exposure_expt3`) and subjective reliability ($\beta$ = `r beta_rel_subj_exposure_expt3`, p < .001) such that when the gaze cue was more reliable and when subjective reliability assessments were higher participants were more likely to use the gaze cue. The interaction between speaker reliability and subjective reliability assessments was marginally significant ($\beta$ = `r beta_rel_subj_exposure_interaction_expt3`, $p$= `r beta_rel_subj_exposure_interaction_expt3_p`). This analysis provides evidence that participants were sensitive to the reliability manipulation both in how often they used the gaze cue and in how they rated the reliability of the speaker at the end of the task.
 
 ### Test trials
+
+```{r e3-main-plot, fig.pos = "tb", fig.width=5, fig.height=4, fig.cap = "Accuracy on Same and Switch test trials in Experiment 3. Panel A shows test trial performance as a function of gaze reliability condition. Panel B shows test trial performance as a function of whether participants followed gaze on exposure trials.The blue lines with open points represent test trials where participants did not follow gaze on exposure trials. The red lines with filled points represent trials where participants did follow gaze on exposure trials. The horizontal dashed line represents the expected performance if participants were selecting randomly, and error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap."}
+grid::grid.raster(png::readPNG("figs/expt3_main_plot.png"))
+```
 
 ```{r expt3_chance}
 e3.chance.tests <- test.chance(data = filter(df_expt3, trial_category == "test",
@@ -606,41 +607,67 @@ e3.chance.tests <- test.chance(data = filter(df_expt3, trial_category == "test",
   mutate(stars = getstars(ps))
 ```
 
-Figure 4 shows performance on test trials in Experiment 3. Across all conditions for both Trial Types participants selected the correct referent at rates greater than chance (smallest $\beta$ = `r round(sort(e3.chance.tests$betas)[1], 2)`, z = `r round(sort(e3.chance.tests$zs)[1], 2)`, p < .001). Our primary prediction in this experiment was an interaction between reliability and test trial type, with higher levels of reliability leading to less attention and memory allocated to alternative word-object links. To test this prediction, we performed three complementary analyses of test trial performance using three different predictors: reliability condition, participants' use of gaze, and participants' subjective reliability assessments. 
+Next we asked whether the reliability manipulation altered the strength of participants' memory for alternative word-object links. Figure 4 shows performance on test trials. Across all conditions for both Same and Switch trials participants selected the correct referent at rates greater than chance (smallest $\beta$ = `r round(sort(e3.chance.tests$betas)[1], 2)`, z = `r round(sort(e3.chance.tests$zs)[1], 2)`, p < .001). Our primary prediction in this experiment was an interaction between reliability and test trial type, with higher levels of reliability leading to worse performance on Switch trials (i.e., less attention and memory allocated to alternative word-object links). To test this prediction, we performed four complementary analyses of test trial performance using four different predictors: (a) the planned analysis using reliability condition, and participants' (b) use of gaze, (c) subjective reliability assessments, and (d) inspection times during exposure trials. 
 
-```{r expt3-sub-plots, fig.pos = "tb", fig.width=4.8, fig.height=4, fig.cap = "Accuracy on test trials in Experiment 3 for both Same and switch trial types. Panel A shows accuracy as a function of the speaker's reliability. Panel B shows accuracy as a function of participants' gaze following on exposure trials. Panel C shows accuracy as a function of participants' subjective reliability judgments, grouped into five equally spaced bins. The horizontal dashed line represents the expected performance if participants were selecting randomly. The colored lines are linear model fits and error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap."}
+```{r expt3-sub-plots, fig.pos = "tb", fig.width=4.8, fig.height=4, fig.cap = "Secondary analyses of test trial performance in Experiment 3. Panel A shows accuracy as a function of the number of trials each participant followed gaze on exposure trials. Panel B shows accuracy as a function of participants' subjective reliability judgments at the end of the task. Panel C shows accuracy as a function of the time participants spent inspecting the objects during exposure trials. The horizontal dashed line represents the expected performance if participants were selecting randomly, and error bars indicate 95\\% confidence intervals computed by non-parametric bootstrap."}
 grid::grid.raster(png::readPNG("figs/expt3_sub_plot.png"))
 ```
 
 #### Reliability condition analysis
 
+```{r e3 analysis}
+df_analysis <- df_expt3 %>% 
+  filter(trial_category == "exposure", block == "test", include_good_rt == "include") %>% 
+  select(subid, itemNum, inspection_time_exposure = rt) %>% 
+  mutate(inspection_time_exposure_sec = inspection_time_exposure / 1000) %>% 
+  left_join(filter(df_expt3, trial_category == "test", block == "test", include_good_rt == "include"), 
+            by = c("subid", "itemNum")) 
+```
+
 ```{r glmer condition expt3}
 m1_expt3 <- glmer(correct ~ (trialType + reliability)^2 + (trialType | subid), 
-                  offset = logit(1/numPicN),
                   nAGQ = 1,
                   family = binomial,
-                  data = filter(df_expt3, trial_category == "test", block == "test",
-                                include_good_rt == "include"),
+                  data = df_analysis,
                   control = glmerControl(optimizer = "bobyqa"))
 
 beta_trialtype_expt3 <- round(summary(m1_expt3)$coef[2], 2)
 beta_trialtype_int_expt3 <- round(summary(m1_expt3)$coef[3], 2)
 beta_rel_trialtype_int_expt3 <- round(summary(m1_expt3)$coef[4], 2)
-beta_rel_trialtype_int_p_expt3 <- round(summary(m1_expt3)$coef[4,4], 2)
+p_rel_trialtype_int_expt3 <- round(summary(m1_expt3)$coef[4,4], 3)
 ```
 
-Panel A of Figure 4 shows participants' accuracy on both types of test trials as a function of the reliability manipulation. We fit a mixed-effects logistic regression model predicting accuracy using reliability condition as a predictor and found a significant main effect of trial type ($\beta = `r beta_trialtype_expt3`$, p < .001), with lower accuracy on Switch trials. We found a significant interaction between Reliability condition and Trial Type ($\beta = `r beta_rel_trialtype_int_expt3`$, p = `r beta_rel_trialtype_int_p_expt3`), providing evidence for our key prediction. The interaction between Reliability condition and accuracy was relatively weak, however, and -- similar to Experiment 1 -- there was substantial variability across conditions (see the 50% reliable condition in Panel A of Figure 4). To provide additional support for our hypothesis, we conducted two follow-up analyses. 
+To test the effect of our reliability manipulation, we fit a mixed-effects logistic regression model predicting accuracy at test using reliability condition and test trial type as predictors. We found a significant main effect of trial type ($\beta = `r beta_trialtype_expt3`$, p < .001), with overall lower accuracy on Switch trials. We also found a significant interaction between reliability condition and trial type ($\beta = `r beta_rel_trialtype_int_expt3`$, $p$ = `r p_rel_trialtype_int_expt3`) such that when gaze was more reliable, participants performed worse on Switch trials (see Panel A of Figure 4). This interaction provides evidence for our key prediction, but it was not particularly strong, and -- similar to Experiment 1 -- there was substantial variability across conditions (see the 50% reliable condition in Panel A of Figure 4). So to provide additional support for our hypothesis, we conducted three follow-up analyses. 
 
-#### Gaze use analysis
+#### Gaze use analyses
+
+```{r e3 glmer gaze follow on exposure}
+m2a_expt3 <- glmer(correct ~ (correct_exposure + trialType + reliability)^2 + (trialType | subid),
+                    control = glmerControl(optimizer = "bobyqa"),
+                    nAGQ = 1,
+                    family = binomial,
+                    data = df_analysis)
+
+# trial type and gf
+beta_trialtype_gf_e3_m2a <- round(summary(m2a_expt3)$coef[5], 2)
+
+# gf and reliability
+beta_gf_rel_e3_m2a <- round(summary(m2a_expt3)$coef[6], 2)
+p_gf_rel_e3_m2a <- round(summary(m2a_expt3)$coef[6,4], 3)
+
+# reliability and trial type
+beta_rel_trialtype_e3_m2a <- round(summary(m2a_expt3)$coef[7], 2)
+p_rel_trialtype_e3_m2a <- round(summary(m2a_expt3)$coef[7,4], 3)
+```
+
+We would only expect to see a strong interaction between reliability and trial type if learners chose to use the gaze cue during exposure trials. To test this hypothesis, we fit two mixed effects logistic regression models. First, we fit a model with the same specifications as the reliability condition analylsis, but we added accuracy on exposure trials as a predictor (recall that "correct" performance on exposure trials is defined as selecting the object that was the target of the speaker's gaze). We found a significant two-way interaction between accuracy on exposure and trial type ($\beta = `r beta_trialtype_gf_e3_m2a`$, $p$ < .001) with worse performance on Switch test trials when participants followed gaze on exposure trials (see Panel B of Figure 4). Importantly, we also found a two-way interaction between gaze following and reliability condition ($\beta = `r beta_gf_rel_e3_m2a`$, $p$ = `r p_gf_rel_e3_m2a`) such that when gaze cue was more reliable participants were more likely to use it. \footnote{We thank an anonymous reviewer for suggesting this analysis, but we would like to note that it is expoloratory.} This analysis suggests that the reliability of the gaze cue modulated how often participants used the cue, and when participants did not use the cue, they tended to store more word-object links.
 
 ```{r glmer total exposure correct expt3}
-m2_expt3 <- glmer(correct ~ total_exposure_correct * trialType + (trialType | subid),
-                  offset = logit(1/numPicN),
+m2b_expt3 <- glmer(correct ~ total_exposure_correct * trialType + (trialType | subid),
                   control = glmerControl(optimizer = "bobyqa"),
                   nAGQ = 1,
                   family = binomial,
-                  data = filter(df_expt3, trial_category == "test", block == "test",
-                                experiment == "replication", include_good_rt == "include"))
+                  data = df_analysis)
 
 beta_totexpo_expt3 <- round(summary(m2_expt3)$coef[2], 2)
 beta_trialtype_expt3 <- round(summary(m2_expt3)$coef[3], 2)
@@ -649,7 +676,6 @@ beta_totexpo_trialtype_int_expt3 <- round(summary(m2_expt3)$coef[4], 2)
 
 ```{r glmer original total exposure correct expt3}
 m2_expt3_original <- glmer(correct ~ total_exposure_correct * trialType + (trialType | subid),
-                           offset = logit(1/numPicN),
                            control = glmerControl(optimizer = "bobyqa"),
                            nAGQ = 1,
                            family = binomial,
@@ -661,19 +687,16 @@ beta_trialtype_expt3_original <- round(summary(m2_expt3_original)$coef[3], 2)
 beta_totexpo_trialtype_int_expt3_original <- round(summary(m2_expt3_original)$coef[4], 2)
 ```
 
-
-We would only expect to see a strong interaction between reliability and trial type if learners chose to use the gaze cue during exposure trials. To test this hypothesis, we fit a mixed effects logistic regression model with the same specifications, but substituting accuracy on exposure trials for reliability condition as a predictor. We found a robust two-way interaction between accuracy on exposure trials and Trial Type ($\beta = `r beta_totexpo_trialtype_int_expt3`$, p < .001) such that participants who were more likely to use the gaze cue performed worse on Switch trials, but not Same trials. ^[We found this interaction while performing exploratory data analysis on a previous version of this study with an independent sample (N = 250, $\beta = `r beta_totexpo_trialtype_int_expt3_original`$, p < .001). The results reported here are from a follow-up study where testing this interaction was a planned analysis.] Panel B of Figure 4 shows this interaction. 
+We also hypothesized that our reliability manipulation could affect how often individual participants chose to use the gaze cue throughout the task. To explore this possibility, we fit a model with the same specifications, but we included a predictor that we created by binning participants based on the number of trials on which they chose to follow gaze on exposure trials (i.e., gaze following score). In this model, we found a robust two-way interaction between how often participants chose to follow gaze on exposure and test trial type ($\beta = `r beta_totexpo_trialtype_int_expt3`$, p < .001) such that participants who were more likely to use the gaze cue performed worse on Switch trials, but not Same trials (see Panel A of Figure 5). ^[We found this interaction while performing exploratory data analysis on a previous version of this study with an independent sample (N = 250, $\beta = `r beta_totexpo_trialtype_int_expt3_original`$, p < .001). The results reported here are from a follow-up study where testing this interaction was a planned analysis.] This analysis provides additional evidence that the *use* of gaze is an important moderator of the effect of reliability on the amount of information stored during cross-situational word learning in this task.
 
 #### Subjective reliability analysis 
 
 ```{r glmer subjective reliability expt 3}
 m3_expt3 <- glmer(correct ~ rel_subj * trialType + (trialType | subid),
                   control = glmerControl(optimizer = "bobyqa"), 
-                  offset = logit(1/numPicN),
                   nAGQ = 1,
                   family = binomial,
-                  data = filter(df_expt3, trial_category == "test", block == "test",
-                                experiment == "replication", include_good_rt == "include"))
+                  data = df_analysis)
 
 beta_rel_subj_expt3 <- round(summary(m3_expt3)$coef[2], 2)
 beta_trialtype_rel_subj_expt3 <- round(summary(m3_expt3)$coef[3], 2)
@@ -681,10 +704,21 @@ beta_rel_subj_trialtype_int_expt3 <- round(summary(m3_expt3)$coef[4], 2)
 p_rel_subj_trialtype_int_expt3 <- round(summary(m3_expt3)$coef[4,4], 2)
 ```
 
+The strong interaction between frequency of gaze use and test trial performance suggests that participants' subjective experience of reliability in the experiment mattered. Thus, to quantify the effect of subjective reliability we fit the same mixed effects logistic regression model, but substituted subjective reliability as a predictor of test trial performance. We found a significant interaction between Trial Type and participants' subjective reliability assessments ($\beta = `r beta_rel_subj_trialtype_int_expt3`$, p = `r p_rel_subj_trialtype_int_expt3`) -- when participants thought the speaker was more reliable, then they performed worse on Switch trials, but not Same trials (see Panel B of Figure 5). 
 
-The strong interaction between frequency of gaze use and test trial performance suggests that participants' subjective experience of reliability in the experiment mattered. To quantify the effect of subjective reliability, we fit the same mixed effects logistic regression model, but substituted subjective reliability as a predictor of test trial performance. We found a significant interaction between Trial Type and participants' subjective reliability assessments ($\beta = `r beta_rel_subj_trialtype_int_expt3`$, p = `r p_rel_subj_trialtype_int_expt3`) -- if participants thought the speaker was more reliable, then they performed worse on Switch, but not Same, trials. 
+#### Inspection time analysis
 
-Taken together, these three analyses show that as the speaker's gaze became more reliable, participants were (a) more likely to use it, (b) more likely to rate the speaker as reliable, and (c) less likely to store multiple word-object links. These findings support and extend the results of Experiments 1 and 2 in several important ways. First, participants' performance on Same trials was again relatively unaffected by changes in performance on Switch trials. The selective effect of gaze on Switch trials provides converging evidence that the limitations on Same trials may be different than those regulating the distribution of attention on Switch trials. Second, learners' *use* of a referential cue was a stronger predictor of reduced memory for alternative word-object links compared to our reliability manipulation. Although we found a significant effect of reliability on participants' use of the gaze cue, participants' tendency to use the cue remained high. Consider that even in the 0% reliability condition the mean proportion of gaze following was still `r round(min(ms_expt3$accuracy),2)`. It is reasonable that participants would continue to use the gaze cue in our experiment since it was the only cue available and participants did not have a strong reason to think that the speaker would be deceptive. 
+```{r glmer e3 inspection time}
+m4_expt3 <- glmer(correct ~ log2(inspection_time_exposure_sec) * trialType + (trialType | subid),
+                  control = glmerControl(optimizer = "bobyqa"), 
+                  nAGQ = 1,
+                  family = binomial,
+                  data = df_analysis)
+
+```
+
+
+Taken together, these four analyses show that as the speaker's gaze became more reliable, participants were (a) more likely to use it, (b) more likely to rate the speaker as reliable, and (c) less likely to store multiple word-object links. These findings support and extend the results of Experiments 1 and 2 in several important ways. First, participants' performance on Same trials was again relatively unaffected by changes in performance on Switch trials. The selective effect of gaze on Switch trials provides converging evidence that the limitations on Same trials may be different than those regulating the distribution of attention on Switch trials. Second, learners' *use* of a referential cue was a stronger predictor of reduced memory for alternative word-object links compared to our reliability manipulation. Although we found a significant effect of reliability on participants' use of the gaze cue, participants' tendency to use the cue remained high. Consider that even in the 0% reliability condition the mean proportion of gaze following was still `r round(min(ms_expt3$accuracy),2)`. It is reasonable that participants would continue to use the gaze cue in our experiment since it was the only cue available and participants did not have a strong reason to think that the speaker would be deceptive. 
 
 The critical contribution of Experiment 3 is that learners respond to a *graded* manipulation of referential uncertainty, with the amount of information stored from the int ital exposure tracking with the reliability of the cue and participants' use of the cue. This graded accuracy performance shows that at the group-level learners stored alternative word-object links with different levels of fidelity depending on the amount of referential uncertainty present during learning. 
 
@@ -778,7 +812,7 @@ e4.chance.tests <- test.chance(data = filter(df_expt4_filtered, trial_category =
 m1_acc_expt4 <- glmer(correct ~ (trialType + gaze_trial + 
                                    log2(intervalNum + 1) + inspection_cond)^3 +
                         (trialType | subid), 
-                      nAGQ=0,
+                      nAGQ=1,
                       glmerControl(optimizer = "bobyqa"),
                       family=binomial,
                       data = df_expt4_filtered)
