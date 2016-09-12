@@ -10,10 +10,10 @@ plyr
 car
 dplyr
 directlabels
-modelr
 kmr
 langcog
-pander
 magrittr
+modelr
 tidyr
 xtable
+knitcitations
