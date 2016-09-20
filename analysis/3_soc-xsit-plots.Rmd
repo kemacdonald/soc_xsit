@@ -171,20 +171,23 @@ ms_expo_rt_expt1$condition <- revalue(ms_expo_rt_expt1$condition,
 
 ms_expo_rt_expt1$intervalNum <- as.factor(ms_expo_rt_expt1$intervalNum)
 ms_expo_rt_expt1$numPic <- paste(ms_expo_rt_expt1$numPic, "-Referents", sep="")
-y_axis_labs <- c("3.0", "4.0", "5.0", "6.0", "7.0")
+y_axis_labs <- c("0.0", "2.0", "4.0", "6.0", "8.0")
 
 exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1, 
                                 aes(x=intervalNum, y=mean, color = condition, 
-                                    group = condition)) + 
+                                    group = condition, shape = condition)) + 
   geom_smooth(method = "loess", se = F, span = 4, size = 1) +
-  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), size = 1) +
-  geom_point(color = "white", size = 2.5, 
-             data = filter(ms_expo_rt_expt1, condition == "No-Gaze")) +
-  scale_y_continuous(limits=c(3,7.5), breaks = c(3,4,5,6,7), labels = y_axis_labs) +
-  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), 
+                  fill = "white", stroke = 1.5, size= 1, fatten = 1.5,
+                  position = position_dodge(width = .15)) +
+  scale_y_continuous(limits=c(0,8), breaks = c(0,2,4,6,8), labels = y_axis_labs) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33"),
+                      name = "Condition") +
+  scale_shape_manual(values = c(21, 19),
+                     name = "Condition") +
   facet_grid( ~ numPic) + 
   xlab(NULL) + 
-  ylab("RT (sec)") +
+  ylab("Inspection Time (sec)") +
   labs(colour = "Condition",linetype = "Trial Type") +
   guides(linetype=F) 
 ```
@@ -225,11 +228,11 @@ expt1.acc.test <- ggplot(data=ms_test_filt_expt1,
               method = "loess", se = F, span = 10) +
   geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = condition), 
                   fill = "white", stroke = 1.5, size= 1, fatten = 2.5,
-                  position = position_dodge(width = .15)) +
-  scale_shape_manual(values = c(21, 19)) +
+                  position = position_dodge(width = .2)) +
+  scale_shape_manual(values = c(21, 19), name = "Condition") +
   geom_hline(aes(yintercept=1/numPic), linetype = "dashed") +
-  scale_y_continuous(limits=c(0,1.1), breaks = c(0, .25, .5, .75, 1.0)) +
-  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
+  scale_y_continuous(limits=c(0,1.05), breaks = c(0, .25, .5, .75, 1.0)) +
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33"), name = "Condition") +
   facet_wrap(~ numPic_name, ncol = 4) + 
   xlab("Interval Between Exposure and Test") + 
   ylab("Prop. Correct") +
@@ -372,7 +375,7 @@ ms_test_all_expt2 <- rbind(ms_test_expt2, ms_test_expt2_filt)
 ms_rt_expo_expt2$condition <- revalue(ms_rt_expo_expt2$condition_trial,
                                       c("no-social" = "No-Gaze", "social" = "Gaze"))
 
-y_axis_labs_2 <- c("3.0", "4.0", "5.0", "6.0")
+y_axis_labs_2 <- c("0.0", "2.0", "4.0", "6.0")
 
 expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2, 
                         aes(x=as.factor(intervalNum), 
@@ -380,15 +383,18 @@ expt2.rt.expo <- ggplot(data=ms_rt_expo_expt2,
                             group = condition_trial)) + 
   geom_line(size = 1) +
   geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = condition_trial), 
-                  fill = "white", stroke = 1.5, size= 1.3, fatten = 3) +
-  scale_shape_manual(values = c(21, 19)) +
-  scale_y_continuous(limits=c(3,6.5), breaks = c(3,4,5,6), labels = y_axis_labs_2) +
+                  fill = "white", stroke = 1.5, size= 1, fatten = 2) +
+  scale_shape_manual(values = c(21, 19), name = "Condition") +
+  scale_y_continuous(limits=c(0,7), breaks = c(0,2,4,6), labels = y_axis_labs_2) +
   scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
   guides(shape=F, color=F) +
-  labs(title = "Inspection Time (Exposure)",
+  labs(title = "A) Inspection Time (Exposure)",
        x = "Intervening Trials",
-       y = "RT (sec)") +
-  theme(plot.margin = margin(t = 20, r = 20, b = 20, l = 20, unit = "pt")) 
+       y = "Inspection Time (sec)") +
+  theme(plot.margin = margin(t = 10, r = 20, b = 10, l = 20, unit = "pt"),
+        title = element_text(size=14, face="bold")) +
+  annotate("text", x = 2, y = 5.7, label = "No-Gaze", color = "#2c7fb8", size = 6) +
+  annotate("text", x = 2, y = 3, label = "Gaze", color = "#e34a33", size = 6) 
 
 ## accuracy plot
 ms_test_expt2_filt$condition_trial <- revalue(ms_test_expt2_filt$condition_trial,
@@ -397,29 +403,33 @@ ms_test_expt2_filt$condition_trial <- revalue(ms_test_expt2_filt$condition_trial
 
 expt2.acc.test.line <- ggplot(data=ms_test_expt2_filt, 
                               aes(x=as.factor(intervalNum), 
-                                  y=mean, colour = condition_trial)) + 
+                                  y=mean, colour = condition_trial, shape = condition_trial)) + 
   geom_line(aes(group=interaction(trialType, condition_trial),
-                linetype = trialType), size = 1, position = position_dodge(width = 0.2)) +
-  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper, shape = condition_trial), 
+                linetype = trialType), size = 1, position = position_dodge(width = 0.1)) +
+  geom_pointrange(aes(ymin=ci_lower, ymax=ci_upper), 
                   fill = "white", stroke = 2, size= 1.3, fatten = 2,
-                  position = position_dodge(width = 0.2)) +
+                  position = position_dodge(width = 0.1)) +
   geom_hline(aes(yintercept=1/4), linetype = "dashed") +
-  scale_shape_manual(values = c(21, 19)) +
   scale_y_continuous(limits=c(0,1)) +
-  scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
-  labs(title = "Accuracy (Test)",
+  scale_colour_manual(values=c("#2c7fb8", "#e34a33"), name = "Condition") +
+  scale_shape_manual(values = c(21, 19), name = "Condition") +
+  labs(title = "B) Accuracy (Test)",
        x = "Intervening Trials",
        y = "Prop. Correct",
-       colour = "Condition", 
        linetype = "Trial Type") +
-  guides(linetype=FALSE, shape=F, color=F) +
-  theme(plot.margin = margin(t = 20, r = 20, b = 20, l = 20, unit = "pt")) +
+  guides(linetype=F) +
+  theme(plot.margin = margin(t = 10, r = 20, b = 10, l = 20, unit = "pt"),
+        title = element_text(size=14, face="bold"),
+        legend.text = element_text(size=14),
+        legend.title = element_text(size=15, face="bold"),
+        legend.position=c(0.8,0.88)) +
   annotate("text", x = 2.35, y = 0.7, label = "Same", color = "black", size = 6) +
   annotate("text", x = 2.35, y = 0.4, label = "Switch", color = "black", size = 6) 
 ```
 
 ```{r expt2 final plot, fig.height=5, fig.width = 8}
-grid.arrange(expt2.rt.expo, expt2.acc.test.line, ncol=2)
+e2_main_plot <- grid.arrange(expt2.rt.expo, expt2.acc.test.line, ncol=2)
+ggsave(plot = e2_main_plot, "../paper/figs/expt2_new.png", device = "png", width = 9, height = 5)
 ```
 
 ## Experiment 3

@@ -1,0 +1,229 @@
+---
+title: "Soc-Xsit Inspection Time Models"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+```{r libraries, message=FALSE, warning=FALSE, echo = F}
+library(tidyverse); library(lme4); library(modelr); library(lsmeans)
+logit <- function(x) {log(x/(1-x))}
+theme_set(theme_bw())
+
+df_expt1 <- read.csv("../data/3_final-processed/soc-xsit-expt1-finalData.csv", stringsAsFactors = F)
+df_expt2 <- read.csv("../data/3_final-processed/soc-xsit-expt2-finalData.csv", stringsAsFactors = F)
+df_expt3 <- read.csv("../data/3_final-processed/soc-xsit-expt3-finalData.csv", stringsAsFactors = F)
+df_expt4 <- read.csv("../data/3_final-processed/soc-xsit-expt4-finalData.csv", stringsAsFactors = F)
+```
+
+Plot model predictions to better understand the coefficients. We limit all models to include only two-way interactions. Here, I only interpret the coefficients related to inspection time since the results for the other coefficients do not change when inspection times are added to the models.
+
+### Experiment 1
+
+```{r e1 inspection times, echo = F}
+df_expt1 %<>% 
+  filter(trial_category == "exposure", include_good_rt_exposure == "include") %>% 
+  select(subid, itemNum, inspection_time_exposure = rt) %>% 
+  mutate(inspection_time_exposure_sec = inspection_time_exposure / 1000) %>% 
+  left_join(df_expt1, by = c("subid", "itemNum")) 
+
+df_e1_filt <- df_expt1 %>% 
+  filter(trial_category == "test", 
+         include_good_rt_exposure == "include",
+         include_good_rt_test == "include",
+         include_expo == "include" | condition == "No-Social",
+         correct_exposure == T | condition == "No-Social")
+```
+
+```{r e1 inspection time model}
+m1_e1_inspect <- glmer(correct ~ (condition + trialType + 
+                                    log2(numPicN) + 
+                                    log2(intervalNum + 1) +
+                                    log2(inspection_time_exposure_sec))^2 + 
+                         (trialType | subid), 
+                       offset = logit(1/numPicN), 
+                       control=glmerControl(optimizer="bobyqa"),
+                       family=binomial, 
+                       nAGQ=0,
+                       data=df_e1_filt)
+
+broom::tidy(m1_e1_inspect) %>% 
+  filter(group == "fixed") %>% 
+  mutate_at(.cols = c("estimate", "std.error", "statistic", "p.value"), 
+            .funs = round, digits = 3) %>% 
+  mutate(p.value = ifelse(round(p.value, 3) == 0, "< .001", round(p.value, 3))) %>% 
+  knitr::kable()
+```
+
+```{r plot inspect model preds e1, echo=FALSE, fig.height=8, fig.width=10}
+df_expt1  %>%
+  data_grid(
+    trialType,
+    condition,
+    inspection_time_exposure_sec = seq_range(inspection_time_exposure_sec, 10),
+    numPicN,
+    intervalNum
+    ) %>% 
+  mutate(preds = predict(m1_e1_inspect, newdata = ., 
+                         type = "response", re.form = NA)) %>% 
+  mutate(intervalNum = paste(intervalNum, "-Interval", sep = ""),
+         numPicN = paste(numPicN, "-Referents", sep = "")) %>% 
+  ggplot(aes(x = inspection_time_exposure_sec, y = preds, 
+           color = condition, linetype = trialType),
+       data = .) +
+  geom_line() +
+  facet_grid(numPicN ~ intervalNum)
+```
+
+* No main effect of inspection time. 
+* Significant interaction between inspection time and gaze condition (longer inspection times provide bigger boost for no-gaze condition).
+* No other significant interactions with inspection time
+
+### Is there an effect of gaze on same trials in E1 ?
+
+Pairwise comparison collapsing across interval and number of referents
+
+```{r e1 lsmeans}
+lsm_obj_e1 <- lsmeans(m1_e1_inspect, ~ condition | trialType)
+e1_pairs <- pairs(lsm_obj_e1, adjust = "bon")
+summary(e1_pairs) %>% knitr::kable(digits = 3)
+```
+
+KM thoughts: There apprears to be more evidence for a boost to same trials with gaze  than I thought. It looks like the boost is more likely to show up at higher intervals and at higher number of referents, but is also significant in just the pairwise comparison of same/switch trials across the gaze conditions. My best guess is that the higher interval and referent conditions taxed attention and memory more in the no-gaze condition (paticipants felt they had to spread attention across the referents), whereas in the gaze condition, participants' focused more attention/ on their selection, which led to better performance. 
+ 
+### Experiment 2
+
+```{r e2 inspection times, echo = F}
+df_expt2_analysis <-df_expt2 %>% 
+  filter(include == TRUE, 
+         mean_acc_exp > 0.25, 
+         include_good_rt == "include")
+
+df_expt2_analysis %<>% 
+  rename(inspection_time_exposure = rt_exposure) %>% 
+  mutate(inspection_time_exposure_sec = inspection_time_exposure / 1000)
+
+df_expt2_analysis %<>% 
+  mutate(include_good_rt_exposure = ifelse(log(inspection_time_exposure_sec) >
+                                             mean(log(inspection_time_exposure_sec)) + 2 *
+                                             sd(log(inspection_time_exposure_sec)) |
+                                    log(inspection_time_exposure_sec) <
+                                      mean(log(inspection_time_exposure_sec)) - 2 *
+                                      sd(log(inspection_time_exposure_sec)),
+                                  "exclude", "include")) %>% 
+  filter(include_good_rt_exposure == "include")
+```
+
+```{r e2 inspect model}
+m2_inspect_e2 <- glmer(correct ~ (condition_trial + 
+                                    trialType +
+                                    log2(intervalNum + 1) +
+                                    log2(inspection_time_exposure_sec))^2 +
+                         (trialType | subid), 
+                       nAGQ=0,
+                       glmerControl(optimizer = "bobyqa"),
+                       family=binomial,
+                       data = filter(df_expt2_analysis, trial_category == "test"))
+
+ broom::tidy(m2_inspect_e2) %>% 
+   filter(group == "fixed") %>% 
+  mutate_at(.cols = c("estimate", "std.error", "statistic", "p.value"), 
+            .funs = round, digits = 3) %>% 
+  mutate(estimate = round(estimate, 2),
+         p.value = ifelse(round(p.value, 3) == 0, "< .001", round(p.value, 3))) %>%  
+   knitr::kable()
+```
+
+```{r e2 plot model preds inspect, echo=FALSE}
+df_expt2_analysis %>% 
+  filter(trial_category == "test") %>%
+  data_grid(
+    condition_trial,
+    intervalNum,
+    trialType,
+    inspection_time_exposure_sec = seq_range(inspection_time_exposure_sec, 10)
+    ) %>% 
+  mutate(preds = predict(m2_inspect_e2, newdata = ., 
+                         type = "response", re.form = NA)) %>% 
+  mutate(intervalNum = paste(intervalNum, "-Interval", sep = "")) %>% 
+  ggplot(aes(x = inspection_time_exposure_sec, y = preds, 
+             color = condition_trial, linetype = trialType),
+       data = .) +
+  geom_line() +
+  facet_wrap(~intervalNum)
+```
+
+* No main effect of inspection time
+* Significant interaction between trial type and inspection time (longer inspection provide bigger boost switch trials compared to same trials)
+
+### Pairwise comparisons E2
+
+```{r e2 lsmeans}
+lsm_obj_e2 <- lsmeans(m2_inspect_e2, ~ condition_trial | trialType)
+e2_pairs <- pairs(lsm_obj_e2, adjust = "bon")
+summary(e2_pairs) %>% knitr::kable(digits = 3)
+```
+
+No difference between same trials in the gaze vs. no-gaze condition. Perhaps because we did not test at high enough attention and memory demands.
+
+### Experiment 3
+
+```{r e3 analysis}
+df_analysis_e3 <- df_expt3 %>% 
+  filter(trial_category == "exposure", block == "test", 
+         include_good_rt == "include") %>% 
+  select(subid, itemNum, inspection_time_exposure = rt) %>% 
+  mutate(inspection_time_exposure_sec = inspection_time_exposure / 1000) %>% 
+  left_join(filter(df_expt3, trial_category == "test", block == "test", 
+                   include_good_rt == "include"), 
+            by = c("subid", "itemNum")) 
+```
+
+```{r glmer e3 inspection time}
+# does inspection time affect test trial performance
+m_inspect_e3 <- glmer(correct ~ (log2(inspection_time_exposure_sec) + 
+                                  trialType + 
+                                  reliability)^2 + 
+                     (trialType | subid),
+                  control = glmerControl(optimizer = "bobyqa"), 
+                  nAGQ = 0,
+                  family = binomial,
+                  data = df_analysis_e3)
+
+# get betas and p.vals
+broom::tidy(m_inspect_e3) %>% 
+  filter(group == "fixed") %>% 
+   mutate_at(.cols = c("estimate", "std.error", "statistic", "p.value"), 
+            .funs = round, digits = 3) %>% 
+  mutate(estimate = round(estimate, 2),
+         p.value = ifelse(round(p.value, 3) == 0, "< .001", round(p.value, 3))) %>% 
+knitr::kable()
+```
+
+```{r glmer preds inspect model e3, echo = F}
+df_analysis_e3 %>% 
+  filter(is.na(trialType) == F) %>%
+  data_grid(
+    trialType,
+    inspection_time_exposure_sec = seq_range(inspection_time_exposure_sec, 10),
+    reliability = seq_range(reliability, 5)
+    ) %>% 
+  mutate(preds = predict(m_inspect_e3, newdata = ., 
+                         type = "response", re.form = NA)) %>% 
+  ggplot(aes(x = inspection_time_exposure_sec, y = preds, 
+           color = as.factor(reliability), linetype = trialType),
+       data = .) +
+  geom_line() 
+```
+
+* Main effect of inspection time (longer is better). 
+* No interaction between inspection time and trial type. 
+* Weak interaction between inspection time and reliability (less of a boost for longer inspection times at higher levels of reliabilty).
+
+### Things to address
+
+* How to interpret the interaction between inspection time and gaze condition changing between E1 and E2. In E2 there is an interaction between inspection time and trial type. 
+Note that if you remove interval in the E2 model, then you do see a sig interaction between gaze condition and inspection time like in E1, suggesting that interval is doing something to the link between inspection time and condition/trial-type.
+
+* In E1, is there actually some evidence for a gaze boost to same trials at the higher number of referents and interval conditions? When I plotted the model predictions, it became more apparent that the models are capturing an advantage here. 
+

@@ -1,4 +1,7 @@
 % Template for Elsevier submission with R Markdown
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL soc-xsit-elsevier_revision_draft1.tex   Mon Sep 12 17:21:17 2016
+%DIF ADD soc-xsit-elsevier.tex                   Fri Sep 16 14:49:08 2016
 
 % Stuff changed from PLOS Template
 \documentclass[authoryear, review]{elsarticle}
@@ -63,6 +66,30 @@
 
 % Leave date blank
 \date{}
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFaddtex}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdeltex}[1]{{\protect\color{red}\sout{#1}}}                      %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF HYPERREF PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{\texorpdfstring{\DIFaddtex{#1}}{#1}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{\texorpdfstring{\DIFdeltex{#1}}{}} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
 
 \begin{document}
 
@@ -131,7 +158,7 @@ large variety of word meanings from data with this kind of ambiguity?
 Statistical learning theories offer a solution to this problem by
 aggregating cross-situational statistics across labeling events to
 identify underlying word meanings (Siskind, 1996; Yu \& Smith, 2007).
-Recent experimental work has shown that both adults and young infants
+Recent experimental \DIFaddbegin \DIFadd{work }\DIFaddend has shown that both adults and young infants
 can use word-object co-occurrence statistics to learn words from
 individually ambiguous naming events (Smith \& Yu, 2008; Vouloumanos,
 2008). For example, Smith and Yu (2008) taught 12-month-olds three novel
@@ -149,45 +176,48 @@ approximate the input distribution (for review, see Smith, Suanda, \& Yu
 connection strengths between multiple word-object links (McMurray,
 Horst, \& Samuelson, 2012), while other approaches have argued that
 learners store only a single word-object hypothesis (Trueswell, Medina,
-Hafri, \& Gleitman, 2013). Recent experimental and modeling work,
-Yurovsky and Frank (2015) suggests an integrative explanation: learners
+Hafri, \& Gleitman, 2013). \DIFdelbegin \DIFdel{In recent }\DIFdelend \DIFaddbegin \DIFadd{Recent }\DIFaddend experimental and modeling work,
+Yurovsky and Frank (2015) \DIFdelbegin \DIFdel{have suggested }\DIFdelend \DIFaddbegin \DIFadd{suggests }\DIFaddend an integrative explanation\DIFdelbegin \DIFdel{where }\DIFdelend \DIFaddbegin \DIFadd{: }\DIFaddend learners
 allocate a fixed amount of attention to a single hypothesis, and
 distribute the rest evenly among the remaining alternatives. As the set
 of alternatives grows, the amount of attention allocated to each object
 approaches zero.
 
-In addition to the debate about representation, researchers have
-disagreed about how to characterize the ambiguity of the input to
+In addition to the debate about representation, researchers \DIFdelbegin \DIFdel{also
+disagree }\DIFdelend \DIFaddbegin \DIFadd{have
+disagreed }\DIFaddend about how to characterize the ambiguity of the input to
 cross-situational learning mechanisms. One way to quantify the
-uncertainty in a naming event is to show adults clips of caregiver-child
-interactions and measure their accuracy at guessing the meaning of an
-intended referent (Human Simulation Paradigm: HSP {[}Gillette, Gleitman,
-Gleitman, and Lederer, 1999{]}). Using the HSP, Medina, Snedeker,
+uncertainty in a naming event is to show adults \DIFdelbegin \DIFdel{video }\DIFdelend clips of caregiver-child
+interactions and \DIFdelbegin \DIFdel{ask them to guess }\DIFdelend \DIFaddbegin \DIFadd{measure their accuracy at guessing }\DIFaddend the meaning of an
+intended referent (Human Simulation Paradigm: HSP \DIFaddbegin {[}\DIFadd{Gillette, Gleitman,
+Gleitman, and Lederer, 1999}{]}\DIFaddend ). Using the HSP, Medina, Snedeker,
 Trueswell, and Gleitman (2011) found that approximately 90\% of learning
-episodes were ambiguous (\textless{} 33\% accuracy) and only 7\% were
+episodes were ambiguous (\textless{} 33\% accuracy) and \DIFaddbegin \DIFadd{only }\DIFaddend 7\% were
 relatively unambiguous (\textgreater{} 50\% accuracy). In contrast,
-Yurovsky, Smith, and Yu (2013) found a higher proprotion of clear naming
-events, with approximately 30\% being unambiguous (\textgreater{} 90\%
-accuracy). Consistent with this finding, Cartmill, Armstrong, Gleitman,
-Goldin-Meadow, Medina, and Trueswell (2013) showed that the proportion
-of unambiguous naming episodes varies across parent-child dyads, with
+Yurovsky, Smith, and Yu (2013) found \DIFdelbegin \DIFdel{more of a bimodal distribution of referential uncertainty}\DIFdelend \DIFaddbegin \DIFadd{a higher proprotion of clear naming
+events}\DIFaddend , with approximately \DIFdelbegin \DIFdel{20\%
+of naming events being ambiguous (\textless{} 10\% accuracy) and }\DIFdelend 30\% being unambiguous (\textgreater{} 90\%
+accuracy). \DIFaddbegin \DIFadd{Consistent with this finding, }\DIFaddend Cartmill, Armstrong, Gleitman,
+Goldin-Meadow, Medina, and Trueswell (2013) \DIFdelbegin \DIFdel{also }\DIFdelend showed that the proportion
+of unambiguous naming episodes varies across \DIFdelbegin \DIFdel{parents}\DIFdelend \DIFaddbegin \DIFadd{parent-child dyads}\DIFaddend , with
 some parents rarely providing highly informative contexts and others'
-doing so relatively more often.\footnote{The differences in the
-  estimates of referential uncertainty in these studies could be driven
+doing so relatively more often.\footnote{\DIFdelbegin \DIFdel{Note that }\DIFdelend \DIFaddbegin \DIFadd{The differences in }\DIFaddend the
+  \DIFdelbegin \DIFdel{different
+  }\DIFdelend estimates of referential uncertainty in these studies could be driven
   by the different sampling procedures used to select naming events for
   the HSP. Yurovsky, Smith, and Yu (2013) sampled utterances for which
   the parent labeled a co-present object, whereas Medina, Snedeker,
   Trueswell, et al. (2011) randomly sampled any utterances containing
   concrete nouns. Regardless of these differences, the key point here is
   that variability in referential uncertainty across naming events
-  exists and thus could alter the representations underlying
+  exists and \DIFdelbegin \DIFdel{can }\DIFdelend \DIFaddbegin \DIFadd{thus could }\DIFaddend alter the representations underlying
   cross-situational learning.}
 
 Thus, representations in cross-situational word learning can appear
 distributional or discrete, and the input to statistical learning
 mechanisms can vary along a continuum from low to high ambiguity. These
 results raise an interesting question: could learners be sensitive to
-the ambiguity of the input and use this information to alter the
+the ambiguity of the input and use this information to \DIFdelbegin \DIFdel{flexibly }\DIFdelend alter the
 representations they store in memory? In the current line of work, we
 investigated how the presence of referential cues in the social context
 might alter the ambiguity of the input to statistical word learning
@@ -196,27 +226,30 @@ mechanisms.
 Social-pragmatic theories of language acquisition emphasize the
 importance of social cues for word learning (P. Bloom, 2002; Clark,
 2009; Hollich et al., 2000). Experimental work has shown that even
-children as young as 16 months prefer to map novel words to objects that
+children as young as 16 months \DIFdelbegin \DIFdel{are sophisticated intention-readers,
+preferring }\DIFdelend \DIFaddbegin \DIFadd{prefer }\DIFaddend to map novel words to objects that
 are the target of a speaker's gaze and not their own (Baldwin, 1993). In
 an analysis of naturalistic parent-child labeling events, Yu and Smith
-(2012) found that young learners tended to retain labels that were
-accompanied by clear referential cues, which served to make a single
-object dominant in the visual field. And correlational studies have
-demonstrated strong links between early intention-reading skills (e.g.,
+(2012) \DIFdelbegin %DIFDELCMD < {]}
+%DIFDELCMD < %%%
+\DIFdel{showed }\DIFdelend \DIFaddbegin \DIFadd{found }\DIFaddend that young learners tended to retain labels that were
+accompanied \DIFdelbegin \DIFdel{with }\DIFdelend \DIFaddbegin \DIFadd{by }\DIFaddend clear referential cues\DIFdelbegin \DIFdel{that were concurrent with visual access}\DIFdelend \DIFaddbegin \DIFadd{, which served to make a single
+object dominant in the visual field}\DIFaddend . And correlational \DIFdelbegin \DIFdel{data has shown }\DIFdelend \DIFaddbegin \DIFadd{studies have
+demonstrated }\DIFaddend strong links between early intention-reading skills (e.g.,
 gaze following) and later vocabulary growth (Brooks \& Meltzoff, 2005,
 2008; Carpenter, Nagell, Tomasello, Butterworth, \& Moore, 1998).
 Moreover, studies outside the domain of language acquisition have shown
-that the presence of social cues: (a) produce better spatial learning of
-audiovisual events (Wu, Gopnik, Richardson, \& Kirkham, 2011), (b) boost
-recognition of a cued object (Cleveland, Schug, \& Striano, 2007), and
+that the presence of social cues: (a) \DIFdelbegin \DIFdel{produced }\DIFdelend \DIFaddbegin \DIFadd{produce }\DIFaddend better spatial learning of
+audiovisual events (Wu, Gopnik, Richardson, \& Kirkham, 2011), (b) \DIFdelbegin \DIFdel{boosted }\DIFdelend \DIFaddbegin \DIFadd{boost
+}\DIFaddend recognition of a cued object (Cleveland, Schug, \& Striano, 2007), and
 (c) lead to preferential encoding of an object's featural information
 (Yoon, Johnson, \& Csibra, 2008). Together, the evidence suggests that
 social cues could alter the representations stored during
 cross-situational word learning by modulating how people allocate
 attention to the relevant statistics in the input.
 
-The goal of our current investigation is to ask whether the presence of
-a valid social cue -- a speaker's gaze -- can change the representations
+The goal of \DIFdelbegin \DIFdel{the current study }\DIFdelend \DIFaddbegin \DIFadd{our current investigation }\DIFaddend is to ask whether the presence of
+a valid social cue \DIFdelbegin \DIFdel{, }\DIFdelend \DIFaddbegin \DIFadd{-- }\DIFaddend a speaker's gaze \DIFdelbegin \DIFdel{, }\DIFdelend \DIFaddbegin \DIFadd{-- }\DIFaddend can change the representations
 underlying cross-situational word learning. We used a modified version
 of Yurovsky and Frank (2015)'s paradigm to provide a direct measure of
 memory for alternative word-object links during cross-situational
@@ -229,9 +262,11 @@ using a more ecologically valid social cue. In Experiment 3, we moved to
 a parametric manipulation of referential uncertainty by varying the
 reliability of the speaker's gaze. Learners were sensitive to graded
 changes in reliability and retained more word-object links as
-uncertainty in the input increased. Finally, in Experiment 4, we equated
-the length of the initial naming events with and without the referential
-cue. Learners stored less information in the presence of gaze even when
+uncertainty in the input increased. Finally, in Experiment 4, we \DIFdelbegin \DIFdel{fixed
+}\DIFdelend \DIFaddbegin \DIFadd{equated
+}\DIFaddend the length of the initial naming events \DIFdelbegin \DIFdel{across the gaze and no-gaze
+conditions}\DIFdelend \DIFaddbegin \DIFadd{with and without the referential
+cue}\DIFaddend . Learners stored less information in the presence of gaze \DIFdelbegin \DIFdel{despite }\DIFdelend even when
 they had visually inspected the objects for the same amount of time. In
 sum, our data suggest that cross-situational word learners are quite
 flexible, storing representations with different levels of fidelity
@@ -247,14 +282,15 @@ schematic, female interlocutor. Participants saw a series of ambiguous
 exposure trials where they heard one novel word that was either paired
 with a gaze cue or not and selected the object they thought went with
 each word. In subsequent test trials, participants heard the novel word
-again, this time paired with a new set of novel objects. One of the
+again, this time \DIFdelbegin \DIFdel{, }\DIFdelend paired with a new set of novel objects. One of the
 objects in this set was either the participant's initial guess (Same
 test trials) or one of the objects was \emph{not} their initial guess
 (Switch test trials). Performance on Switch trials provided a direct
 measure of whether referential cues influenced the number of alternative
 word-object links that learners stored in memory. If learners performed
-worse on Switch trials after an exposure trial with gaze, this would
-suggest that they stored fewer additional objects from the initial
+worse on Switch trials after an exposure trial with gaze, this \DIFdelbegin \DIFdel{suggests
+}\DIFdelend \DIFaddbegin \DIFadd{would
+suggest }\DIFaddend that they stored fewer additional objects from the initial
 learning context.
 
 \subsection{Method}\label{method}
@@ -272,11 +308,15 @@ HITs). The final sample consisted of 1438 participants.
 \begin{CodeChunk}
 \begin{figure}[tb]
 
-{\centering \includegraphics[width=0.8\linewidth]{figs/stimuli-1} 
+{\centering \DIFdelbeginFL %DIFDELCMD < \includegraphics[width=1\linewidth]{figs/stimuli-1} 
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \includegraphics[width=0.8\linewidth]{figs/stimuli-1} 
+\DIFaddendFL 
 
 }
 
-\caption[Screenshots of exposure and test trials from Experiment 1 (schematic gaze cue) and Experiments 2, 3 \& 4 (video gaze cue)]{Screenshots of exposure and test trials from Experiment 1 (schematic gaze cue) and Experiments 2, 3 \& 4 (video gaze cue). Participants saw exposure trials with or without a gaze cue depending on condition assignment. All participants saw both types of test trials: Same and Switch. On Same trials, the object that participants chose during exposure appeared with a new novel object. On Switch trials the object that participants did not choose appeared with a new novel object.}\label{fig:stimuli}
+\DIFdelbeginFL %DIFDELCMD < \caption[Screenshots of exposure and test trials from Experiment 1 (schematic gaze cue) and Experiments 2, 3 \& 4 (human actress gaze cue)]{%%%
+\DIFdelendFL \DIFaddbeginFL \caption[Screenshots of exposure and test trials from Experiment 1 (schematic gaze cue) and Experiments 2, 3 \& 4 (video gaze cue)]{\DIFaddendFL Screenshots of exposure and test trials from Experiment 1 (schematic gaze cue) and Experiments 2, 3 \& 4 (\DIFdelbeginFL \DIFdelFL{human actress }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{video }\DIFaddendFL gaze cue). Participants saw exposure trials with or without a gaze cue depending on condition assignment. All participants saw both types of test trials: Same and Switch. On Same trials, the object that participants chose during exposure appeared with a new novel object. On Switch trials the object that participants did not choose appeared with a new novel object.\DIFdelbeginFL \DIFdelFL{Participants saw either 2, 4, 6, or 8 referents depending on their condition assignment.}\DIFdelendFL }\label{fig:stimuli}
 \end{figure}
 \end{CodeChunk}
 
@@ -301,7 +341,7 @@ novel objects, and were asked to guess which object went with the word.
 Before seeing exposure and test trials, participants completed four
 practice trials with familiar words and objects. These trials
 familiarized participants to the task and allowed us to exclude
-participants who were unlikely to perform the task as directed, either
+participants who were unlikely to perform the task as directed\DIFaddbegin \DIFadd{, }\DIFaddend either
 because of inattention or because their computer audio was turned off.
 
 After the practice trials, participants were told that they would now
@@ -324,8 +364,8 @@ or 7 trials from the initial exposure to a word. For example, in the
 immediately following the exposure trial, but in the 3-interval
 condition, participants would see three additional exposure trials for
 other novel words before seeing the test trial for the initial word. The
-interval conditions modulated the time delay and the number of
-intervening trials between learning and test, and the number of
+interval conditions modulated the time delay \DIFaddbegin \DIFadd{and the number of
+intervening trials }\DIFaddend between learning and test, and the number of
 referents conditions modulated the attention demands present during
 learning.
 
@@ -348,8 +388,8 @@ trials to provide evidence that learners were (a) sensitive to our
 experimental manipulation and (b) altered their allocation of attention
 in response to the presence of a social cue. Accuracy on exposure trials
 was defined as selecting the referent that was the target of gaze in the
-Gaze condition. (Note that there was no ``correct'' behavior for
-exposure trials in the No-Gaze condition.) Next, we examined accuracy on
+Gaze condition\DIFdelbegin \DIFdel{(note }\DIFdelend \DIFaddbegin \DIFadd{. (Note }\DIFaddend that there was no ``correct'' behavior for
+exposure trials in the No-Gaze condition\DIFdelbegin \DIFdel{).}\DIFdelend \DIFaddbegin \DIFadd{.) }\DIFaddend Next, we examined accuracy on
 test trials to test whether learners' memory for alternative word-object
 links changed depending on the ambiguity of the learning context.
 Accuracy on test trials (both Same and Switch) was defined as selecting
@@ -361,7 +401,7 @@ operationalized as a decrease in accuracy on Switch test trials after
 seeing exposure trials with a gaze cue. To quantify participants'
 behavior, we used mixed-effects regression models with the maximal
 random effects structure justified by our experimental design:
-by-subject intercepts and slopes for each trial type (Barr, 2013). We
+by-subject intercepts and slopes for each trial type \DIFaddbegin \DIFadd{(Barr, 2013)}\DIFaddend . We
 limited all models to include only two-way interactions because the
 critical test of our hypothesis was the interaction between gaze
 condition and trial type, and we did not have theoretical predictions
@@ -369,12 +409,16 @@ for any possible three-way or four-way interactions. All models were fit
 using the lme4 package in R (Bates, Maechler, Bolker, \& Walker, 2013),
 and all of our data and our processing/analysis code can be viewed in
 the version control repository for this paper at
-\url{https://github.com/kemacdonald/soc_xsit}.
+\DIFdelbegin \DIFdel{:
+}\DIFdelend \url{https://github.com/kemacdonald/soc_xsit}.
 
 \begin{CodeChunk}
 \begin{figure}[tb]
 
-{\centering \includegraphics[width=0.9\linewidth]{figs/expt1-plot-1} 
+{\centering \DIFdelbeginFL %DIFDELCMD < \includegraphics[width=1\linewidth]{figs/expt1-plot-1} 
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \includegraphics[width=0.9\linewidth]{figs/expt1-plot-1} 
+\DIFaddendFL 
 
 }
 
@@ -400,8 +444,9 @@ be expected if participants were selecting randomly. In all conditions,
 participants used gaze to select referents on exposure trials more often
 than expected by chance (smallest \(\beta\) = 1.4, z = 9.38, \(p\)
 \textless{} .001). However, there was variability across conditions in
-the mean proportion of gaze cue (overall \(M\) = 0.84, range:
-0.77--0.93).
+the mean proportion of gaze cue (overall \(M\) = 0.84, \DIFdelbegin \DIFdel{smallest \(M\) =
+}\DIFdelend \DIFaddbegin \DIFadd{range:
+}\DIFaddend 0.77\DIFdelbegin \DIFdel{, largest \(M\) = 0.93}\DIFdelend \DIFaddbegin \DIFadd{--0.93}\DIFaddend ).
 
 We were also interested in differences in participants' response times
 across the experimental conditions. Since these trials were self-paced,
@@ -413,10 +458,11 @@ participants' inspection times as follows:
 \texttt{Log(Inspection time) $\sim$ Gaze * Log(Interval) + Gaze * Log(Referents) + (1 | subject)}.
 We found a significant main effect of the number of referents (\(\beta\)
 = 0.34, p \textless{} .001) with longer inspection times as the number
-of referents increased, a significant interaction between gaze condition
+of referents increased, a significant \DIFdelbegin \DIFdel{two-way }\DIFdelend interaction between gaze condition
 and the number of referents (\(\beta\) = -0.27, p \textless{} .001) with
 longer inspection times in the No-Gaze condition, especially as the
-number of referents increased, and a significant interaction between
+number of referents increased, and a significant \DIFdelbegin \DIFdel{two-way
+}\DIFdelend interaction between
 gaze condition and interval (\(\beta\) = -0.08, \(p\) = 0.004) with
 slower inspection times in the No-Gaze condition, especially as the
 number of intervening trials increased (see the top row of Figure 2).
@@ -440,7 +486,7 @@ did for exposure trials:
 correct object more often than would be expected by chance (smallest
 \(\beta\) = 0.36, \(z\) = 2.44, \(p\) = 0.01). On Switch trials in the
 8-referent, 3-interval condition, participants' responses were not
-significantly different from chance (\(\beta\) = 0.06, z = 0.33, \(p\) =
+significantly different from chance (\(\beta\) = 0.06, z = 0.33, \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend =
 0.74). Participants' success on Switch trials replicates the findings
 from Yurovsky and Frank (2015) and provides direct evidence that
 learners encode more than a single hypothesis in ambiguous word learning
@@ -488,27 +534,28 @@ include only two-way interactions because the critical test of our
 hypothesis is the interaction between gaze condition and trial type, and
 we did not have any theoretical predictions for possible three-way
 interactions.
-\footnote{If we allowed for three-way interactions in the model, there was a marginally significant interaction between gaze condition, trial type, and interval ($\beta = 0.21$, $p$ = 0.058). The two-way interaction between gaze condition and trial type remained significant in this more complex model ($\beta = -1.3$, $p$ = 0.006).}
+\footnote{If we allowed for three-way interactions in the model, there was a marginally significant interaction between gaze condition, trial type, and interval ($\beta = 0.21$, $p$ = 0.058). The two-way interaction between gaze condition and trial type remained significant in this more complex model ($\beta = -1.3$, $p$ = 0.006).\DIFdelbegin \DIFdel{A model including four-way interactions did not sufficiently improve model fit in order to justify the added complexity.}\DIFdelend }
 
 Table 1 shows the output of the logistic regression. We found
 significant main effects of the number of referents (\(\beta = 0.23\),
-\(p\) \textless{} .001) and interval (\(\beta = -0.45\), \(p\)
-\textless{} .001), such that as each of these factors increased,
+\DIFdelbegin \DIFdel{p
+}\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{} .001) and interval (\(\beta = -0.45\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\)
+}\DIFaddend \textless{} .001), such that as each of these factors increased,
 accuracy on test trials decreased. We also found a significant main
-effect of trial type (\(\beta = -1.36\), \(p\) \textless{} .001), with
+effect of trial type (\(\beta = -1.36\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{} .001), with
 worse performance on Switch trials. There were significant interactions
-between trial type and interval (\(\beta = 0.52\), \(p\) \textless{}
-.001), trial type and referents (\(\beta = -0.59\), \(p\) \textless{}
-.001), and gaze condition and referents (\(\beta = 0.2\), \(p\)
-\textless{} .05). These interactions can be interpreted as meaning: (a)
+between trial type and interval (\(\beta = 0.52\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{}
+.001), trial type and referents (\(\beta = -0.59\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{}
+.001), and gaze condition and referents (\(\beta = 0.2\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\)
+}\DIFaddend \textless{} .05). These interactions can be interpreted as meaning: (a)
 the interval between exposure and test affected Same trials more than
 Switch trials, (b) the number of referents affected Switch trials more
 than Same trials, and (c) participants performed slightly better at the
 higher number of referents in the Gaze condition. The interactions
 between gaze condition and referents and between referents and interval
 were not significant. Importantly, we found the predicted interaction
-between trial type and gaze condition (\(\beta = -1.09\), \(p\)
-\textless{} .001), with participants in the Gaze condition performing
+between trial type and gaze condition (\(\beta = -1.09\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\)
+}\DIFaddend \textless{} .001), with participants in the Gaze condition performing
 worse on Switch trials. This interaction provides direct evidence that
 the presence of a referential cue selectively reduces participants'
 memory for alternative word-object links.
@@ -534,7 +581,7 @@ tracking of alternatives resulted in an increase in performance on Same
 trials. This finding suggests that the limitations on Same trials may be
 different than those regulating the distribution of attention on Switch
 trials since the presence of a referential cue selectively reduced
-learners tracking of alternatives but apparently did not cause learners
+learners tracking of alternatives but apparently did not \DIFdelbegin \DIFdel{lead }\DIFdelend \DIFaddbegin \DIFadd{cause }\DIFaddend learners
 to form a stronger memory of their single candidate hypothesis.
 
 There was relatively large variation in performance across conditions in
@@ -554,8 +601,9 @@ cue. We designed Experiment 2 to address this question.
 
 In Experiment 2, we set out to replicate the findings from Experiment 1
 using a more ecologically valid stimulus set. We replaced the static,
-schematic drawing with a video of a female actress. While these stimuli
-were still far from actual learning contexts, they included a real
+schematic drawing with a video of a \DIFdelbegin \DIFdel{live }\DIFdelend \DIFaddbegin \DIFadd{female }\DIFaddend actress. While \DIFdelbegin \DIFdel{the video
+}\DIFdelend \DIFaddbegin \DIFadd{these }\DIFaddend stimuli
+were still far from actual learning contexts, \DIFdelbegin \DIFdel{it }\DIFdelend \DIFaddbegin \DIFadd{they }\DIFaddend included a real
 person who provided both a gaze cue and a head turn towards the target
 object. To reduce the across-conditions variability that we found in
 Experiment 1, we introduced a within-subjects design where each
@@ -572,10 +620,10 @@ of learners' recall of their candidate hypothesis.
 
 \subsubsection{Participants}\label{participants-1}
 
-Participant recruitment and inclusion/exclusion criteria were identical
+Participant recruitment and \DIFdelbegin \DIFdel{inclusionary}\DIFdelend \DIFaddbegin \DIFadd{inclusion}\DIFaddend /\DIFdelbegin \DIFdel{exclusionary }\DIFdelend \DIFaddbegin \DIFadd{exclusion }\DIFaddend criteria were identical
 to those of Experiment 1. 100 HITs were posted for each condition (1
 Referent X 2 Intervals X 2 Gaze conditions) for total of 400 paid HITs
-(33 HITs excluded).
+(\DIFdelbegin \DIFdel{excluded }\DIFdelend 33 HITs \DIFaddbegin \DIFadd{excluded}\DIFaddend ).
 
 \subsubsection{Stimuli}\label{stimuli-1}
 
@@ -592,7 +640,7 @@ the duration of the trial.
 Procedures were identical to those of Experiment 1. The major design
 change was a within-subjects manipulation of the gaze cue where each
 participant saw exposure trials with and without gaze. The experiment
-consisted of 32 trials split into 2 blocks of 16 trials. Each block
+consisted of 32 trials \DIFdelbegin \DIFdel{broken down }\DIFdelend \DIFaddbegin \DIFadd{split }\DIFaddend into 2 blocks of 16 trials. Each block
 consisted of 8 exposure trials and 8 test trials (4 Same trials and 4
 Switch trials) and contained only Gaze or No-gaze exposure trials. The
 order of block was counterbalanced across participants.
@@ -606,17 +654,18 @@ accuracy on test trials.
 \subsubsection{Exposure trials}\label{exposure-trials-1}
 
 Similar to Experiment 1, participants' responses on exposure trials
-differed from those expected by chance (smallest \(\beta\) = 3.39, z =
-31.99, \(p\) \textless{} .001), suggesting that gaze was effective in
+differed from those expected by chance (smallest \(\beta\) = 3.42, z =
+33.43, \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{} .001), suggesting that gaze was effective in
 directing participants' attention. Participants in Experiment 2 were
-more consistent in their use of gaze with the video stimuli compared to
+more consistent in their use of gaze with the \DIFdelbegin \DIFdel{live action }\DIFdelend \DIFaddbegin \DIFadd{video }\DIFaddend stimuli compared to
 the schematic stimuli used in Experiment 1 (\(M_{Exp1}\) = 0.8,
-\(M_{Exp2}\) = 0.91\$), suggesting that using a real person increased
-participants' willingness to follow the gaze cue.
+\(M_{Exp2}\) = 0.91\$), suggesting that using a \DIFdelbegin \DIFdel{live actress
+}\DIFdelend \DIFaddbegin \DIFadd{real person }\DIFaddend increased
+participants' willingness to \DIFdelbegin \DIFdel{use }\DIFdelend \DIFaddbegin \DIFadd{follow }\DIFaddend the gaze cue.
 
 We replicated the findings from Experiment 1. Inspection times were
-shorter in the Gaze (\(\beta\) = -1.1, \(p\) \textless{} .001) and the
-3-interval condition (\(\beta\) = -0.48, \(p\) \textless{} .001). The
+shorter in the Gaze (\(\beta\) = -1.11, \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{} .001) and the
+3-interval condition (\(\beta\) = -0.5, \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{} .001). The
 interaction between gaze and interval was not significant, meaning that
 gaze had the same effect on participants' inspection times at both
 intervals (see Panel A of Figure 3).
@@ -624,11 +673,14 @@ intervals (see Panel A of Figure 3).
 \begin{CodeChunk}
 \begin{figure}[tb]
 
-{\centering \includegraphics[width=0.8\linewidth]{figs/expt2-plot-1} 
+{\centering \DIFdelbeginFL %DIFDELCMD < \includegraphics[width=1\linewidth]{figs/expt2-plot-1} 
+%DIFDELCMD < %%%
+\DIFdelendFL \DIFaddbeginFL \includegraphics[width=0.8\linewidth]{figs/expt2-plot-1} 
+\DIFaddendFL 
 
 }
 
-\caption[Experiment 2 results]{Experiment 2 results. Panel A shows inspection times on exposure trials with and without gaze. Panel B shows accuracy on Same and Switch test trials. All plotting conventions are the same as in Figure 2. Error bars indicate 95\% confidence intervals computed by non-parametric bootstrap.}\label{fig:expt2-plot}
+\caption[Experiment 2 results]{Experiment 2 results. Panel A shows inspection times on exposure trials \DIFdelbeginFL \DIFdelFL{as a function of interval and for trials }\DIFdelendFL with and without gaze. Panel B shows accuracy \DIFdelbeginFL \DIFdelFL{for }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{on }\DIFaddendFL Same and Switch test trials\DIFdelbeginFL \DIFdelFL{as a function of the number of intervening trials between exposure and test for trials with and without gaze}\DIFdelendFL . \DIFdelbeginFL \DIFdelFL{The dashed line }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{All plotting conventions are the same as }\DIFaddendFL in \DIFdelbeginFL \DIFdelFL{Panel B represents chance performance. }\DIFdelendFL \DIFaddbeginFL \DIFaddFL{Figure 2. }\DIFaddendFL Error bars indicate 95\% confidence intervals computed by non-parametric bootstrap.}\label{fig:expt2-plot}
 \end{figure}
 \end{CodeChunk}
 
@@ -639,13 +691,13 @@ intervals (see Panel A of Figure 3).
 \begin{tabular}{lrrrrl}
  Predictor & Estimate & Std. Error & $z$ value & $p$ value &  \\ 
   \hline
-Intercept & 2.94 & 0.18 & 16.00 & $<$ .001 & *** \\ 
-  Switch Trial & -2.99 & 0.19 & -16.11 & $<$ .001 & *** \\ 
-  Gaze Condition & -0.10 & 0.16 & -0.63 & 0.53 &  \\ 
-  Log(Interval) & -0.93 & 0.10 & -9.23 & $<$ .001 & *** \\ 
-  Switch Trial*Gaze Condition & -0.71 & 0.16 & -4.49 & $<$ .001 & *** \\ 
-  Switch Trial*Log(Interval) & 0.79 & 0.10 & 8.03 & $<$ .001 & *** \\ 
-  Gaze Condition*Log(Interval) & 0.15 & 0.08 & 2.05 & 0.04 & * \\ 
+Intercept & 2.98 & 0.18 & 16.20 & $<$ .001 & *** \\ 
+  Switch Trial & -3.04 & 0.18 & -16.47 & $<$ .001 & *** \\ 
+  Gaze Condition & -0.15 & 0.16 & -0.98 & 0.33 &  \\ 
+  Log(Interval) & -0.98 & 0.10 & -9.62 & $<$ .001 & *** \\ 
+  Switch Trial*Gaze Condition & -0.65 & 0.15 & -4.32 & $<$ .001 & *** \\ 
+  Switch Trial*Log(Interval) & 0.85 & 0.10 & 8.68 & $<$ .001 & *** \\ 
+  Gaze Condition*Log(Interval) & 0.14 & 0.07 & 1.90 & 0.06 & . \\ 
    \hline
 \end{tabular}
 \caption{Predictor estimates with standard errors and significance information for a logistic mixed-effects model predicting word learning in Experiment 2.} 
@@ -654,35 +706,37 @@ Intercept & 2.94 & 0.18 & 16.00 & $<$ .001 & *** \\
 
 Across all conditions for both trial types participants selected the
 correct referent at rates greater than chance (smallest \(\beta\) =
-0.58, z = 9.32, \(p\) \textless{} .001). We replicated the critical
+0.58, z = 9.68, \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{} .001). We replicated the critical
 finding from Experiment 1: after seeing exposure trials with gaze,
 participants performed worse on Switch trials, meaning they stored fewer
-word-object links (\(\beta = -0.71\), \(p\) \textless{}
+word-object links (\(\beta = -0.65\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{}
 .001).\footnote{As in Experiment 1, we fit this model to a filtered dataset removing participants who did not reliably use the gaze cue.}
 Participants were also less accurate as the interval between exposure
-and test increased (\(\beta\) = -0.93, \(p\) \textless{} .001) and on
-the Switch trials overall (\(\beta = -2.99\), \(p\) \textless{} .001).
+and test increased (\(\beta\) = -0.98, \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{} .001) and on
+the Switch trials overall (\(\beta = -3.04\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{} .001).
 
-In addition, there was a significant interaction between trial type and
-interval (\(\beta = 0.79\), \(p\) \textless{} .001), with worse
+In addition, there was a significant \DIFdelbegin \DIFdel{two-way }\DIFdelend interaction between trial type and
+interval (\(\beta = 0.85\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{} .001), with worse
 performance on Switch trials in the 3-interval condition. The
-interaction between gaze condition and interval was marginally
-significant (\(\beta = 0.15\), \(p\) = 0.041), such that participants in
+\DIFdelbegin \DIFdel{two-way
+}\DIFdelend interaction between gaze condition and interval was marginally
+significant (\(\beta = 0.14\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend = 0.057), such that participants in
 the gaze condition were less affected by the increase in interval.
 Similar to Experiment 1, we did not see evidence of a boost to
 performance on Same trials in the gaze condition.
 
 Next, we added inspection times on exposure trials as a predictor of
 accuracy at test. We found a marginally significant main effect of
-inspection time (\(\beta\) = 0.15, \(p\) = 0.255) with higher accuracy
+inspection time (\(\beta\) = \DIFdelbegin \DIFdel{0.182}\DIFdelend \DIFaddbegin \DIFadd{0.18}\DIFaddend , \(p\) = 0.096) with higher accuracy
 as inspection time increased. Similar to Experiment 1, the interaction
 between gaze and trial type remained significant even when inspection
-time was added to the model (\(\beta\) = -0.54, \(p\) \textless{} .001).
+time was added to the model (\(\beta\) = \DIFdelbegin \DIFdel{-0.547}\DIFdelend \DIFaddbegin \DIFadd{-0.55}\DIFaddend , \(p\) \textless{} .001).
 
 The results of Experiment 2 provide converging evidence for our
-hypothesis that the presence of a referential cue reliably focuses
+hypothesis \DIFdelbegin \DIFdel{, showing }\DIFdelend that the presence of a referential cue reliably focuses
 learners' attention away from alternative word-object links and shifts
-them towards single hypothesis tracking. Moving to the video stimulus
+them towards single hypothesis tracking. Moving to \DIFdelbegin \DIFdel{a live action
+}\DIFdelend \DIFaddbegin \DIFadd{the video }\DIFaddend stimulus
 led to higher rates of selecting the target of gaze on exposure trials,
 but did not result in a boost to performance on Same trials. The
 selective effect of gaze on Switch trials provides additional evidence
@@ -694,7 +748,7 @@ information in response to a categorical manipulation of referential
 uncertainty. In both Experiments 1 and 2, the learning context was
 either entirely ambiguous (No-Gaze) or entirely unambiguous (Gaze). But
 not all real-world learning contexts fall at the extremes of this
-continuum. Could learners be sensitive to more subtle changes in the
+continuum\DIFdelbegin \DIFdel{(although see Yurovsky et al. , 2013). }\DIFdelend \DIFaddbegin \DIFadd{. }\DIFaddend Could learners be sensitive to more subtle changes in the
 quality of learning contexts? In our next experiment, we tested a
 prediction of our account: whether learners would store more word-object
 links in response to graded changes in referential uncertainty during
@@ -706,23 +760,23 @@ In Experiment 3, we explored whether learners would allocate attention
 and memory flexibly in response to \emph{graded} changes in the
 referential uncertainty that was present during learning. To test this
 hypothesis, we moved beyond a categorical manipulation of the
-presence/absence of gaze, and we parametrically varied the reliability
-of the referential cue. We manipulated cue reliability by adding a block
+presence/absence of gaze, and we parametrically varied the \DIFdelbegin \DIFdel{strength }\DIFdelend \DIFaddbegin \DIFadd{reliability
+}\DIFaddend of the referential cue. We manipulated cue \DIFdelbegin \DIFdel{strength }\DIFdelend \DIFaddbegin \DIFadd{reliability }\DIFaddend by adding a block
 of familiarization trials where we varied the proportion of Same and
 Switch trials. If participants saw more Switch trials, this provided
-direct evidence that the speaker's gaze was a less reliable cue to
-reference because the gaze target on exposure trials would not appear at
-test. This design was inspired by a growing body of experimental work
+\DIFaddbegin \DIFadd{direct }\DIFaddend evidence that the speaker's gaze was a less reliable cue to
+reference \DIFaddbegin \DIFadd{because the gaze target on exposure trials would not appear at
+test}\DIFaddend . This design was inspired by a growing body of experimental work
 showing that even young children are sensitive to the prior reliability
 of speakers and will use this information to decide whom to learn novel
-words from (e.g., Koenig, Clement, \& Harris, 2004).
+words from (\DIFaddbegin \DIFadd{e.g., }\DIFaddend Koenig, Clement, \& Harris, 2004).
 
 \subsection{Method}\label{method-2}
 
 \subsubsection{Participants}\label{participants-2}
 
-Participant recruitment and inclusion/exclusion criteria were identical
-to those of Experiment 1 and 2 (27 HITs excluded). 100 HITs were posted
+Participant recruitment and \DIFdelbegin \DIFdel{inclusionary}\DIFdelend \DIFaddbegin \DIFadd{inclusion}\DIFaddend /\DIFdelbegin \DIFdel{exclusionary }\DIFdelend \DIFaddbegin \DIFadd{exclusion }\DIFaddend criteria were identical
+to those of Experiment 1 and 2 (\DIFdelbegin \DIFdel{excluded }\DIFdelend 27 HITs \DIFaddbegin \DIFadd{excluded}\DIFaddend ). 100 HITs were posted
 for each reliability level (0\%, 25\%, 50\%, 75\%, and 100\%) for total
 of 500 paid HITs.
 
@@ -738,8 +792,8 @@ familiarization block. Recall that on Switch trials the gaze target did
 not show up at test, which provided evidence that the speaker's gaze was
 not a reliable cue to reference. Reliability was a between-subjects
 manipulation such that participants either saw 8, 6, 4, 2, or 0 Switch
-trials during familiarization, which created the 0\%, 25\%, 50\%, 75\%,
-and 100\% reliability conditions. After the familiarization block,
+trials during familiarization, which \DIFdelbegin \DIFdel{corresponded to }\DIFdelend \DIFaddbegin \DIFadd{created }\DIFaddend the 0\%, 25\%, 50\%, 75\%,
+\DIFdelbegin \DIFdel{or }\DIFdelend \DIFaddbegin \DIFadd{and }\DIFaddend 100\% reliability conditions. After the familiarization block,
 participants completed another block of 16 trials (8 exposure trials and
 8 test trials). Since we were no longer testing the effect of the
 presence or absence of a referential cue, all exposure trials throughout
@@ -753,16 +807,18 @@ reliable.''
 \subsubsection{Exposure trials}\label{exposure-trials-2}
 
 Participants reliably chose the referent that was the target of gaze at
-rates greater than chance (smallest \(\beta\) = 2.62, z = 31.99, \(p\)
-\textless{} .001). We fit a mixed effects logistic regression model
+rates greater than chance (smallest \(\beta\) = 2.62, z = 33.43, \DIFdelbegin \DIFdel{p
+}\DIFdelend \DIFaddbegin \DIFadd{\(p\)
+}\DIFaddend \textless{} .001). We fit a mixed effects logistic regression model
 predicting the probability of selecting the gaze target as follows:
 \texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + (1 | subject)}.
 We found an effect of reliability condition (\(\beta\) = 3.28, \(p\) =
 0.03) such that when the gaze cue was more reliable, participants were
 more likely to use it (\(M_{0\%}\) = 0.83, \(M_{25\%}\) = 0.82,
 \(M_{50\%}\) = 0.87, \(M_{75\%}\) = 0.9, \(M_{100\%}\) = 0.94). We also
-found an effect of subjective reliability (\(\beta\) = 7.26, \(p\)
-\textless{} .001) such that when participants thought the gaze cue was
+found an effect of subjective reliability (\(\beta\) = 7.26, \DIFdelbegin \DIFdel{p
+}\DIFdelend \DIFaddbegin \DIFadd{\(p\)
+}\DIFaddend \textless{} .001) such that when participants thought the gaze cue was
 reliable, they were more likely to use it. The interaction between
 reliability condition and subjective reliability assessments was
 marginally significant (\(\beta\) = -4.58, \(p\)= 0.092). This analysis
@@ -786,14 +842,15 @@ rated the reliability of the speaker at the end of the task.
 Next, we tested whether the reliability manipulation altered the
 strength of participants' memory for alternative word-object links.
 Across all conditions, participants selected the correct referent at
-rates greater than chance (smallest \(\beta\) = 0.42, z = 3.69, \(p\)
-\textless{} .001). Our primary prediction was an interaction between
+rates greater than chance (smallest \(\beta\) = 0.42, z = 3.69, \DIFdelbegin \DIFdel{p
+}\DIFdelend \DIFaddbegin \DIFadd{\(p\)
+}\DIFaddend \textless{} .001). Our primary prediction was an interaction between
 reliability and test trial type, with higher levels of reliability
 leading to worse performance on Switch trials (i.e., less memory
 allocated to alternative word-object links). To explore this prediction,
-we performed four complementary analyses: our primary analysis, which
-tested the effect of the reliability manipulation, and three secondary
-analyses, which explored the effects of participants' (a) use of the
+we performed four complementary analyses\DIFdelbegin \DIFdel{. Our primary analysis}\DIFdelend \DIFaddbegin \DIFadd{: our primary analysis, which
+}\DIFaddend tested the effect of \DIFdelbegin \DIFdel{reliability condition}\DIFdelend \DIFaddbegin \DIFadd{the reliability manipulation}\DIFaddend , and three secondary
+analyses\DIFaddbegin \DIFadd{, which }\DIFaddend explored the effects of participants' (a) use of the
 gaze cue, (b) subjective reliability assessments, and (c) inspection
 time on exposure trials.
 
@@ -813,8 +870,9 @@ analysis}\label{reliability-condition-analysis}
 
 To test the effect of reliability, we fit a model predicting accuracy at
 test using reliability condition and test trial type as predictors. We
-found a significant main effect of trial type (\(\beta = -3.95\), \(p\)
-\textless{} .001), with lower accuracy on Switch trials. We also found
+found a significant main effect of trial type (\(\beta = -3.95\), \DIFdelbegin \DIFdel{p
+}\DIFdelend \DIFaddbegin \DIFadd{\(p\)
+}\DIFaddend \textless{} .001), with lower accuracy on Switch trials. We also found
 the key interaction between reliability condition and trial type
 (\(\beta\) = -0.76, \(p\) = 0.044), such that when gaze was more
 reliable, participants performed worse on Switch trials (see Panel A of
@@ -838,14 +896,15 @@ cue.) We found a significant interaction between accuracy on exposure
 trials and trial type (\(\beta = -1.43\), \(p\) \textless{} .001) with
 worse performance on Switch test trials when participants used gaze on
 exposure trials (see Panel B of Figure 4). We also found an interaction
-between gaze use and reliability (\(\beta = 0.97\), \(p\) = 0.004) such
+between gaze use and reliability (\(\beta = 0.97\), \(p\) = 0.004) \DIFdelbegin \DIFdel{, }\DIFdelend such
 that when gaze was more reliable, participants were more likely to use
 it. The interaction between trial type and reliability became marginally
 significant in this model (\(\beta = -0.62\), \(p\) = 0.086), suggesting
-that participants' use of the gaze cue was a stronger predictor of
+that \DIFdelbegin \emph{\DIFdel{use}} %DIFAUXCMD
+\DIFdelend \DIFaddbegin \DIFadd{participants' use }\DIFaddend of the gaze cue was a stronger predictor of
 memory for alternative word-object links.\footnote{We are grateful to an
   anonymous reviewer for suggesting this analysis, but we would like to
-  note that it is exploratory.}
+  note that it is \DIFdelbegin \DIFdel{an }\DIFdelend exploratory\DIFdelbegin \DIFdel{analysis}\DIFdelend .}
 
 We also hypothesized that the reliability manipulation might change how
 often individual participants chose to use the gaze cue throughout the
@@ -854,18 +913,19 @@ specifications, but we included a predictor that we created by binning
 participants based on the number of exposure trials on which they chose
 to follow gaze (i.e., a gaze following score). We found a significant
 interaction between how often participants chose to follow gaze on
-exposure trials and trial type (\(\beta = -0.32\), \(p\) \textless{}
+exposure trials and trial type (\(\beta = -0.32\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{}
 .001), such that participants who were more likely to use the gaze cue
-performed worse on Switch trials, but not Same trials (see Panel B of
+performed worse on Switch trials, but not Same trials (see Panel \DIFdelbegin \DIFdel{A }\DIFdelend \DIFaddbegin \DIFadd{B }\DIFaddend of
 Figure 5).\footnote{We found this interaction while performing
   exploratory data analysis on a previous version of this study with an
-  independent sample (N = 250, \(\beta = -0.29\), \(p\) \textless{}
-  .001). The results reported here are from a follow-up study where
+  independent sample (N = 250, \(\beta = -0.29\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{}
+  .001). The results reported here are from a \DIFdelbegin \DIFdel{separate sample }\DIFdelend \DIFaddbegin \DIFadd{follow-up study }\DIFaddend where
   testing this interaction was a planned analysis.} Taken together, the
 two analyses of participants' use of the gaze cue provide converging
-evidence that when the speaker's gaze was reliable participants were
-more likely to use the cue, and when they followed gaze, they tended to
-store less information from the initial naming event.
+evidence that when the speaker's gaze was reliable participants \DIFdelbegin \DIFdel{tended
+}\DIFdelend \DIFaddbegin \DIFadd{were
+more likely }\DIFaddend to use the cue, and when they followed gaze, they tended to
+store less information from the initial \DIFdelbegin \DIFdel{learning episode}\DIFdelend \DIFaddbegin \DIFadd{naming event}\DIFaddend .
 
 \paragraph{Subjective reliability
 analysis}\label{subjective-reliability-analysis}
@@ -876,35 +936,31 @@ experience of reliability in the experiment mattered. Thus, we fit the
 same model but substituted subjective reliability for the frequency of
 gaze use as a predictor of test trial performance. We found a
 significant interaction between trial type and participants' subjective
-reliability assessments (\(\beta = -1.63\), \(p\) = 0.01): when
+reliability assessments (\(\beta = -1.63\), \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend = 0.01): when
 participants thought the speaker was more reliable, they performed worse
 on Switch trials, but not Same trials (see Panel B of Figure 5).
 
 \paragraph{Inspection time analyses}\label{inspection-time-analyses}
 
 Finally, we were curious about how inspection time on exposure trials
-affected accuracy at test. So we fit a model using inspection time,
-trial type, and reliability condition to predict accuracy. We found a
-main effect of inspection time (\(\beta\) = 0.31, \(p\) = 0.001), with
-longer inspection times leading to better performance. The interaction
-between trial type and inspection time was not significant, meaning that
-increased inspection time had the same, positive effect on both Same and
-Switch trials. There was a marginally significant interaction between
-inspection time and reliability condition (\(\beta\) = -0.2, \(p\) =
-0.067) with longer inspection times providing a larger boost to accuracy
-when the speaker was less reliable.
+affected accuracy at test. So we fit a model using inspection time and
+trial type to predict accuracy and found a main effect of inspection
+time (\(\beta\) = 0.22, \(p\) = 0.006), with longer inspection times
+leading to better performance. The interaction between trial type and
+inspection time was not significant, meaning that increased inspection
+time had the same, positive effect on both Same and Switch trials. Next,
+we explored the factors that influenced inspection time on exposure
+trials by fitting a model to predict inspection time using reliability
+and use of the gaze cue as predictors. We found a main effect of using
+the gaze cue (-0.32, \(p\) \textless{} .001) with \DIFaddbegin \DIFadd{use of the gaze cue
+leading to }\DIFaddend shorter inspection times\DIFdelbegin \DIFdel{when participants chose to follow gaze}\DIFdelend . The main effect of reliability
+condition and the interaction between reliability and use of gaze were
+not significant. These analyses provide evidence that \DIFdelbegin \emph{\DIFdel{use}} %DIFAUXCMD
+\DIFdelend \DIFaddbegin \DIFadd{use }\DIFaddend of the gaze
+cue was the primary factor affecting how long participants inspected the
+objects on exposure trials.
 
-Next, we explored the factors that influenced inspection time on
-exposure trials by fitting a model to predict inspection time using
-reliability and use of the gaze cue as predictors. We found a main
-effect of using the gaze cue (-0.32, \(p\) \textless{} .001) with use of
-the gaze cue leading to shorter inspection times. The main effect of
-reliability condition and the interaction between reliability and use of
-gaze were not significant. These analyses provide evidence that use of
-the gaze cue was the primary factor affecting how long participants
-inspected the objects on exposure trials.
-
-Together, these four analyses show that when the speaker's gaze was more
+Together, these four analyses \DIFdelbegin \DIFdel{showed }\DIFdelend \DIFaddbegin \DIFadd{show }\DIFaddend that when the speaker's gaze was more
 reliable, participants were more likely to: (a) use the gaze cue, (b)
 rate the speaker as more reliable, and (c) store fewer word-object
 links, showing behavior more consistent with single hypothesis tracking.
@@ -947,15 +1003,15 @@ trials equivalent across the Gaze and No-Gaze conditions.
 
 \section{Experiment 4}\label{experiment-4}
 
-In Experiment 4, we asked whether a reduction in visual inspection time
-in the gaze condition could completely explain the effect of social cues
+In Experiment 4, we asked whether \DIFdelbegin \DIFdel{less }\DIFdelend \DIFaddbegin \DIFadd{a reduction in }\DIFaddend visual inspection time
+in the gaze \DIFdelbegin \DIFdel{conditions can }\DIFdelend \DIFaddbegin \DIFadd{condition could }\DIFaddend completely explain the effect of social cues
 on learners' reduced memory for alternative word-object links. To answer
 this question, we modified our paradigm and made the length of exposure
 trials equivalent across the Gaze and No-Gaze conditions. In this
 version of the task, participants saw the objects for a fixed amount of
 time regardless of whether gaze was present. We also included two
-different exposure trial lengths in order to test whether gaze would
-have a differential effect at shorter vs.~longer inspection times. If
+different \DIFdelbegin \DIFdel{time windows for exposure trials }\DIFdelend \DIFaddbegin \DIFadd{exposure trial lengths }\DIFaddend in order to test whether gaze would
+have a differential effect \DIFdelbegin \DIFdel{on }\DIFdelend \DIFaddbegin \DIFadd{at }\DIFaddend shorter vs.~longer inspection times. If
 the presence of gaze reduces learners' memory for multiple word-object
 links, then this provides evidence that referential cues affected the
 underlying representations over and above a reduction in inspection
@@ -976,10 +1032,10 @@ time.
 
 \subsubsection{Participants}\label{participants-3}
 
-Participant recruitment and inclusion/exclusion criteria were identical
+Participant recruitment and \DIFdelbegin \DIFdel{inclusionary}\DIFdelend \DIFaddbegin \DIFadd{inclusion}\DIFaddend /\DIFdelbegin \DIFdel{exclusionary }\DIFdelend \DIFaddbegin \DIFadd{exclusion }\DIFaddend criteria were identical
 to those of Experiments 1, 2, and 3. 100 HITs were posted for each
 condition (1 Referent X 2 Intervals X 2 Inspection Time conditions) for
-total of 400 paid HITs (37 HITs excluded).
+total of 400 paid HITs (\DIFdelbegin \DIFdel{excluded }\DIFdelend 37 HITs \DIFaddbegin \DIFadd{excluded}\DIFaddend ).
 
 \subsubsection{Stimuli}\label{stimuli-2}
 
@@ -1023,24 +1079,25 @@ time on exposure trials (0.05\% of trials).
 \subsubsection{Exposure Trials}\label{exposure-trials-3}
 
 Participants' responses on exposure trials differed from those expected
-by chance (smallest \(\beta\) = 2.95, z = 38.08, \(p\) \textless{}
+by chance (smallest \(\beta\) = 2.95, z = 38.08, \DIFdelbegin \DIFdel{p }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend \textless{}
 .001), suggesting that gaze was again effective in directing
 participants' attention. Similar to Experiment 2, participants were
-quite likely to use the gaze cue when it was a video of an actress
+quite likely to use the gaze cue when it was a \DIFdelbegin \DIFdel{live }\DIFdelend \DIFaddbegin \DIFadd{video of an }\DIFaddend actress
 (\(M_{0-interval}\) = 0.93, \(M_{3-interval}\) = 0.95).
 
 \subsubsection{Test Trials}\label{test-trials-3}
 
 Figure 6 shows performance on test trials in Experiment 4. In the
 majority of conditions, participants selected the correct referent at
-rates greater than chance (smallest \(\beta\) = 0.2, z = 2.2, \(p\)
-\textless{} .05). However, participants' responses were only marginally
+rates greater than chance (smallest \(\beta\) = 0.2, z = 2.2, \DIFdelbegin \DIFdel{p
+}\DIFdelend \DIFaddbegin \DIFadd{\(p\)
+}\DIFaddend \textless{} .05). However, participants' responses were only marginally
 different from chance on Switch trials after exposure trials with gaze
 in the 3-interval condition (\(\beta\) = 0.17, \(p\) = 0.06).
 
 We replicate the key finding from Experiments 1-3: after seeing exposure
 trials with gaze, participants were less accurate on Switch trials
-(\(\beta\) = 0.9, \(p\) \textless{} .001). Since inspection times were
+(\(\beta\) = \DIFdelbegin \DIFdel{0.905}\DIFdelend \DIFaddbegin \DIFadd{0.9}\DIFaddend , \(p\) \textless{} .001). Since inspection times were
 fixed across the Gaze and No-Gaze conditions, this finding provides
 evidence that the presence of a referential cue did more than just
 reduce the amount of time participants' spent inspecting the potential
@@ -1050,26 +1107,29 @@ on Same trials. To assess the simple effects of gaze on trial type, we
 computed pairwise contrasts using the \emph{lsmeans} package in R with a
 Bonferroni correction for multiple comparisons (Lenth, 2016). Accuracy
 was higher for Same trials in the Gaze condition (\(\beta\) = 0.49,
-\(p\) \textless{} .001), but lower for Switch trials (\(\beta\) = -0.41,
+\(p\) \textless{} .001), \DIFdelbegin \DIFdel{and lower in the No-Gaze condition }\DIFdelend \DIFaddbegin \DIFadd{but lower for Switch trials }\DIFaddend (\(\beta\) = -0.41,
 \(p\) \textless{} .001). The boost in accuracy on Same trials differs
 from Experiments 1-3 and suggests that making inspection times
 equivalent across conditions allowed the social cue to affect the
 strength of learners' memory for their candidate hypothesis.
 
-The results of Experiment 4 help to clarify the effect of gaze on memory
+The results of Experiment 4 help to clarify \DIFdelbegin \DIFdel{how gaze modulates }\DIFdelend \DIFaddbegin \DIFadd{the effect of gaze on }\DIFaddend memory
 in our task, providing evidence that the presence of a referential cue
-did more than just reduce participants' visual inspection time. Instead,
-gaze reduced memory for alternative word-object links even when people
-had the same opportunity to visually inspect and encode them. We also
+\DIFdelbegin \DIFdel{does
+}\DIFdelend \DIFaddbegin \DIFadd{did }\DIFaddend more than just reduce participants' visual inspection time\DIFdelbegin \DIFdel{; instead,
+the
+presence of }\DIFdelend \DIFaddbegin \DIFadd{. Instead,
+}\DIFaddend gaze reduced memory for alternative word-object links even when people
+had \DIFdelbegin \DIFdel{spent the same amount of time encoding the objects}\DIFdelend \DIFaddbegin \DIFadd{the same opportunity to visually inspect and encode them}\DIFaddend . We also
 found evidence of a boost for learners' memory of their candidate
-hypothesis in the gaze condition, an effect that we did not see in
+hypothesis in the gaze condition\DIFdelbegin \DIFdel{; }\DIFdelend \DIFaddbegin \DIFadd{, }\DIFaddend an effect that we did not \DIFdelbegin \DIFdel{find }\DIFdelend \DIFaddbegin \DIFadd{see }\DIFaddend in
 Experiments 1-3. One explanation for this difference is that in
-Experiment 4, since participants' use of gaze was independent of the
-length of exposure trials, inspection times in the gaze condition were
-longer compared to those in Experiments 1-3. Thus, it could be that the
-combination of a gaze cue with the opportunity to continue attending to
-the gaze target led to a boost in performance on Same trials relative to
-trials without gaze.
+Experiment 4\DIFaddbegin \DIFadd{, since }\DIFaddend participants' use of gaze was independent of the
+length of exposure trials, \DIFdelbegin \DIFdel{which made }\DIFdelend inspection times in the gaze condition \DIFaddbegin \DIFadd{were
+}\DIFaddend longer compared to those in Experiments 1-3. Thus, it could be that the
+combination of \DIFdelbegin \DIFdel{gaze with longer inspection times leads to }\DIFdelend \DIFaddbegin \DIFadd{a gaze cue with the opportunity to continue attending to
+the gaze target led to }\DIFaddend a boost in performance on Same trials relative to
+\DIFdelbegin \DIFdel{learning }\DIFdelend \DIFaddbegin \DIFadd{trials }\DIFaddend without gaze.
 
 \section{General Discussion}\label{general-discussion}
 
@@ -1078,16 +1138,16 @@ to proceed despite the presence of individually ambiguous naming events.
 But models of cross-situational learning disagree about how much
 information is actually stored in memory, and the input to statistical
 learning mechanisms can vary along a continuum of referential
-uncertainty from unambiguous naming instances to highly ambiguous
-situations. In the current line of work, we explore the hypothesis that
+uncertainty \DIFaddbegin \DIFadd{from unambiguous naming instances to highly ambiguous
+situations}\DIFaddend . In the current line of work, we explore the hypothesis that
 these two factors are fundamentally linked to one another and to the
 social context in which word learning occurs. Specifically, we ask how
-cross-situational learning operates over social input that varies the
-amount of ambiguity in the learning context.
+cross-situational learning operates over social input that \DIFdelbegin \DIFdel{modulates }\DIFdelend \DIFaddbegin \DIFadd{varies }\DIFaddend the
+amount of ambiguity in the \DIFdelbegin \DIFdel{each }\DIFdelend learning context.
 
 Our results suggest that the representations underlying
 cross-situational learning are quite flexible. In the absence of a
-referential cue to word meaning, learners tended to store more
+referential cue to word meaning, \DIFdelbegin \DIFdel{people }\DIFdelend \DIFaddbegin \DIFadd{learners }\DIFaddend tended to store more
 alternative word-object links. In contrast, when gaze was present
 learners stored less information, showing behavior consistent with
 tracking a single hypothesis (Experiments 1 and 2). Learners were also
@@ -1100,35 +1160,37 @@ when they spent the same amount of time visually inspecting the objects
 during learning (Experiment 4).
 
 In Experiments 1-3, reduced memory for alternative hypotheses did not
-result in a strong boost to memory for learners' candidate hypothesis.
+result in a \DIFaddbegin \DIFadd{strong }\DIFaddend boost to memory for learners' candidate hypothesis.
 This pattern of data suggests that the presence of a referential cue
 selectively affected one component of the underlying representation: the
-number of alternative word-object links, and not learners' candidate
-hypothesis. However, when the length of exposure trials was equivalent
-across the gaze and no-gaze conditions in Experiment 4, learners showed
-stronger memory for their initial hypothesis when gaze was present,
+number of alternative word-object links, and not learners' \DIFdelbegin \DIFdel{initial
+}\DIFdelend candidate
+hypothesis. However, when the length of exposure trials was \DIFdelbegin \DIFdel{made }\DIFdelend equivalent
+across the gaze \DIFaddbegin \DIFadd{and no-gaze }\DIFaddend conditions in Experiment 4, learners showed
+stronger memory for their initial hypothesis when gaze was present\DIFdelbegin \DIFdel{. This }\DIFdelend \DIFaddbegin \DIFadd{,
 suggesting that the confound with inspection time might have masked this
-difference in the previous experiments. This finding in turn suggests
+difference in the previous experiments. This finding in turn }\DIFaddend suggests
 that the relationship between referential cues and the strength of
 learners' candidate hypothesis is modulated by how the cue interacts
-with attention: When coupled with the opportunity for sustained
-attention, gaze provided a boost to memory.
+with \DIFdelbegin \DIFdel{visual inspection time: when coupled with longer
+inspection times}\DIFdelend \DIFaddbegin \DIFadd{attention: When coupled with the opportunity for sustained
+attention}\DIFaddend , gaze provided a boost to memory.
 
 \subsection{Relationship to previous
 work}\label{relationship-to-previous-work}
 
-Why would a decrease in memory for alternatives fail to increase the
-strength of learners' memory for their candidate hypothesis in
+Why \DIFdelbegin \DIFdel{did we not see an increase in }\DIFdelend \DIFaddbegin \DIFadd{would a decrease in memory for alternatives fail to increase }\DIFaddend the
+strength of learners' \DIFaddbegin \DIFadd{memory for their }\DIFaddend candidate hypothesis in
 Experiments 1-3? One possibility is that participants did not shift
 their cognitive resources from the set of alternatives to their single
-hypothesis, but instead chose to use the gaze information to reduce
-inspection time, thus conserving their resources for future use.
+hypothesis, but instead \DIFdelbegin \DIFdel{rationally conserved }\DIFdelend \DIFaddbegin \DIFadd{chose to use the gaze information to reduce
+inspection time, thus conserving }\DIFaddend their resources for future use.
 Griffiths, Lieder, and Goodman (2015) formalize this behavior by pushing
 the rationality of computational-level models down to the psychological
 process level. In their framework, cognitive systems are thought to be
 adaptive in that they optimize the use of their limited resources,
 taking the cost of computation (e.g., the opportunity cost of time or
-mental energy) into account. For example, Vul, Goodman, Griffiths, and
+mental \DIFdelbegin \DIFdel{opportunity}\DIFdelend \DIFaddbegin \DIFadd{energy}\DIFaddend ) into account. For example, Vul, Goodman, Griffiths, and
 Tenenbaum (2014) showed that as time pressure increased in a
 decision-making task, participants were more likely to show behavior
 consistent with a less cognitively challenging strategy of matching,
@@ -1139,7 +1201,7 @@ present during learning, spending less time inspecting alternative
 word-object links and reducing the number of links stored in memory when
 uncertainty was low.
 
-Our results fit well with recent experimental work that investigates how
+Our results \DIFdelbegin \DIFdel{also }\DIFdelend fit well with recent experimental work that investigates how
 attention and memory can constrain infants' statistical word learning.
 For example, Smith and Yu (2013) used a modified cross-situational
 learning task to show that only infants who disengaged from a novel
@@ -1151,17 +1213,26 @@ co-occurrences that were separated in time. Both of these findings make
 the important point that only the information that comes into contact
 with the learning system can be used for cross-situational word
 learning, and this information is directly influenced by the attention
-and memory constraints of the learner. These results also add to a large
+and memory constraints of the learner. \DIFdelbegin %DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdel{Moreover, these results }\DIFdelend \DIFaddbegin \DIFadd{These results also }\DIFaddend add to a large
 literature showing the importance of social information for word
-learning (P. Bloom, 2002; Clark, 2009) and to recent work exploring the
-interaction between statistical learning mechansims and other types of
-information (Frank, Goodman, \& Tenenbaum, 2009; Koehne \& Crocker,
-2014; Yu \& Ballard, 2007). Our findings suggest that referential cues
+learning (P. Bloom, 2002; Clark, 2009\DIFdelbegin \DIFdel{;
+Hollich et al., 2000) . These findings also bring Social-pragmatic
+theories of language acquisition into contact with studies }\DIFdelend \DIFaddbegin \DIFadd{) and to recent work }\DIFaddend exploring the
+interaction between statistical learning \DIFaddbegin \DIFadd{mechansims }\DIFaddend and other types of
+\DIFdelbegin \DIFdel{cues }\DIFdelend \DIFaddbegin \DIFadd{information }\DIFaddend (Frank, Goodman, \& Tenenbaum, 2009; \DIFaddbegin \DIFadd{Koehne \& Crocker,
+2014; }\DIFaddend Yu \& Ballard, 2007). \DIFdelbegin \DIFdel{For example, Yoshida, Rhemtulla, and Vouloumanos (2012)showed that in an associative learning task, adults only use exclusion learning processes (i.e., discarding
+known alternatives)with speech, and not for nonspeech labels, suggesting that adults constrained learning differently depending on the type of stimuli. Our findings suggest that referential cues present in
+the
+social context interact with statistical learning by modulating the amount of information that is stored in the underlying representations that support learning over time}\DIFdelend \DIFaddbegin \DIFadd{Our findings suggest that referential cues
 affect statistical learning by modulating the amount of information that
 people store in the underlying representations that support learning
 over time.
+}
 
-Is gaze a privileged cue, or could other, less-social cues (e.g., an
+\DIFadd{Is gaze a privileged cue, or could other, less-social cues (e.g., an
 arrow) also affect the representations underlying cross-situational
 learning? On the one hand, previous research has shown that gaze cues
 lead to more reflexive attentional responses compared to arrows
@@ -1178,9 +1249,9 @@ effectively reduces uncertainty in the naming event. Under this account,
 gaze is placed amongst a set of many cues that could produce similar
 effects as those reported here. Future work could explore a wider range
 of cues to see if they modulate the representations underlying
-cross-situational learning in a similar way.
+cross-situational learning in a similar way}\DIFaddend .
 
-How should we characterize the effect of gaze on attention and memory in
+\DIFdelbegin \DIFdel{But how }\DIFdelend \DIFaddbegin \DIFadd{How }\DIFaddend should we characterize the effect of gaze on attention and memory in
 our task? One possibility is that the referential cue acts as a filter,
 only allowing likely referents to contact statistical learning
 mechanisms (Yu \& Ballard, 2007). This `filtering account' separates the
@@ -1202,13 +1273,34 @@ because the results from the current study cannot distinguish between
 these explanations, these questions remain topics for future studies
 specifically designed to tease apart these possibilities.
 
-\subsection{Limitations}\label{limitations}
+\DIFdelbegin \DIFdel{Is gaze a privileged cue, or could other, perhaps less-social cues
+(e.g., an arrow) also modulate the representations underlying
+cross-situational learning? On the one hand, previous research suggests
+that gaze cues lead to more reflexive attentional responses compared to
+arrows (Friesen, Ristic, \& Kingstone, 2004), that gaze-triggered
+attention results in better learning compared to salience-triggered
+attention (e.g., via flashing objects) (Wu \& Kirkham, 2010), and that
+even toddlers readily use gaze to infer novel word meanings (Baldwin,
+1993). Thus, it could be that gaze is an especially effective cue for
+constraining word learning since it often communicates a speaker's
+referential intent and is a particularly powerful way to guide
+attention. On the other hand, the generative process of the cue (i.e.,
+whether it is more or less social) might be less important; instead, the
+critical factor might be whether the cue effectively reduces referential
+uncertainty during the initial learning episode. Future work could
+explore a wider range of cues (e.g., pointing or object salience) to see
+if they modulate the representations underlying cross-situational
+learning in a similar way.
+}%DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelend \subsection{Limitations}\label{limitations}
 
 There are several limitations to the current study that are worth
 noting. First, the social context that we used was relatively
 impoverished. Although we moved beyond a simple manipulation of the
-presence or absence of social information in Experiment 3, we
-nevertheless isolated just a single cue to reference, gaze. But
+presence or absence of social information \DIFdelbegin \DIFdel{, we }\DIFdelend \DIFaddbegin \DIFadd{in Experiment 3, we
+nevertheless }\DIFaddend isolated just a single cue to reference, gaze. But
 real-world learning contexts are much more complex, providing learners
 access to multiple cues such as gaze, pointing, and previous discourse.
 In fact, Frank, Tenenbaum, and Fernald (2013) analyzed a corpus of
@@ -1216,43 +1308,43 @@ parent-child interactions and concluded that learners would do better to
 aggregate noisy social information from multiple cues, rather than
 monitor a single cue since no single cue was a consistent predictor of
 reference. In our data, we did see a more reliable effect of referential
-cues when we used video of an actress, which included both gaze and head
+cues when we used \DIFdelbegin \DIFdel{a live }\DIFdelend \DIFaddbegin \DIFadd{video of an }\DIFaddend actress, which included both gaze and head
 turn as opposed to the static, schematic stimuli, which only included
 gaze. It is still an open and interesting question as to how our results
 would generalize to learning environments that contain a rich
 combination of social cues.
 
 Second, we do not yet know how variations in referential uncertainty
-during learning would affect the representations of young word learners,
+during learning \DIFdelbegin \DIFdel{might }\DIFdelend \DIFaddbegin \DIFadd{would }\DIFaddend affect the representations of young word learners\DIFaddbegin \DIFadd{,
 the age at which cross-situational word learning might be particularly
-important. Recent research using a similar paradigm as our own did not
-find evidence that 2- or 3-year-olds stored multiple word-object links;
+important}\DIFaddend . Recent research using a similar paradigm \DIFaddbegin \DIFadd{as our own }\DIFaddend did not
+find evidence that 2- or 3-year-olds \DIFdelbegin \DIFdel{store }\DIFdelend \DIFaddbegin \DIFadd{stored }\DIFaddend multiple word-object links;
 instead, children only retained a single candidate hypothesis (Woodard,
 Gleitman, \& Trueswell, 2016). However, performance limitations on
-children's developing attention and memory systems (Colombo, 2001;
-Ross-sheehy, Oakes, \& Luck, 2003) could make success on these explicit
-response tasks more difficult. Moreover, our work suggests that
-different levels of referential uncertainty in naturalistic learning
-contexts (Medina, Snedeker, Trueswell, \& Gleitman, 2011; Yurovsky \&
-Frank, 2015) might evoke different strategies for information storage,
-with learners storing more information as ambiguity increases. Thus, we
-think that it will be important to test a variety of outcome measures
-and learning contexts to see if younger learners show evidence of
-storing multiple word meanings during learning.
+children's developing \DIFdelbegin \DIFdel{visual
+}\DIFdelend attention and memory systems (Colombo, 2001;
+Ross-sheehy, Oakes, \& Luck, 2003) could make success on \DIFaddbegin \DIFadd{these }\DIFaddend explicit
+response tasks \DIFdelbegin \DIFdel{such as these
+}\DIFdelend \DIFaddbegin \DIFadd{more }\DIFaddend difficult. Thus, we think that it will be important
+to test a variety of outcome measures to see if \DIFdelbegin \DIFdel{young }\DIFdelend \DIFaddbegin \DIFadd{younger }\DIFaddend learners show
+evidence of storing multiple word meanings during learning.
+\DIFaddbegin 
 
-Previous work with infants has shown that their attention is often
-stimulus-driven and sticky (Oakes, 2011), suggesting that very young
-word learners might not effectively explore the visual scene in order to
-extract the necessary statistics for storing multiple alternatives. It
-could be that referential cues play an even more important role for
-young learners by filtering the input to cross-situational word learning
-mechanisms and guiding children to the relevant statistics in the input.
-In fact, recent work has shown that the precise timing of features such
-as increased parent attention and gesturing towards a named object and
-away from non-target objects were strong predictors of referential
-clarity in a naming event (Trueswell et al., 2016). It could be that the
-statistics available in these particularly unambiguous naming events are
-the most useful for cross-situational learning.
+\DIFaddend Moreover, previous work with infants has shown that their attention is
+often stimulus-driven and sticky (Oakes, 2011), suggesting that very
+young word learners might not effectively explore the visual scene in
+order to extract the necessary statistics for storing multiple
+alternatives. It could be that referential cues play an even more
+important role for young learners by filtering the input to
+cross-situational word learning mechanisms and guiding \DIFdelbegin \DIFdel{them }\DIFdelend \DIFaddbegin \DIFadd{children }\DIFaddend to the
+relevant statistics in the input. In fact, recent work has shown that
+the precise timing of features such as increased parent attention and
+gesturing towards a named object and away from non-target objects were
+strong predictors of \DIFdelbegin \DIFdel{the referential clarity of
+}\DIFdelend \DIFaddbegin \DIFadd{referential clarity in }\DIFaddend a naming event (Trueswell et
+al., 2016). It could be that the statistics available in these
+particularly \DIFdelbegin \DIFdel{clear }\DIFdelend \DIFaddbegin \DIFadd{unambiguous }\DIFaddend naming events are the most useful for
+\DIFdelbegin \DIFdel{young learners to retain for }\DIFdelend cross-situational learning.
 
 Finally, the current experiments used a restricted cross-situational
 word learning scenario, which differs from real-world language learning
@@ -1263,15 +1355,17 @@ be named repeatedly in a short amount of time (Frank, Tenenbaum, \&
 Fernald, 2013; Rohde \& Frank, 2014). Two, the restricted visual world
 of 2-8 objects on a screen combined with the forced-choice response
 format may have biased people to assume that all words in the task must
-have referred to one of the objects. But, in actual language use, people
-can refer to things that are not physically co-present (e.g., Gleitman,
+have referred to one of the objects\DIFdelbegin \DIFdel{on the screen}\DIFdelend . But, in actual language \DIFdelbegin \DIFdel{usage }\DIFdelend \DIFaddbegin \DIFadd{use, }\DIFaddend people
+can refer to things that are not physically co-present (e.g., \DIFdelbegin \DIFdel{L. }\DIFdelend Gleitman,
 1990), creating a scenario where learners would not benefit from storing
 additional word-object links in the absence of clear referential cues.
 Finally, we presented novel words in isolation, removing any sentential
-cues to word meaning (e.g., verb-argument relations). In fact, previous
-work with adults has shown that cross-situational learning mechanisms
+cues to word meaning (e.g., verb-argument relations). \DIFdelbegin \DIFdel{Previous work shows that sentence-level
+constraints interact with }\DIFdelend \DIFaddbegin \DIFadd{In fact, previous
+work with adults has shown that }\DIFaddend cross-situational \DIFdelbegin \DIFdel{word learning mechanisms
+}\DIFdelend \DIFaddbegin \DIFadd{learning mechanisms
 only operate in contexts where sentence-level constraints do not
-completely disambiguate meaning (Koehne \& Crocker, 2014). Thus, we need
+completely disambiguate meaning }\DIFaddend (Koehne \& Crocker, 2014). Thus, we need
 more evidence to understand how the representations underlying
 cross-situational learning change in response to referential uncertainty
 at different timescales and in richer language contexts that more
@@ -1286,7 +1380,8 @@ respond to the amount of ambiguity in the input, and as referential
 uncertainty increases, learners tended to store more word-object links.
 Overall, these results bring together aspects of social and statistical
 accounts of word learning to increase our understanding of how
-statistical learning mechansims operate over fundamentally social input.
+\DIFdelbegin \DIFdel{social
+information modulates the input to statistical learning mechanisms}\DIFdelend \DIFaddbegin \DIFadd{statistical learning mechansims operate over fundamentally social input}\DIFaddend .
 
 \newpage
 
@@ -1310,12 +1405,13 @@ Baldwin, D. A. (1993). Infants' ability to consult the speaker for clues
 to word reference. \emph{Journal of Child Language}, \emph{20}(02),
 395--418.
 
-\hypertarget{ref-barr2013random}{}
-Barr, D. J. (2013). Random effects structure for testing interactions in
-linear mixed-effects models. \emph{Frontiers in Psychology}, \emph{4},
+\DIFaddbegin \hypertarget{ref-barr2013random}{}
+\DIFadd{Barr, D. J. (2013). Random effects structure for testing interactions in
+linear mixed-effects models. }\emph{\DIFadd{Frontiers in Psychology}}\DIFadd{, }\emph{\DIFadd{4}}\DIFadd{,
 328.
+}
 
-\hypertarget{ref-bates2013lme4}{}
+\DIFaddend \hypertarget{ref-bates2013lme4}{}
 Bates, D., Maechler, M., Bolker, B., \& Walker, S. (2013). Lme4: Linear
 mixed-effects models using eigen and s4. \emph{R Package Version},
 \emph{1}(4).
@@ -1382,12 +1478,13 @@ Friesen, C. K., Ristic, J., \& Kingstone, A. (2004). Attentional effects
 of counterpredictive gaze and arrow cues. \emph{Journal of Experimental
 Psychology: Human Perception and Performance}, \emph{30}(2), 319.
 
-\hypertarget{ref-gillette1999human}{}
-Gillette, J., Gleitman, H., Gleitman, L., \& Lederer, A. (1999). Human
-simulations of vocabulary learning. \emph{Cognition}, \emph{73}(2),
+\DIFaddbegin \hypertarget{ref-gillette1999human}{}
+\DIFadd{Gillette, J., Gleitman, H., Gleitman, L., \& Lederer, A. (1999). Human
+simulations of vocabulary learning. }\emph{\DIFadd{Cognition}}\DIFadd{, }\emph{73}(2)\DIFadd{,
 135--176.
+}
 
-\hypertarget{ref-gleitman1990structural}{}
+\DIFaddend \hypertarget{ref-gleitman1990structural}{}
 Gleitman, L. (1990). The structural sources of verb meanings.
 \emph{Language Acquisition}, \emph{1}(1), 3--55.
 
@@ -1489,7 +1586,7 @@ intent: Dynamics of reference in natural parent--child interactions.
 \emph{Cognition}, \emph{148}, 117--135.
 
 \hypertarget{ref-trueswell2013propose}{}
-Trueswell, J. C., Medina, T. N., Hafri, A., \& Gleitman, L. (2013).
+Trueswell, J. C., Medina, T. N., Hafri, A., \& Gleitman, L\DIFdelbegin \DIFdel{. R}\DIFdelend . (2013).
 Propose but verify: Fast mapping meets cross-situational word learning.
 \emph{Cognitive Psychology}, \emph{66}(1), 126--156.
 
