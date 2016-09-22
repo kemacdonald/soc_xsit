@@ -16,4 +16,6 @@ magrittr
 modelr
 tidyr
 xtable
+estimability
+lsmeans
 knitcitations
