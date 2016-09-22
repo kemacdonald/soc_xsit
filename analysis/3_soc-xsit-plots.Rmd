@@ -1,5 +1,5 @@
 ---
-title: "Soc-Xsit Vizualizations"
+title: "Soc-Xsit Plots"
 author: "Kyle MacDonald"
 date: "July 26, 2016"
 output: html_document
@@ -11,18 +11,12 @@ knitr::opts_chunk$set(fig.width=8, fig.height=5, fig.crop = F, echo = F, cache =
                       warning=F, cache=F, message=F, sanitize = T)
 ```
 
-This script creates visualizations for Social Cross-situational Word Learning Project. For the statistical models, see the .Rmd file for the manuscript.
+This script creates the plots for the paper: "Social cues modulate the representations underlying cross-situational learning"
 
-Clear workspace and set working directory 
-
-```{r clear workspace, echo=F, warning=F}
-source("useful.R")
-library(pander)
-library(magrittr)
-library(gridExtra)
-library(tidyr)
-library(langcog)
-library(directlabels)
+```{r libraries, echo=F, warning=F}
+source("useful.R"); library(pander); library(magrittr)
+library(gridExtra); library(tidyr); library(langcog)
+library(directlabels); library(forcats)
 ```
 
 ```{r custom plotting theme, include = FALSE}
@@ -30,9 +24,12 @@ theme_soc_xsit <- theme_set(theme_bw())
 theme_soc_xsit <- theme_update(
   title = element_text(size=16, face="bold"),
   axis.title.x = element_text(colour="black",size=18, margin=margin(15,0,0,0),face="plain"),
-  axis.text.x = element_text(colour="grey20",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
-  axis.text.y = element_text(colour="grey20",size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
-  axis.title.y = element_text(colour="black",size=18,margin=margin(0,15,0,0),face="plain"),
+  axis.text.x = element_text(colour="grey20",size=16,
+                             angle=0,hjust=0.5,vjust=0,face="plain"),
+  axis.text.y = element_text(colour="grey20",
+                             size=16,angle=0,hjust=0.5,vjust=0,face="plain"),
+  axis.title.y = element_text(colour="black",
+                              size=18,margin=margin(0,15,0,0),face="plain"),
   legend.position="top",
   legend.text = element_text(size=18),
   legend.title = element_text(size=18, face="bold"),
@@ -49,7 +46,7 @@ Read in data from all 4 Experiments:
 * Experiment 3: Parametric manipulation of cue reliablity
 * Experiment 4: Fixed inspection time for each exposure trial: two lengths -- short (6 sec) vs. long (9 sec)
 
-```{r read data, echo=F, warning=F}
+```{r read data, warning=F}
 df_expt1 <- read.csv("../data/3_final-processed/soc-xsit-expt1-finalData.csv")
 df_expt2 <- read.csv("../data/3_final-processed/soc-xsit-expt2-finalData.csv")
 df_expt3 <- read.csv("../data/3_final-processed/soc-xsit-expt3-finalData.csv")
@@ -57,24 +54,6 @@ df_expt4 <- read.csv("../data/3_final-processed/soc-xsit-expt4-finalData.csv")
 ```
 
 ## Experiment 1
-
-### Get N for each condition.  
-
-```{r describe data, tidy=TRUE}
-nsubs <- df_expt1 %>%
-  group_by(condition, intervalNum, numPicN) %>%
-  summarise(n_subs = n_distinct(subid))
-
-knitr::kable(nsubs)
-```
-
-### Set up filters 
-
-Get test trials for analysis. Here we have 2 filters:
-
-* Remove fast/slow RTs
-* Remove fast/slow RTs & subjects who performed below 
-chance selecting gaze target on exposure trials
 
 ```{r expt1 test trials}
 # just RT filter
@@ -99,28 +78,9 @@ df_expo_expt1_analysis <- df_expt1 %>%
   filter(correct_exposure == T | condition == "No-Social")
 ```
 
-Get the number of subjects filtered out
+### Gaze following on exposure trials in the social condition
 
-```{r expt1 nsubs filtered}
-df_n <- df_test_expt1 %>%
-  group_by(condition) %>%
-  summarise(n_subs = n_distinct(subid))
-
-df_n_filt <- df_test_expt1_filt %>%
-  group_by(condition) %>%
-  summarise(n_subs_filt = n_distinct(subid)) %>%
-  select(n_subs_filt)
-
-df_n <- cbind(df_n, df_n_filt)
-
-knitr::kable(df_n)
-```
-
-### Accuracy on exposure trials in social condition
-
-Get means and CIs for each combination of number of referents and interval
-
-```{r expt1 accuracy on exposure trials, include=F}
+```{r expt1 accuracy on exposure trials}
 ms_expo_expt1 <-  df_expo_expt1 %>%
   filter(condition == "Social") %>%
   group_by(numPic, intervalNum, subid) %>%
@@ -129,9 +89,7 @@ ms_expo_expt1 <-  df_expo_expt1 %>%
   multi_boot_standard("accuracy_exposure")
 ```
 
-Now plot those means and CIs.
-
-```{r expt 1 accuracy on exposure trials plot, include = F, echo=F}
+```{r expt 1 accuracy on exposure trials plot}
 ggplot(data=ms_expo_expt1, aes(x=intervalNum, y=mean)) + 
   geom_pointrange(aes(ymin=ci_lower, 
                       ymax=ci_upper), size=0.6) +
@@ -148,12 +106,9 @@ ggplot(data=ms_expo_expt1, aes(x=intervalNum, y=mean)) +
   guides(linetype=FALSE) 
 ```
 
-### RT on exposure trials 
+### Inspection time on exposure trials and Accuracy at test
 
-Next we compare reaction times across social/no-social at different 
-levels of attention and memory demands.
-
-```{r expt1 rt on exposure trials}
+```{r expt1 summarize rt on exposure trials}
 ms_expo_rt_expt1 <-  df_expo_expt1_analysis %>%
   mutate(rt = rt + 2000,
          rt_sec = rt / 1000) %>% 
@@ -163,9 +118,7 @@ ms_expo_rt_expt1 <-  df_expo_expt1_analysis %>%
   multi_boot_standard("mean_rt")
 ```
 
-Clean up the variable names for plotting and plot.
-
-```{r expt1 plot rt on exposure trials, echo=F}}
+```{r expt1 plot rt on exposure trials}
 ms_expo_rt_expt1$condition <- revalue(ms_expo_rt_expt1$condition,
                                       c("No-Social" = "No-Gaze","Social" = "Gaze"))
 
@@ -192,9 +145,7 @@ exp1_rt_exposure_plot <- ggplot(data=ms_expo_rt_expt1,
   guides(linetype=F) 
 ```
 
-### Accuracy on test trials 
-
-```{r expt1 acc test}
+```{r expt1 summarize accuracy at test}
 ms_test_expt1 <- df_test_expt1  %>%
   group_by(condition, intervalNum, numPic, trialType, subid) %>%
   summarise(accuracy = mean(correct), 
@@ -241,18 +192,13 @@ expt1.acc.test <- ggplot(data=ms_test_filt_expt1,
   guides(linetype=F, shape = F, color = F)
 ```
 
-```{r}
+```{r e1 final plot, fig.height=7}
 grid.arrange(exp1_rt_exposure_plot, expt1.acc.test, ncol=1)
 ```
 
 ## Experiment 2
 
-In Experiment 2, we chose a subset of the referent/interval conditions: 
-numPic = 4, and interval = 0 or 3.
-
-### Set up filters
-
-Exposure trials.
+Tested a subset of the referent/interval conditions: 4-referent and 0-/3-interval in order to replicate findings from Experiment 1 with a more ecologically valid social cue.
 
 ```{r expt2 expo filters}
 # just RT filter
@@ -276,25 +222,6 @@ df_expo_expt2_analysis <- df_expt2 %>%
          include_good_rt == "include")
 ```
 
-Get the number of subjects filtered out by the subject level filter.
-
-```{r expt2 nsubs filtered}
-df_n_expt2 <- df_expo_expt2 %>%
-  group_by(condition) %>%
-  summarise(n_subs = n_distinct(subid))
-
-df_n_expt2_filt <- df_expo_expt2_filt %>%
-  group_by(condition) %>%
-  summarise(n_subs_filt = n_distinct(subid)) %>%
-  select(n_subs_filt)
-
-nsubs_expt2_filt <- cbind(df_n_expt2, df_n_expt2_filt)
-
-knitr::kable(nsubs_expt2_filt)
-```
-
-Test trial filters.
-
 ```{r expt2 test filters}
 # just RT filter
 df_test_expt2 <- df_expt2 %>%
@@ -309,9 +236,7 @@ df_test_expt2_filt <- df_expt2 %>%
          correct_exposure == T | condition_trial == "no-social")
 ```
 
-### Analyze Exposure Trials
-
-Accuracy, selecting target of gaze.
+### Inspection time on exposure trials and accuracy at test
 
 ```{r expt2 acc expo}
 # unfiltered
@@ -333,8 +258,6 @@ ms_expo_expt2_filt <- df_expo_expt2_filt %>%
 ms_expo_all_expt2 <- rbind(ms_expo_expt2, ms_expo_expt2_filt)
 ```
 
-RT on exposure trials.
-
 ```{r expt2 rt expo}
 ms_rt_expo_expt2 <- df_expo_expt2_analysis %>%
   group_by(condition_trial, intervalNum, subid) %>%
@@ -343,10 +266,6 @@ ms_rt_expo_expt2 <- df_expo_expt2_analysis %>%
   group_by(condition_trial, intervalNum) %>%
   multi_boot_standard("rt_exposure")
 ```
-
-### Analyze test trials
-
-Get means and CIs for each condition.
 
 ```{r expt2 acc test aggregate}
 # unfiltered
@@ -368,9 +287,7 @@ ms_test_expt2_filt <- df_test_expt2_filt %>%
 ms_test_all_expt2 <- rbind(ms_test_expt2, ms_test_expt2_filt)
 ```
 
-#### Now plot inspection time for exposure trials with the accuracy on test trials.
-
-```{r expt2 final plot, echo=F, fig.width = 4, fig.height = 4}
+```{r expt2 plots, echo=F}
 ## inspection time plot
 ms_rt_expo_expt2$condition <- revalue(ms_rt_expo_expt2$condition_trial,
                                       c("no-social" = "No-Gaze", "social" = "Gaze"))
@@ -434,21 +351,14 @@ ggsave(plot = e2_main_plot, "../paper/figs/expt2_new.png", device = "png", width
 
 ## Experiment 3
 
-### Get the number of subjects in each experiment and condition.
+Manipulated cue reliablity with 5 levels of reliability -- 0%, 25%, 50%, 75%, and 100% -- to test if learners would show graded changes in amount of information stored during learning.
 
-```{r expt3 get number of subs}
-n_subs_expt3 <- df_expt3 %>%
-  group_by(prop_cond_clean) %>%
-  summarise(n_subs = n_distinct(subid))
-
-# Fix factor order for reliablity conditions
-df_expt3$prop_cond_clean <- factor(df_expt3$prop_cond_clean,
-                                   levels = c("0%", "25%", "50%", "75%", "100%"))
+```{r e3 reorder levels of reliability}
+df_expt3$prop_cond_clean <- fct_relevel(df_expt3$prop_cond_clean, 
+                                        c("0%", "25%", "50%", "75%", "100%"))
 ```
 
-### Analyze performance at Test
-
-As a function of reliability condition, inspection time, number of trials using gaze, and subjective reliability judgment.
+### Performance at test as a function of reliability condition
 
 ```{r expt3 summarizing}
 # Accuracy on familiarization trials in test block
@@ -508,10 +418,6 @@ ms_acc_exp_test_expt3 <- df_expt3 %>%
   multi_boot_standard("correct")
 ```
 
-### Inspection time analysis
-
-Here we plot accuracy at test as a function of how long participants inspected the display during exposure at the trial level. 
-
 ```{r e4 inspection time and gaze following}
 ## correct as a fucntion of inspection time on exposure
 df_inspect <- df_expt3 %>% 
@@ -541,8 +447,6 @@ ms_expt3_gf <- df_expt3 %>%
   multi_boot_standard(column = "mean_ss")
 ```
 
-### Experiment 3: final plots
-
 ```{r e3 main plots}
 expt3_acc_test <- ggplot(data=ms_test_test, 
                          aes(x=prop_cond_clean, y=mean, group=trialType,
@@ -556,10 +460,8 @@ expt3_acc_test <- ggplot(data=ms_test_test,
   scale_x_discrete(expand = c(0.2,0)) +
   #scale_colour_manual(values=c("#2c7fb8", "#e34a33")) +
   scale_color_grey(start = 0, end = 0.6) +
-  labs(x="Reliability of Gaze",
-       y = "Prop. Correct",
-       color = "Trial Type",
-       title = "(A)") +
+  labs(x="Reliability of Gaze", y = "Prop. Correct",
+       color = "Trial Type", title = "(A)") +
   guides(color=F,shape=F) +
   theme(axis.text.x = element_text(size = 12),
         plot.margin = margin(t = 10, r = 10, b = 10, l = 10, unit = "pt"),
@@ -600,6 +502,7 @@ e3_main_plot <- grid.arrange(expt3_acc_test, expt3_gf_plot, ncol = 2)
 ggsave(plot = e3_main_plot, "../paper/figs/expt3_main_plot.png", device = "png", width = 9, height = 5)
 ```
 
+### Performance at test as a function of gaze use and subjective reliability
 
 ```{r e3 sub plots}
 expt3_acc_test_chose_gazetar <- ggplot(data=ms_acc_exp_test_expt3, 
@@ -687,15 +590,7 @@ ggsave(plot = e3_sub_plots, "../paper/figs/expt3_sub_plot.png", device = "png", 
 
 ## Experiment 4
 
-```{r expt4 nsubs}
-nsubs_expt4 <- df_expt4 %>% 
-  group_by(interval, inspection_cond) %>%
-  summarise(n_subs = n_distinct(subid))
-
-knitr::kable(nsubs_expt4)
-```
-
-Set up filter
+Fixed inspection time for exposure trials in the gaze and no-gaze conditions: two lengths -- short (6 sec) vs. long (9 sec). Tested for an effect of gaze over and above reduced inspection time.
 
 ```{r exp4 filter}
 df_expt4_filtered <- df_expt4 %>% 
@@ -704,22 +599,7 @@ df_expt4_filtered <- df_expt4 %>%
          mean_acc_exp > 0.25, include_good_rt == "include")
 ```
 
-```{r exp4 ss removed}
-df_n_expt4 <- df_expt4 %>%
-  group_by(interval, inspection_cond) %>%
-  summarise(n_subs = n_distinct(subid))
-
-df_n_expt4_filt <- df_expt4_filtered %>%
-  group_by(interval, inspection_cond) %>%
-  summarise(n_subs_filt = n_distinct(subid)) %>%
-  select(n_subs_filt)
-
-nsubs_expt4_filt <- cbind(df_n_expt4, df_n_expt4_filt)
-
-knitr::kable(nsubs_expt4_filt)
-```
-
-```{r e4 means 1}
+```{r e4 means 1, include = F}
 # Get means and CIs for each condition (interval X trial type X inspection time)
 ms_e4 <- df_expt4_filtered %>%
   group_by(subid, inspection_cond, intervalNum, trialType, gaze_trial) %>% 
@@ -730,9 +610,7 @@ ms_e4 <- df_expt4_filtered %>%
 ms_e4$inspection_cond <- factor(ms_e4$inspection_cond, levels = c("short", "long"))
 ```
 
-Now plot.
-
-```{r e4 plot}
+```{r e4 plot, include = F}
 e4_plot <- ggplot(data=ms_e4, aes(x=as.factor(intervalNum), y=mean, 
                        colour = gaze_trial, shape = gaze_trial)) + 
   geom_line(aes(group=interaction(trialType, gaze_trial), 
@@ -770,9 +648,9 @@ ms_e4_2 <- df_expt4_filtered %>%
 ms_e4_2$gaze_trial <- factor(ms_e4_2$gaze_trial, levels = c("No-Gaze", "Gaze"))
 ```
 
-Now the same plot, but collapsed across inspection conditions.
+### Performance at test as a function of interval and gaze condition
 
-```{r, fig.width = 4, fig.height = 4}
+```{r e4 final plot, fig.width = 5}
 expt4.acc.test.line <- ggplot(data=ms_e4_2, 
                               aes(x=as.factor(intervalNum), y=mean, 
                                   colour = gaze_trial,shape = gaze_trial)) +
@@ -796,12 +674,6 @@ expt4.acc.test.line <- ggplot(data=ms_e4_2,
 
 ggsave(plot = expt4.acc.test.line, "../paper/figs/expt4_collapsed.png", device = "png",
        width = 5, height = 5)
+
+expt4.acc.test.line
 ```
-
-Finally, we want to compare the inpection time data to the participant controlled version (experiment 2).
-
-```{r}
-grid.arrange(expt2.acc.test.line, expt4.acc.test.line,  ncol = 2)
-```
-
-Overall, we see a similar pattern of data. Interval affects same trials more than switch trials. Same trials are easier than switch trials. And participants in the no-gaze condition do better on switch trials.
