@@ -1334,7 +1334,6 @@ project. This work was supported by a National Science Foundation
 Graduate Research Fellowship to KM, an NIH NRSA Postdoctoral Fellowship
 to DY, and a John Merck Scholars Fellowship to M.C.F.
 
-
 \newpage
 
 \section{References}\label{references}
@@ -1705,7 +1704,7 @@ Intercept & 3.51 & 0.29 & 12.13 & $<$ .001 & *** \\
 
 \section*{Table A5. Accuracy on exposure trials in Experiment 3 as a function of reliability condition and participants' subjective reliability judgments}
 
-\texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + \\  offset(logit($^1/_{Referents}$)) + (1 | subject)}
+\texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + (1 | subject)}
 
 \begin{table}[h]
 \centering
@@ -1723,7 +1722,7 @@ Intercept & 3.07 & 0.98 & 3.14 & 0.002 & ** \\
 
 \section*{Table A6. Accuracy on test trials in Experiment 3 as a function of reliability condition}
 
-\texttt{Correct $\sim$ Trial Type * Reliability Condition + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
+\texttt{Correct $\sim$ Trial Type * Reliability Condition + (Trial Type | subject)}
 
 \begin{table}[h]
 \centering
@@ -1743,7 +1742,7 @@ Intercept & 4.70 & 0.36 & 13.09 & $<$ .001 & *** \\
 
 \section*{Table A7. Accuracy on test trials in Experiment 3 as a function of reliability condition and participants' use of gaze on exposure trials}
 
-\texttt{Correct $\sim$ (Trial Type + Reliability Condition + Correct-Exposure)$^2$ \\ + offset(logit($^1/_{Referents}$)) + (Trial Type | subject)}
+\texttt{Correct $\sim$ (Trial Type + Reliability Condition + Correct-Exposure)$^2$ \\ + (Trial Type | subject)}
 
 \begin{table}[h]
 \centering
@@ -1764,7 +1763,7 @@ Intercept & 4.50 & 0.39 & 11.58 & $<$ .001 & *** \\
 
 \section*{Table A8. Accuracy on test trials in Experiment 3 as a function of each participants' accuracy on exposure trials}
 
-\texttt{Correct $\sim$ Trial Type * Total Correct Exposure + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
+\texttt{Correct $\sim$ Trial Type * Total Correct Exposure + (Trial Type | subject)}
 
 \begin{table}[h]
 \centering
@@ -1784,7 +1783,7 @@ Intercept & 2.73 & 0.39 & 7.01 & $<$ .001 & *** \\
 
 \section*{Table A9. Accuracy on test trials in Experiment 3 as a function of each participants' subjective reliability judgment}
 
-\texttt{Correct $\sim$ Trial Type * Subjective Reliability + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
+\texttt{Correct $\sim$ Trial Type * Subjective Reliability + (Trial Type | subject)}
 
 \begin{table}[h]
 \centering
@@ -1802,7 +1801,7 @@ Intercept & 4.54 & 0.44 & 10.33 & $<$ .001 & *** \\
 
 \section*{Table A10. Accuracy on test trials in Experiment 3 as a function of reliability condition and inspection time on exposure trials}
 
-\texttt{Correct $\sim$ (Trial Type + Reliability condition + Trial Type + \\ Log(Inspection Time))$^2$ + offset(logit($^1/_{Referents}$)) + (Trial Type | subject)}
+\texttt{Correct $\sim$ (Trial Type + Reliability condition + Trial Type + \\ Log(Inspection Time))$^2$ + (Trial Type | subject)}
 
 \begin{table}[h]
 \centering
@@ -1825,7 +1824,7 @@ Intercept & 3.11 & 0.20 & 15.94 & $<$ .001 & *** \\
 
 \section*{Table A11. Accuracy on test trials in Experiment 4 as a function of gaze and interval}
 
-\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval))$^2$ + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
+\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval))$^2$ + (Trial Type | subject)}
 
 \begin{table}[h]
 \centering
@@ -1843,6 +1842,5 @@ Intercept & 3.37 & 0.16 & 21.32 & $<$ .001 & *** \\
 \end{tabular}
 \label{tab:e4_acc}
 \end{table}
-
 
 \end{document}

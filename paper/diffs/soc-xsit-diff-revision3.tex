@@ -1,4 +1,7 @@
 % Template for Elsevier submission with R Markdown
+%DIF LATEXDIFF DIFFERENCE FILE
+%DIF DEL soc-xsit-elsevier-revision-draft2.tex   Thu Sep 22 12:03:16 2016
+%DIF ADD soc-xsit-elsevier-revision-draft3.tex   Fri Sep 30 13:44:16 2016
 
 % Stuff changed from PLOS Template
 \documentclass[authoryear, review]{elsarticle}
@@ -63,6 +66,30 @@
 
 % Leave date blank
 \date{}
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF UNDERLINE PREAMBLE %DIF PREAMBLE
+\RequirePackage[normalem]{ulem} %DIF PREAMBLE
+\RequirePackage{color}\definecolor{RED}{rgb}{1,0,0}\definecolor{BLUE}{rgb}{0,0,1} %DIF PREAMBLE
+\providecommand{\DIFaddtex}[1]{{\protect\color{blue}\uwave{#1}}} %DIF PREAMBLE
+\providecommand{\DIFdeltex}[1]{{\protect\color{red}\sout{#1}}}                      %DIF PREAMBLE
+%DIF SAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddbegin}{} %DIF PREAMBLE
+\providecommand{\DIFaddend}{} %DIF PREAMBLE
+\providecommand{\DIFdelbegin}{} %DIF PREAMBLE
+\providecommand{\DIFdelend}{} %DIF PREAMBLE
+%DIF FLOATSAFE PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFaddFL}[1]{\DIFadd{#1}} %DIF PREAMBLE
+\providecommand{\DIFdelFL}[1]{\DIFdel{#1}} %DIF PREAMBLE
+\providecommand{\DIFaddbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFaddendFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelbeginFL}{} %DIF PREAMBLE
+\providecommand{\DIFdelendFL}{} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF PREAMBLE EXTENSION ADDED BY LATEXDIFF
+%DIF HYPERREF PREAMBLE %DIF PREAMBLE
+\providecommand{\DIFadd}[1]{\texorpdfstring{\DIFaddtex{#1}}{#1}} %DIF PREAMBLE
+\providecommand{\DIFdel}[1]{\texorpdfstring{\DIFdeltex{#1}}{}} %DIF PREAMBLE
+%DIF END PREAMBLE EXTENSION ADDED BY LATEXDIFF
 
 \begin{document}
 
@@ -159,7 +186,7 @@ approaches zero.
 In addition to the debate about representation, researchers have
 disagreed about how to characterize the ambiguity of the input to
 cross-situational learning mechanisms. One way to quantify the
-uncertainty in a naming event is to show adults video clips of
+uncertainty in a naming event is to show adults \DIFaddbegin \DIFadd{video }\DIFaddend clips of
 caregiver-child interactions and measure their accuracy at guessing the
 meaning of an intended referent (Human Simulation Paradigm: HSP
 {[}Gillette, Gleitman, Gleitman, and Lederer, 1999{]}). Using the HSP,
@@ -355,7 +382,7 @@ links changed depending on the ambiguity of the learning context.
 Accuracy on test trials (both Same and Switch) was defined as selecting
 the referent that was present during the exposure trial for that word.
 
-The key behavioral prediction of our hypothesis was that the presence of
+The key behavioral prediction of our hypothesis \DIFdelbegin \DIFdel{is }\DIFdelend \DIFaddbegin \DIFadd{was }\DIFaddend that the presence of
 gaze would result in reduced memory for multiple word-object links,
 operationalized as a decrease in accuracy on Switch test trials after
 seeing exposure trials with a gaze cue. To quantify participants'
@@ -366,11 +393,12 @@ limited all models to include only two-way interactions because the
 critical test of our hypothesis was the interaction between gaze
 condition and trial type, and we did not have theoretical predictions
 for any possible three-way or four-way interactions.
+\DIFaddbegin 
 
-In the main text, we only report effects that achieved statistical
+\DIFadd{In the main text, we only report effects that achieved statistical
 significance at the \(\alpha\) = .05 threshold. In the Appendix, we
 report the full model specification and output for each of the models in
-the paper. All models were fit using the lme4 package in R (Bates,
+the paper. }\DIFaddend All models were fit using the lme4 package in R (Bates,
 Maechler, Bolker, \& Walker, 2013), and all of our data and our
 processing/analysis code can be viewed in the version control repository
 for this paper at \url{https://github.com/kemacdonald/soc_xsit}.
@@ -414,7 +442,7 @@ referents on the screen, thus providing an index of participants'
 attention. To quantify the effects of gaze, interval, and number of
 referents, we fit a linear mixed-effects model that predicted
 participants' inspection times as follows:
-\texttt{Log(Inspection time) $\sim$ (Gaze * Log(Interval) + Log(Referents))$^2$ + (1 | subject)}.
+\texttt{Log(Inspection time) $\sim$ \DIFaddbegin \DIFadd{(}\DIFaddend Gaze * Log(Interval) + \DIFdelbegin \DIFdel{Gaze * }\DIFdelend Log(Referents)\DIFaddbegin \DIFadd{)$^2$ }\DIFaddend + (1 | subject)}.
 We found a significant main effect of the number of referents (\(\beta\)
 = 0.34, p \textless{} .001) with longer inspection times as the number
 of referents increased, a significant interaction between gaze condition
@@ -422,7 +450,7 @@ and the number of referents (\(\beta\) = -0.27, p \textless{} .001) with
 longer inspection times in the No-Gaze condition, especially as the
 number of referents increased, and a significant interaction between
 gaze condition and interval (\(\beta\) = -0.08, \(p\) = 0.004) with
-longer inspection times in the No-Gaze condition, especially as the
+\DIFdelbegin \DIFdel{slower }\DIFdelend \DIFaddbegin \DIFadd{longer }\DIFaddend inspection times in the No-Gaze condition, especially as the
 number of intervening trials increased (see the top row of Figure 2).
 Shorter inspection times on exposure trials with gaze provide evidence
 that the presence of a referential cue focused participants' attention
@@ -484,15 +512,19 @@ target of gaze on exposure trials:\footnote{We did not predict that
   expect to see an effect of gaze if participants actually used the gaze
   cue. The filter removed 94 participants (6\% of the sample). The key
   inferences from the data do not depend on this filtering criteria.}
-\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Referents))$^2$ + offset(logit($^1/_{Referents}$)) + (TrialType | subject)}.
-We coded interval and number of referents as continuous predictors and
-transformed these variables to the log scale. And we limited the model
+\texttt{Correct $\sim$ \DIFaddbegin \DIFadd{(}\DIFaddend Trial Type \DIFdelbegin \DIFdel{* }\DIFdelend \DIFaddbegin \DIFadd{+ }\DIFaddend Gaze + \DIFdelbegin \DIFdel{Trial Type * }\DIFdelend Log(Interval) + \DIFdelbegin \DIFdel{Trial Type * }%DIFDELCMD < \\ %%%
+\DIFdelend Log(Referents)\DIFaddbegin \DIFadd{)$^2$ }\DIFaddend + offset(logit($^1/_{Referents}$)) + (TrialType | subject)}.
+\DIFdelbegin %DIFDELCMD < 
+
+%DIFDELCMD < %%%
+\DIFdelend We coded interval and number of referents as continuous predictors and
+transformed these variables to the log scale. \DIFdelbegin \DIFdel{We }\DIFdelend \DIFaddbegin \DIFadd{And we }\DIFaddend limited the model
 to include only two-way interactions because the critical test of our
 hypothesis is the interaction between gaze condition and trial type, and
 we did not have any theoretical predictions for possible three-way
 interactions.\footnote{If we allowed for three-way interactions in the
-  model, the key interaction between gaze condition and trial type
-  remained significant (\(\beta\) = -1.3, \(p\) = 0.006).}
+  model, \DIFdelbegin \DIFdel{there was a marginally significant }\DIFdelend \DIFaddbegin \DIFadd{the key }\DIFaddend interaction between gaze condition \DIFdelbegin \DIFdel{, trial type, }\DIFdelend and \DIFdelbegin \DIFdel{interval ($\beta = 0.21$, $p$ = 0.058). The two-way interaction between gaze condition and }\DIFdelend trial type
+  remained significant \DIFdelbegin \DIFdel{in this more complex model }\DIFdelend (\DIFdelbegin \DIFdel{$\beta = -1.3$}\DIFdelend \DIFaddbegin \DIFadd{\(\beta\) = -1.3}\DIFaddend , \DIFdelbegin \DIFdel{$p$ }\DIFdelend \DIFaddbegin \DIFadd{\(p\) }\DIFaddend = 0.006).}
 
 Table 1 shows the output of the logistic regression. We found
 significant main effects of the number of referents (\(\beta = 0.23\),
@@ -521,7 +553,7 @@ We were also interested in how the length of inspection times on
 exposure trials would affect participants' accuracy at test. So we fit
 an additional model where participants' inspection times were included
 as a predictor. We found a significant interaction between inspection
-time and gaze condition (\(\beta = -0.17\), \(p\) = 0.01) such that
+time and gaze condition (\(\beta = -0.17\), \(p\) = 0.01) \DIFdelbegin \DIFdel{, }\DIFdelend such that
 longer inspection times provided a larger boost to accuracy in the
 No-Gaze condition. Importantly, the key test of our hypothesis, the
 interaction between gaze condition and trial type, remained significant
@@ -556,7 +588,7 @@ cue. We designed Experiment 2 to address this question.
 
 In Experiment 2, we set out to replicate the findings from Experiment 1
 using a more ecologically valid stimulus set. We replaced the static,
-schematic drawing with a video of an actress. While these stimuli were
+schematic drawing with a video of \DIFdelbegin \DIFdel{a female }\DIFdelend \DIFaddbegin \DIFadd{an }\DIFaddend actress. While these stimuli were
 still far from actual learning contexts, they included a real person who
 provided both a gaze cue and a head turn towards the target object. To
 reduce the across-conditions variability that we found in Experiment 1,
@@ -576,7 +608,7 @@ of their candidate hypothesis.
 
 Participant recruitment and inclusion/exclusion criteria were identical
 to those of Experiment 1. 100 HITs were posted for each condition (1
-Referent X 2 Intervals X 2 Gaze conditions) for a total of 400 paid HITs
+Referent X 2 Intervals X 2 Gaze conditions) for total of 400 paid HITs
 (33 HITs excluded).
 
 \subsubsection{Stimuli}\label{stimuli-1}
@@ -613,12 +645,12 @@ differed from those expected by chance (smallest \(\beta\) = 3.39, z =
 directing participants' attention. Participants in Experiment 2 were
 more consistent in their use of gaze with the video stimuli compared to
 the schematic stimuli used in Experiment 1 (\(M_{Exp1}\) = 0.8,
-\(M_{Exp2}\) = 0.91), suggesting that using a real person increased
+\(M_{Exp2}\) = 0.91\DIFdelbegin \DIFdel{\$}\DIFdelend ), suggesting that using a real person increased
 participants' willingness to follow the gaze cue.
 
 We replicated the findings from Experiment 1. Inspection times were
-shorter when gaze was present (\(\beta\) = -1.1, \(p\) \textless{} .001)
-and in the 3-interval condition (\(\beta\) = -0.48, \(p\) \textless{}
+shorter \DIFdelbegin \DIFdel{in the Gaze }\DIFdelend \DIFaddbegin \DIFadd{when gaze was present }\DIFaddend (\(\beta\) = -1.1, \(p\) \textless{} .001)
+and \DIFaddbegin \DIFadd{in }\DIFaddend the 3-interval condition (\(\beta\) = -0.48, \(p\) \textless{}
 .001). The interaction between gaze and interval was not significant,
 meaning that gaze had the same effect on participants' inspection times
 at both intervals (see Panel A of Figure 3).
@@ -641,7 +673,7 @@ at both intervals (see Panel A of Figure 3).
 \begin{tabular}{lrrrrl}
  Predictor & Estimate & Std. Error & $z$ value & $p$ value &  \\ 
   \hline
-Intercept & 4.04 & 0.18 & 21.97 & $<$ .001 & *** \\ 
+Intercept & 2.94 & 0.18 & 16.00 & $<$ .001 & *** \\ 
   Switch Trial & -2.99 & 0.19 & -16.11 & $<$ .001 & *** \\ 
   Gaze Condition & -0.10 & 0.16 & -0.63 & 0.53 &  \\ 
   Log(Interval) & -0.93 & 0.10 & -9.23 & $<$ .001 & *** \\ 
@@ -677,20 +709,25 @@ trials in the gaze condition.
 Next, we added inspection times on exposure trials to the model. Similar
 to Experiment 1, the key interaction between gaze and trial type
 remained significant in this version of the model (\(\beta\) = -0.54,
-\(p\) \textless{} .001). We also found an interaction between inspection
+\(p\) \textless{} .001). \DIFdelbegin \DIFdel{However, we }\DIFdelend \DIFaddbegin \DIFadd{We also }\DIFaddend found an interaction between inspection
 time and trial type (\(\beta\) = 0.21, \(p\) = 0.05), with longer
 inspection times providing a larger boost to performance on Switch
-trials (i.e., stronger memory for alternative word-object links). This
-result differs slightly from Experiment 1 where we found an interaction
-between trial type and inspection time, with longer inspection times
-providing a larger boost to accuracy in the No-Gaze condition. Despite
+trials \DIFdelbegin \DIFdel{. }\DIFdelend \DIFaddbegin \DIFadd{(i.e., stronger memory for alternative word-object links). }\DIFaddend This
+result differs slightly from \DIFdelbegin \DIFdel{what we found in
+}\DIFdelend Experiment 1 where \DIFaddbegin \DIFadd{we found an interaction
+between trial type and inspection time, with }\DIFaddend longer inspection times
+\DIFdelbegin \DIFdel{led to better }\DIFdelend \DIFaddbegin \DIFadd{providing a larger boost to }\DIFaddend accuracy in the No-Gaze condition. \DIFdelbegin \DIFdel{It seems plausible that more time spent visually
+exploring the objects during learning would lead }\DIFdelend \DIFaddbegin \DIFadd{Despite
 this subtle difference, we speculate that inspection times likely played
 a similar role in both experiments, with longer inspection times leading
-to better performance on Switch trials since these trials depended on
-encoding multiple word-object links. It is also possible that the
-interaction between gaze condition and inspection time that we found in
-Experiment 1 was influenced by the different number of referents and
-interval conditions.
+}\DIFaddend to better performance on Switch trials \DIFdelbegin \DIFdel{, which depend }\DIFdelend \DIFaddbegin \DIFadd{since these trials depended }\DIFaddend on
+encoding multiple \DIFdelbegin \DIFdel{alternatives. Thus,
+the
+interaction between inspection time and gaze condition }\DIFdelend \DIFaddbegin \DIFadd{word-object links. It is also possible that the
+interaction betweeen gaze condition and inspection time that we }\DIFaddend found in
+Experiment 1 \DIFdelbegin \DIFdel{might have been driven by the fact that longer inspection
+times were more likely to occur in the absence of a gaze cue}\DIFdelend \DIFaddbegin \DIFadd{was influenced by the different number of referents and
+interval conditions}\DIFaddend .
 
 The results of Experiment 2 provide converging evidence for our primary
 hypothesis that the presence of a referential cue reliably focuses
@@ -775,7 +812,9 @@ more likely to use it (\(M_{0\%}\) = 0.83, \(M_{25\%}\) = 0.82,
 \(M_{50\%}\) = 0.87, \(M_{75\%}\) = 0.9, \(M_{100\%}\) = 0.94). We also
 found an effect of subjective reliability (\(\beta\) = 7.26, \(p\)
 \textless{} .001) such that when participants thought the gaze cue was
-reliable, they were more likely to use it. This analysis provides
+reliable, they were more likely to use it. \DIFdelbegin \DIFdel{The interaction between
+reliability condition and subjective reliability assessments was
+marginally significant (\(\beta\) = -4.58, \(p\)= 0.092). }\DIFdelend This analysis provides
 evidence that participants were sensitive to the reliability
 manipulation both in how often they used the gaze cue and in how they
 rated the reliability of the speaker at the end of the task.
@@ -850,13 +889,14 @@ worse performance on Switch test trials when participants used gaze on
 exposure trials (see Panel B of Figure 4). We also found an interaction
 between gaze use and reliability (\(\beta = 0.97\), \(p\) = 0.004) such
 that when gaze was more reliable, participants were more likely to use
-it. The \(\beta\) value for the interaction between trial type and
-reliability changed from -0.76 to -0.62, (\(p\) = 0.086). This reduction
-suggests that participants' use of gaze may be a stronger predictor of
-the effect of reliability on learners' memory for alternative
-word-object links.\footnote{We are grateful to an anonymous reviewer for
-  suggesting this analysis, but we would like to note that it is
-  exploratory.}
+it. The interaction between trial type and reliability \DIFdelbegin \DIFdel{became marginally
+}\DIFdelend \DIFaddbegin \DIFadd{was no longer
+}\DIFaddend significant in this model (\(\beta = -0.62\), \(p\) = 0.086), suggesting
+that \DIFdelbegin \DIFdel{participants' use of the gaze cue was a stronger predictor of }\DIFdelend \DIFaddbegin \DIFadd{the effect of reliability on learners' }\DIFaddend memory for alternative
+word-object links \DIFaddbegin \DIFadd{is driven by whether participants chose to use the
+gaze cue during learning}\DIFaddend .\footnote{We are grateful to an anonymous
+  reviewer for suggesting this analysis, but we would like to note that
+  it is exploratory.}
 
 We also hypothesized that the reliability manipulation might change how
 often individual participants chose to use the gaze cue throughout the
@@ -865,12 +905,12 @@ specifications, but we included a predictor that we created by binning
 participants based on the number of exposure trials on which they chose
 to follow gaze (i.e., a gaze following score). We found a significant
 interaction between how often participants chose to follow gaze on
-exposure trials and trial type (\(\beta = -0.26\), \(p\) \textless{}
+exposure trials and trial type (\(\beta = -0.32\), \(p\) \textless{}
 .001), such that participants who were more likely to use the gaze cue
 performed worse on Switch trials, but not Same trials (see Panel B of
 Figure 5).\footnote{We found this interaction while performing
   exploratory data analysis on a previous version of this study with an
-  independent sample (N = 250, \(\beta = -0.24\), \(p\) \textless{}
+  independent sample (N = 250, \(\beta = -0.29\), \(p\) \textless{}
   .001). The results reported here are from a follow-up study where
   testing this interaction was a planned analysis.} Taken together, the
 two analyses of participants' use of the gaze cue provide converging
@@ -898,14 +938,15 @@ fitting a model using inspection time, trial type, and reliability
 condition to predict accuracy at test. We found a main effect of
 inspection time (\(\beta\) = 0.31, \(p\) = 0.001), with longer
 inspection times leading to better performance for both Same and Switch
-trials. The interaction between inspection time and reliability
-condition was not significant. The key interaction between reliability
+trials. \DIFdelbegin \DIFdel{There was a marginally significant }\DIFdelend \DIFaddbegin \DIFadd{The }\DIFaddend interaction between inspection time and reliability
+condition \DIFaddbegin \DIFadd{was not significant. The key interaction between reliability
 condition and trial type remained significant in this version of the
-model (\(\beta\) = -0.58, \(p\) = 0.048).
+model }\DIFaddend (\(\beta\) = \DIFdelbegin \DIFdel{-0.2}\DIFdelend \DIFaddbegin \DIFadd{-0.58}\DIFaddend , \(p\) = \DIFdelbegin \DIFdel{0.067)with longer inspection times providing a larger boost to accuracy
+when the speaker was less reliable}\DIFdelend \DIFaddbegin \DIFadd{0.048)}\DIFaddend .
 
 Next, we explored the factors that influenced inspection time on
-exposure trials by fitting a model to predict inspection times as a
-function of reliability condition and participants' use of the gaze cue.
+exposure trials by \DIFdelbegin \DIFdel{predicting inspection times using }\DIFdelend \DIFaddbegin \DIFadd{fitting a model to predict inspection times as a
+function of }\DIFaddend reliability condition and participants' use of the gaze cue\DIFdelbegin \DIFdel{as predictors}\DIFdelend .
 We found a main effect of participants' use of the gaze cue (-0.32,
 \(p\) \textless{} .001) with shorter inspection times when participants
 followed gaze. The main effect of reliability condition and the
@@ -913,7 +954,7 @@ interaction between reliability and use of gaze were not significant.
 These analyses provide evidence that inspection times were similar
 across the different reliability conditions and that use of the gaze cue
 was the primary factor affecting how long participants explored the
-objects during learning.
+objects \DIFdelbegin \DIFdel{on exposure trials}\DIFdelend \DIFaddbegin \DIFadd{during learning}\DIFaddend .
 
 Together, these four analyses show that when the speaker's gaze was more
 reliable, participants were more likely to: (a) use the gaze cue, (b)
@@ -1046,7 +1087,8 @@ quite likely to use the gaze cue when it was a video of an actress
 Figure 6 shows performance on test trials in Experiment 4. In the
 majority of conditions, participants selected the correct referent at
 rates greater than chance (smallest \(\beta\) = 0.2, z = 2.2, \(p\)
-\textless{} .05). However, participants' responses were not different
+\textless{} .05). However, participants' responses were \DIFdelbegin \DIFdel{only marginally
+}\DIFdelend \DIFaddbegin \DIFadd{not }\DIFaddend different
 from chance on Switch trials after exposure trials with gaze in the
 3-interval condition (\(\beta\) = 0.17, \(p\) = 0.06).
 
@@ -1140,7 +1182,9 @@ across our studies. In Experiment 1, longer inspection times led to
 higher accuracy in the No-Gaze condition for both Same and Switch
 trials. In Experiment 2, longer inspection times provided a larger boost
 to performance on Switch trials compared to Same trials, regardless of
-gaze condition. Despite these differences, we speculate that inspection
+gaze condition. \DIFdelbegin \DIFdel{And in Experiment 3, we found some evidence that longer
+inspection times led to better memory when the gaze cue was less
+reliable. }\DIFdelend Despite these differences, we speculate that inspection
 time played a similar role across these studies: When a social cue was
 present, learners' attention was focused and inspection times tended to
 be shorter, which led to worse performance on Switch trials (i.e.,
@@ -1333,7 +1377,6 @@ members of the Language and Cognition Lab for their feedback on this
 project. This work was supported by a National Science Foundation
 Graduate Research Fellowship to KM, an NIH NRSA Postdoctoral Fellowship
 to DY, and a John Merck Scholars Fellowship to M.C.F.
-
 
 \newpage
 
@@ -1596,253 +1639,255 @@ at scale: The baby's view is better. \emph{Developmental Science},
 \emph{16}(6), 959--966.
 
 \bibliography{}
+\DIFaddbegin 
 
 \newpage
 
-\section*{Appendix}
+\section*{\DIFadd{Appendix}}
 
 \captionsetup[table]{labelformat=empty}
 
-\section*{Table A1. Length of inspection times on exposure trials in Experiment 1 as a function of gaze, interval, and number of referents}
+\section*{\DIFadd{Table A1. Length of inspection times on exposure trials in Experiment 1 as a function of gaze, interval, and number of referents}}
 
-\texttt{Log(Inspection time) $\sim$ (Gaze + Log(Interval) + Log(Referents))$^2$ + (1 | subject)}
+\texttt{\DIFadd{Log(Inspection time) $\sim$ (Gaze + Log(Interval) + Log(Referents))$^2$ + (1 | subject)}}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{lrrrrl}
- term & estimate & std.error & t.value & p.value &  \\ 
-  \hline
-Intercept & 0.83 & 0.10 & 8.19 & $<$ .001 & *** \\ 
-  Gaze Condition & 0.16 & 0.11 & 1.48 & 0.138 &  \\ 
-  Log(Interval) & 0.06 & 0.05 & 1.33 & 0.184 &  \\ 
-  Log(Referents) & 0.34 & 0.04 & 7.91 & $<$ .001 & *** \\ 
-  Gaze Condition*Log(Interval) & -0.08 & 0.03 & -2.86 & 0.004 & ** \\ 
-  Gaze Condition*Log(Referent) & -0.27 & 0.04 & -6.01 & $<$ .001 & *** \\ 
-  Log(Interval)*Log(Referent) & -0.00 & 0.02 & -0.19 & 0.849 &  \\ 
-   \hline
+\DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{t.value }& \DIFaddFL{p.value }&  \\ 
+\hline
+\DIFaddFL{Intercept }& \DIFaddFL{0.83 }& \DIFaddFL{0.10 }& \DIFaddFL{8.19 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Gaze Condition }& \DIFaddFL{0.16 }& \DIFaddFL{0.11 }& \DIFaddFL{1.48 }& \DIFaddFL{0.138 }&  \\ 
+\DIFaddFL{Log(Interval) }& \DIFaddFL{0.06 }& \DIFaddFL{0.05 }& \DIFaddFL{1.33 }& \DIFaddFL{0.184 }&  \\ 
+\DIFaddFL{Log(Referents) }& \DIFaddFL{0.34 }& \DIFaddFL{0.04 }& \DIFaddFL{7.91 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Gaze Condition*Log(Interval) }& \DIFaddFL{-0.08 }& \DIFaddFL{0.03 }& \DIFaddFL{-2.86 }& \DIFaddFL{0.004 }& \DIFaddFL{** }\\ 
+\DIFaddFL{Gaze Condition*Log(Referent) }& \DIFaddFL{-0.27 }& \DIFaddFL{0.04 }& \DIFaddFL{-6.01 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Log(Interval)*Log(Referent) }& \DIFaddFL{-0.00 }& \DIFaddFL{0.02 }& \DIFaddFL{-0.19 }& \DIFaddFL{0.849 }&  \\ 
+\hline
 \end{tabular}
 \label{tab:e1_rt}
 \end{table}
 
 \newpage
 
-\section*{Table A2. Accuracy on test trials in Experiment 1 with inspection times on exposure trials included as a predictor}
+\section*{\DIFadd{Table A2. Accuracy on test trials in Experiment 1 with inspection times on exposure trials included as a predictor}}
 
-\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Referents) + \\ Log(Inspection Time))$^2$ + offset(logit($^1/_{Referents}$)) + (TrialType | subject)}
+\texttt{\DIFadd{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Referents) + }\\ \DIFadd{Log(Inspection Time))$^2$ + offset(logit($^1/_{Referents}$)) + (TrialType | subject)}}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 2.89 & 0.34 & 8.49 & $<$ .001 & *** \\ 
-  Switch Trial & -1.45 & 0.25 & -5.76 & $<$ .001 & *** \\ 
-  Gaze Condition & 0.12 & 0.27 & 0.43 & 0.669 &  \\ 
-  Log(Interval) & -0.47 & 0.11 & -4.15 & $<$ .001 & *** \\ 
-  Log(Referents) & 0.05 & 0.14 & 0.39 & 0.693 &  \\ 
-  Log(Inspection Time) & 0.20 & 0.15 & 1.38 & 0.169 &  \\ 
-  Switch Trial*Gaze Condition & -1.02 & 0.13 & -7.86 & $<$ .001 & *** \\ 
-  Switch Trial*Log(Interval) & 0.52 & 0.06 & 9.39 & $<$ .001 & *** \\ 
-  Switch Trial*Log(Referent) & -0.62 & 0.09 & -6.67 & $<$ .001 & *** \\ 
-  Switch Trial*Log(Inspection Time) & 0.09 & 0.07 & 1.36 & 0.174 &  \\ 
-  Gaze Condition*Log(Interval) & 0.09 & 0.06 & 1.61 & 0.107 &  \\ 
-  Gaze Condition*Log(Referent) & 0.36 & 0.10 & 3.68 & $<$ .001 & *** \\ 
-  Gaze Condition*Log(Inspection Time) & -0.17 & 0.07 & -2.55 & 0.011 & * \\ 
-  Log(Interval)*Log(Referent) & -0.05 & 0.04 & -1.26 & 0.207 &  \\ 
-  Log(Interval)*Log(Inspection Time) & 0.02 & 0.03 & 0.54 & 0.589 &  \\ 
-  Log(Referents)*Log(Inspection Time) & 0.05 & 0.05 & 0.94 & 0.345 &  \\ 
-   \hline
+\DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{z.value }& \DIFaddFL{p.value }&  \\ 
+\hline
+\DIFaddFL{Intercept }& \DIFaddFL{2.89 }& \DIFaddFL{0.34 }& \DIFaddFL{8.49 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Switch Trial }& \DIFaddFL{-1.45 }& \DIFaddFL{0.25 }& \DIFaddFL{-5.76 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Gaze Condition }& \DIFaddFL{0.12 }& \DIFaddFL{0.27 }& \DIFaddFL{0.43 }& \DIFaddFL{0.669 }&  \\ 
+\DIFaddFL{Log(Interval) }& \DIFaddFL{-0.47 }& \DIFaddFL{0.11 }& \DIFaddFL{-4.15 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Log(Referents) }& \DIFaddFL{0.05 }& \DIFaddFL{0.14 }& \DIFaddFL{0.39 }& \DIFaddFL{0.693 }&  \\ 
+\DIFaddFL{Log(Inspection Time) }& \DIFaddFL{0.20 }& \DIFaddFL{0.15 }& \DIFaddFL{1.38 }& \DIFaddFL{0.169 }&  \\ 
+\DIFaddFL{Switch Trial*Gaze Condition }& \DIFaddFL{-1.02 }& \DIFaddFL{0.13 }& \DIFaddFL{-7.86 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Switch Trial*Log(Interval) }& \DIFaddFL{0.52 }& \DIFaddFL{0.06 }& \DIFaddFL{9.39 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Switch Trial*Log(Referent) }& \DIFaddFL{-0.62 }& \DIFaddFL{0.09 }& \DIFaddFL{-6.67 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Switch Trial*Log(Inspection Time) }& \DIFaddFL{0.09 }& \DIFaddFL{0.07 }& \DIFaddFL{1.36 }& \DIFaddFL{0.174 }&  \\ 
+\DIFaddFL{Gaze Condition*Log(Interval) }& \DIFaddFL{0.09 }& \DIFaddFL{0.06 }& \DIFaddFL{1.61 }& \DIFaddFL{0.107 }&  \\ 
+\DIFaddFL{Gaze Condition*Log(Referent) }& \DIFaddFL{0.36 }& \DIFaddFL{0.10 }& \DIFaddFL{3.68 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Gaze Condition*Log(Inspection Time) }& \DIFaddFL{-0.17 }& \DIFaddFL{0.07 }& \DIFaddFL{-2.55 }& \DIFaddFL{0.011 }& \DIFaddFL{* }\\ 
+\DIFaddFL{Log(Interval)*Log(Referent) }& \DIFaddFL{-0.05 }& \DIFaddFL{0.04 }& \DIFaddFL{-1.26 }& \DIFaddFL{0.207 }&  \\ 
+\DIFaddFL{Log(Interval)*Log(Inspection Time) }& \DIFaddFL{0.02 }& \DIFaddFL{0.03 }& \DIFaddFL{0.54 }& \DIFaddFL{0.589 }&  \\ 
+\DIFaddFL{Log(Referents)*Log(Inspection Time) }& \DIFaddFL{0.05 }& \DIFaddFL{0.05 }& \DIFaddFL{0.94 }& \DIFaddFL{0.345 }&  \\ 
+\hline
 \end{tabular}
 \label{tab:e1_acc_it}
 \end{table}
 
 \newpage
 
-\section*{Table A3. Length of inspection times on exposure trials in Experiment 2 as a function of gaze and interval}
+\section*{\DIFadd{Table A3. Length of inspection times on exposure trials in Experiment 2 as a function of gaze and interval}}
 
-\texttt{Log(Inspection time) $\sim$ Gaze * Log(Interval) + (1 | subject)}
+\texttt{\DIFadd{Log(Inspection time) $\sim$ Gaze * Log(Interval) + (1 | subject)}}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{lrrrrl}
- term & estimate & std.error & t.value & p.value &  \\ 
-  \hline
-Intercept & 3.90 & 0.08 & 50.69 & $<$ .001 & *** \\ 
-  Gaze Condition & -1.10 & 0.05 & -20.90 & $<$ .001 & *** \\ 
-  Log(Interval) & -0.48 & 0.05 & -8.77 & $<$ .001 & *** \\ 
-  Gaze Condition*Log(Interval) & -0.02 & 0.04 & -0.60 & 0.549 &  \\ 
-   \hline
+\DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{t.value }& \DIFaddFL{p.value }&  \\ 
+\hline
+\DIFaddFL{Intercept }& \DIFaddFL{3.90 }& \DIFaddFL{0.08 }& \DIFaddFL{50.69 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Gaze Condition }& \DIFaddFL{-1.10 }& \DIFaddFL{0.05 }& \DIFaddFL{-20.90 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Log(Interval) }& \DIFaddFL{-0.48 }& \DIFaddFL{0.05 }& \DIFaddFL{-8.77 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Gaze Condition*Log(Interval) }& \DIFaddFL{-0.02 }& \DIFaddFL{0.04 }& \DIFaddFL{-0.60 }& \DIFaddFL{0.549 }&  \\ 
+\hline
 \end{tabular}
 \label{tab:e2_rt}
 \end{table}
 
-\section*{Table A4. Accuracy on test trials in Experiment 2 with inspection times on exposure trials included as a predictor}
+\section*{\DIFadd{Table A4. Accuracy on test trials in Experiment 2 with inspection times on exposure trials included as a predictor}}
 
-\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Inspection Time))$^2$ + \\ offset(logit($^1/_{Referents}$)) + (TrialType | subject)}
+\texttt{\DIFadd{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Inspection Time))$^2$ + }\\ \DIFadd{offset(logit($^1/_{Referents}$)) + (TrialType | subject)}}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 3.51 & 0.29 & 12.13 & $<$ .001 & *** \\ 
-  Gaze Condition & 0.13 & 0.23 & 0.58 & 0.559 &  \\ 
-  Switch Trial & -3.12 & 0.26 & -12.21 & $<$ .001 & *** \\ 
-  Log(Interval) & -0.88 & 0.14 & -6.34 & $<$ .001 & *** \\ 
-  Log(Inspection Time) & 0.15 & 0.13 & 1.14 & 0.255 &  \\ 
-  Switch Trial*Gaze Condition & -0.54 & 0.17 & -3.21 & 0.001 & ** \\ 
-  Gaze Condition*Log(Interval) & 0.16 & 0.09 & 1.85 & 0.064 & . \\ 
-  Gaze Condition*Log(Inspection Time) & -0.14 & 0.10 & -1.37 & 0.172 &  \\ 
-  Switch Trial*Log(Interval) & 0.77 & 0.10 & 8.00 & $<$ .001 & *** \\ 
-  Switch Trial*Log(Inspection Time) & 0.21 & 0.11 & 1.96 & 0.05 & . \\ 
-  Log(Interval)*Log(Inspection Time) & 0.04 & 0.06 & 0.77 & 0.44 &  \\ 
-   \hline
+\DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{z.value }& \DIFaddFL{p.value }&  \\ 
+\hline
+\DIFaddFL{Intercept }& \DIFaddFL{2.41 }& \DIFaddFL{0.29 }& \DIFaddFL{8.34 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Gaze Condition }& \DIFaddFL{0.13 }& \DIFaddFL{0.23 }& \DIFaddFL{0.58 }& \DIFaddFL{0.559 }&  \\ 
+\DIFaddFL{Switch Trial }& \DIFaddFL{-3.12 }& \DIFaddFL{0.26 }& \DIFaddFL{-12.21 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Log(Interval) }& \DIFaddFL{-0.88 }& \DIFaddFL{0.14 }& \DIFaddFL{-6.34 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Log(Inspection Time) }& \DIFaddFL{0.15 }& \DIFaddFL{0.13 }& \DIFaddFL{1.14 }& \DIFaddFL{0.255 }&  \\ 
+\DIFaddFL{Switch Trial*Gaze Condition }& \DIFaddFL{-0.54 }& \DIFaddFL{0.17 }& \DIFaddFL{-3.21 }& \DIFaddFL{0.001 }& \DIFaddFL{** }\\ 
+\DIFaddFL{Gaze Condition*Log(Interval) }& \DIFaddFL{0.16 }& \DIFaddFL{0.09 }& \DIFaddFL{1.85 }& \DIFaddFL{0.064 }& \DIFaddFL{. }\\ 
+\DIFaddFL{Gaze Condition*Log(Inspection Time) }& \DIFaddFL{-0.14 }& \DIFaddFL{0.10 }& \DIFaddFL{-1.37 }& \DIFaddFL{0.172 }&  \\ 
+\DIFaddFL{Switch Trial*Log(Interval) }& \DIFaddFL{0.77 }& \DIFaddFL{0.10 }& \DIFaddFL{8.00 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Switch Trial*Log(Inspection Time) }& \DIFaddFL{0.21 }& \DIFaddFL{0.11 }& \DIFaddFL{1.96 }& \DIFaddFL{0.05 }& \DIFaddFL{. }\\ 
+\DIFaddFL{Log(Interval)*Log(Inspection Time) }& \DIFaddFL{0.04 }& \DIFaddFL{0.06 }& \DIFaddFL{0.77 }& \DIFaddFL{0.44 }&  \\ 
+\hline
 \end{tabular}
 \label{tab:e2_acc_it}
 \end{table}
 
 \newpage
 
-\section*{Table A5. Accuracy on exposure trials in Experiment 3 as a function of reliability condition and participants' subjective reliability judgments}
+\section*{\DIFadd{Table A5. Accuracy on exposure trials in Experiment 3 as a function of reliability condition and participants' subjective reliability judgments}}
 
-\texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + \\  offset(logit($^1/_{Referents}$)) + (1 | subject)}
+  \texttt{\DIFadd{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + (1 | subject)}}
+
+  \begin{table}[h]
+  \centering
+  \begin{tabular}{lrrrrl}
+  \DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{z.value }& \DIFaddFL{p.value }&  \\ 
+  \hline
+  \DIFaddFL{Intercept }& \DIFaddFL{1.97 }& \DIFaddFL{0.98 }& \DIFaddFL{2.02 }& \DIFaddFL{0.044 }& \DIFaddFL{* }\\ 
+  \DIFaddFL{Reliability Condition }& \DIFaddFL{3.28 }& \DIFaddFL{1.50 }& \DIFaddFL{2.19 }& \DIFaddFL{0.029 }& \DIFaddFL{* }\\ 
+  \DIFaddFL{Subjective Reliability }& \DIFaddFL{7.26 }& \DIFaddFL{1.73 }& \DIFaddFL{4.21 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+  \DIFaddFL{Reliability Condition*Subjective Reliability }& \DIFaddFL{-4.58 }& \DIFaddFL{2.72 }& \DIFaddFL{-1.68 }& \DIFaddFL{0.092 }& \DIFaddFL{. }\\ 
+  \hline
+  \end{tabular}
+  \label{tab:e3_gf_exp}
+  \end{table}
+
+  \section*{\DIFadd{Table A6. Accuracy on test trials in Experiment 3 as a function of reliability condition}}
+
+  \texttt{\DIFadd{Correct $\sim$ Trial Type * Reliability Condition + (Trial Type | subject)}}
+
+  \begin{table}[h]
+  \centering
+  \begin{tabular}{lrrrrl}
+  \DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{z.value }& \DIFaddFL{p.value }&  \\ 
+  \hline
+  \DIFaddFL{Intercept }& \DIFaddFL{3.61 }& \DIFaddFL{0.36 }& \DIFaddFL{10.04 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+  \DIFaddFL{Trial Type }& \DIFaddFL{-3.95 }& \DIFaddFL{0.36 }& \DIFaddFL{-10.93 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+  \DIFaddFL{Reliability Condition }& \DIFaddFL{0.38 }& \DIFaddFL{0.37 }& \DIFaddFL{1.03 }& \DIFaddFL{0.302 }&  \\ 
+  \DIFaddFL{Reliability Condition*Trial Type }& \DIFaddFL{-0.76 }& \DIFaddFL{0.38 }& \DIFaddFL{-2.01 }& \DIFaddFL{0.044 }& \DIFaddFL{* }\\ 
+  \hline
+  \end{tabular}
+  \label{tab:e3_acc_rel_cond}
+  \end{table}
+
+  \newpage
+
+  \section*{\DIFadd{Table A7. Accuracy on test trials in Experiment 3 as a function of reliability condition and participants' use of gaze on exposure trials}}
+
+\texttt{\DIFadd{Correct $\sim$ (Trial Type + Reliability Condition + Correct-Exposure)$^2$ }\\ \DIFadd{+ (Trial Type | subject)}}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 3.07 & 0.98 & 3.14 & 0.002 & ** \\ 
-  Reliability Condition & 3.28 & 1.50 & 2.19 & 0.029 & * \\ 
-  Subjective Reliability & 7.26 & 1.73 & 4.21 & $<$ .001 & *** \\ 
-  Reliability Condition*Subjective Reliability & -4.58 & 2.72 & -1.69 & 0.092 & . \\ 
-   \hline
-\end{tabular}
-\label{tab:e3_gf_exp}
-\end{table}
-
-\section*{Table A6. Accuracy on test trials in Experiment 3 as a function of reliability condition}
-
-\texttt{Correct $\sim$ Trial Type * Reliability Condition + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 4.70 & 0.36 & 13.09 & $<$ .001 & *** \\ 
-  Trial Type & -3.95 & 0.36 & -10.92 & $<$ .001 & *** \\ 
-  Reliability Condition & 0.38 & 0.37 & 1.03 & 0.302 &  \\ 
-  Reliability Condition*Trial Type & -0.76 & 0.38 & -2.01 & 0.044 & * \\ 
-   \hline
-\end{tabular}
-\label{tab:e3_acc_rel_cond}
-\end{table}
-
-\newpage
-
-\section*{Table A7. Accuracy on test trials in Experiment 3 as a function of reliability condition and participants' use of gaze on exposure trials}
-
-\texttt{Correct $\sim$ (Trial Type + Reliability Condition + Correct-Exposure)$^2$ \\ + offset(logit($^1/_{Referents}$)) + (Trial Type | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 4.50 & 0.39 & 11.58 & $<$ .001 & *** \\ 
-  Correct Exposure & 0.07 & 0.29 & 0.26 & 0.797 &  \\ 
-  Trial Type & -2.70 & 0.38 & -7.06 & $<$ .001 & *** \\ 
-  Reliability Condition & -0.43 & 0.44 & -0.98 & 0.325 &  \\ 
-  Correct Exposure*Trial Type & -1.43 & 0.27 & -5.41 & $<$ .001 & *** \\ 
-  Correct Exposure*Reliability & 0.97 & 0.33 & 2.92 & 0.004 & ** \\ 
-  Reliability Condition*Trial Type & -0.62 & 0.36 & -1.72 & 0.086 & . \\ 
-   \hline
+\DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{z.value }& \DIFaddFL{p.value }&  \\ 
+\hline
+\DIFaddFL{Intercept }& \DIFaddFL{3.40 }& \DIFaddFL{0.39 }& \DIFaddFL{8.75 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Correct Exposure }& \DIFaddFL{0.07 }& \DIFaddFL{0.29 }& \DIFaddFL{0.26 }& \DIFaddFL{0.797 }&  \\ 
+\DIFaddFL{Trial Type }& \DIFaddFL{-2.70 }& \DIFaddFL{0.38 }& \DIFaddFL{-7.06 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Reliability Condition }& \DIFaddFL{-0.43 }& \DIFaddFL{0.44 }& \DIFaddFL{-0.98 }& \DIFaddFL{0.325 }&  \\ 
+\DIFaddFL{Correct Exposure*Trial Type }& \DIFaddFL{-1.43 }& \DIFaddFL{0.27 }& \DIFaddFL{-5.41 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Correct Exposure*Reliability }& \DIFaddFL{0.97 }& \DIFaddFL{0.33 }& \DIFaddFL{2.92 }& \DIFaddFL{0.004 }& \DIFaddFL{** }\\ 
+\DIFaddFL{Reliability Condition*Trial Type }& \DIFaddFL{-0.62 }& \DIFaddFL{0.36 }& \DIFaddFL{-1.72 }& \DIFaddFL{0.086 }& \DIFaddFL{. }\\ 
+\hline
 \end{tabular}
 \label{tab:e3_acc_rel_cond_gf}
 \end{table}
 
-\section*{Table A8. Accuracy on test trials in Experiment 3 as a function of each participants' accuracy on exposure trials}
+\section*{\DIFadd{Table A8. Accuracy on test trials in Experiment 3 as a function of each participants' accuracy on exposure trials}}
 
-\texttt{Correct $\sim$ Trial Type * Total Correct Exposure + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
+  \texttt{\DIFadd{Correct $\sim$ Trial Type * Total Correct Exposure + (Trial Type | subject)}}
+
+  \begin{table}[h]
+  \centering
+  \begin{tabular}{lrrrrl}
+  \DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{z.value }& \DIFaddFL{p.value }&  \\ 
+  \hline
+  \DIFaddFL{Intercept }& \DIFaddFL{2.38 }& \DIFaddFL{0.54 }& \DIFaddFL{4.39 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+  \DIFaddFL{Total Exposure Correct }& \DIFaddFL{0.19 }& \DIFaddFL{0.07 }& \DIFaddFL{2.65 }& \DIFaddFL{0.008 }& \DIFaddFL{** }\\ 
+  \DIFaddFL{Trial Type }& \DIFaddFL{-2.11 }& \DIFaddFL{0.54 }& \DIFaddFL{-3.89 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+  \DIFaddFL{Total Exposure Correct*Trial Type }& \DIFaddFL{-0.32 }& \DIFaddFL{0.07 }& \DIFaddFL{-4.45 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+  \hline
+  \end{tabular}
+  \label{tab:e3_acc_gaze_use}
+  \end{table}
+
+  \newpage
+
+  \section*{\DIFadd{Table A9. Accuracy on test trials in Experiment 3 as a function of each participants' subjective reliability judgment}}
+
+\texttt{\DIFadd{Correct $\sim$ Trial Type * Subjective Reliability + (Trial Type | subject)}}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 2.73 & 0.39 & 7.01 & $<$ .001 & *** \\ 
-  Total Exposure Correct & 0.14 & 0.06 & 2.49 & 0.013 & * \\ 
-  Trial Type & -1.39 & 0.39 & -3.55 & $<$ .001 & *** \\ 
-  Total Exposure Correct*Trial Type & -0.26 & 0.06 & -4.66 & $<$ .001 & *** \\ 
-   \hline
-\end{tabular}
-\label{tab:e3_acc_gaze_use}
-\end{table}
-
-\newpage
-
-\section*{Table A9. Accuracy on test trials in Experiment 3 as a function of each participants' subjective reliability judgment}
-
-\texttt{Correct $\sim$ Trial Type * Subjective Reliability + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 4.54 & 0.44 & 10.33 & $<$ .001 & *** \\ 
-  Subjective Reliability & 0.40 & 0.58 & 0.69 & 0.493 &  \\ 
-  Trial Type & -3.44 & 0.44 & -7.81 & $<$ .001 & *** \\ 
-  Subjective Reliability*Trial Type & -1.63 & 0.59 & -2.78 & 0.005 & ** \\ 
-   \hline
+\DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{z.value }& \DIFaddFL{p.value }&  \\ 
+\hline
+\DIFaddFL{Intercept }& \DIFaddFL{3.44 }& \DIFaddFL{0.44 }& \DIFaddFL{7.83 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Subjective Reliability }& \DIFaddFL{0.40 }& \DIFaddFL{0.58 }& \DIFaddFL{0.69 }& \DIFaddFL{0.493 }&  \\ 
+\DIFaddFL{Trial Type }& \DIFaddFL{-3.44 }& \DIFaddFL{0.44 }& \DIFaddFL{-7.81 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Subjective Reliability*Trial Type }& \DIFaddFL{-1.63 }& \DIFaddFL{0.59 }& \DIFaddFL{-2.78 }& \DIFaddFL{0.005 }& \DIFaddFL{** }\\ 
+\hline
 \end{tabular}
 \label{tab:e3_acc_subj_rel}
 \end{table}
 
-\section*{Table A10. Accuracy on test trials in Experiment 3 as a function of reliability condition and inspection time on exposure trials}
+\section*{\DIFadd{Table A10. Accuracy on test trials in Experiment 3 as a function of reliability condition and inspection time on exposure trials}}
 
-\texttt{Correct $\sim$ (Trial Type + Reliability condition + Trial Type + \\ Log(Inspection Time))$^2$ + offset(logit($^1/_{Referents}$)) + (Trial Type | subject)}
+\texttt{\DIFadd{Correct $\sim$ (Trial Type + Reliability condition + Trial Type + }\\ \DIFadd{Log(Inspection Time))$^2$ + (Trial Type | subject)}}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 3.11 & 0.20 & 15.94 & $<$ .001 & *** \\ 
-  Log(Inspection Time) & 0.31 & 0.09 & 3.31 & 0.001 & ** \\ 
-  Trial Type & -2.75 & 0.20 & -13.64 & $<$ .001 & *** \\ 
-  Reliability Condition & 0.50 & 0.30 & 1.66 & 0.097 & . \\ 
-  Log(Inspection Time)*Trial Type & 0.03 & 0.09 & 0.34 & 0.736 &  \\ 
-  Log(Inspection Time)*Reliability Condition & -0.20 & 0.11 & -1.83 & 0.067 & . \\ 
-  Trial Type*Reliability Condition & -0.58 & 0.29 & -1.97 & 0.048 & * \\ 
-   \hline
+\DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{z.value }& \DIFaddFL{p.value }&  \\ 
+\hline
+\DIFaddFL{Intercept }& \DIFaddFL{2.01 }& \DIFaddFL{0.20 }& \DIFaddFL{10.31 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Log(Inspection Time) }& \DIFaddFL{0.31 }& \DIFaddFL{0.09 }& \DIFaddFL{3.31 }& \DIFaddFL{0.001 }& \DIFaddFL{** }\\ 
+\DIFaddFL{Trial Type }& \DIFaddFL{-2.75 }& \DIFaddFL{0.20 }& \DIFaddFL{-13.64 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Reliability Condition }& \DIFaddFL{0.50 }& \DIFaddFL{0.30 }& \DIFaddFL{1.66 }& \DIFaddFL{0.097 }& \DIFaddFL{. }\\ 
+\DIFaddFL{Log(Inspection Time)*Trial Type }& \DIFaddFL{0.03 }& \DIFaddFL{0.09 }& \DIFaddFL{0.34 }& \DIFaddFL{0.736 }&  \\ 
+\DIFaddFL{Log(Inspection Time)*Reliability Condition }& \DIFaddFL{-0.20 }& \DIFaddFL{0.11 }& \DIFaddFL{-1.83 }& \DIFaddFL{0.067 }& \DIFaddFL{. }\\ 
+\DIFaddFL{Trial Type*Reliability Condition }& \DIFaddFL{-0.58 }& \DIFaddFL{0.29 }& \DIFaddFL{-1.97 }& \DIFaddFL{0.048 }& \DIFaddFL{* }\\ 
+\hline
 \end{tabular}
 \label{tab:e3_acc_inspect}
 \end{table}
 
 \newpage
 
-\section*{Table A11. Accuracy on test trials in Experiment 4 as a function of gaze and interval}
+\section*{\DIFadd{Table A11. Accuracy on test trials in Experiment 4 as a function of gaze and interval}}
 
-\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval))$^2$ + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
+\texttt{\DIFadd{Correct $\sim$ (Trial Type + Gaze + Log(Interval))$^2$ + (Trial Type | subject)}}
 
 \begin{table}[h]
 \centering
 \begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 3.37 & 0.16 & 21.32 & $<$ .001 & *** \\ 
-  Trial Type & -3.18 & 0.16 & -19.93 & $<$ .001 & *** \\ 
-  Gaze Condition & -0.48 & 0.14 & -3.52 & $<$ .001 & *** \\ 
-  Log(Interval) & -0.84 & 0.10 & -8.59 & $<$ .001 & *** \\ 
-  Trial Type*Gaze Condition & 0.90 & 0.14 & 6.63 & $<$ .001 & *** \\ 
-  Trial Type*Log(Interval) & 0.80 & 0.09 & 8.71 & $<$ .001 & *** \\ 
-  Gaze Condition*Log(Interval) & -0.01 & 0.07 & -0.10 & 0.917 &  \\ 
-   \hline
+\DIFaddFL{term }& \DIFaddFL{estimate }& \DIFaddFL{std.error }& \DIFaddFL{z.value }& \DIFaddFL{p.value }&  \\ 
+\hline
+\DIFaddFL{Intercept }& \DIFaddFL{2.27 }& \DIFaddFL{0.16 }& \DIFaddFL{14.37 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Trial Type }& \DIFaddFL{-3.18 }& \DIFaddFL{0.16 }& \DIFaddFL{-19.93 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Gaze Condition }& \DIFaddFL{-0.48 }& \DIFaddFL{0.14 }& \DIFaddFL{-3.52 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Log(Interval) }& \DIFaddFL{-0.84 }& \DIFaddFL{0.10 }& \DIFaddFL{-8.59 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Trial Type*Gaze Condition }& \DIFaddFL{0.90 }& \DIFaddFL{0.14 }& \DIFaddFL{6.63 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Trial Type*Log(Interval) }& \DIFaddFL{0.80 }& \DIFaddFL{0.09 }& \DIFaddFL{8.71 }& \DIFaddFL{$<$ .001 }& \DIFaddFL{*** }\\ 
+\DIFaddFL{Gaze Condition*Log(Interval) }& \DIFaddFL{-0.01 }& \DIFaddFL{0.07 }& \DIFaddFL{-0.10 }& \DIFaddFL{0.917 }&  \\ 
+\hline
 \end{tabular}
 \label{tab:e4_acc}
 \end{table}
+\DIFaddend 
 
 
 \end{document}

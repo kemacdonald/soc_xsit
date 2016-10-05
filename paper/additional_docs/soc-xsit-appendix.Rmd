@@ -1,0 +1,347 @@
+\newpage
+
+\section*{Appendix}
+
+\captionsetup[table]{labelformat=empty}
+
+\section*{Table A1. Length of inspection times on exposure trials in Experiment 1 as a function of gaze, interval, and number of referents}
+\texttt{Log(Inspection time) $\sim$ (Gaze + Log(Interval) + Log(Referents))$^2$ + (1 | subject)}
+
+```{r e1 inspect model table, results = 'asis'}
+# some code to clean up tables for paper
+e1.tab.inspect <- broom::tidy(m1_rt_expt1) %>% 
+  filter(group == "fixed") %>% 
+  select(term:statistic) %>% 
+  rename(t.value = statistic) %>% 
+  mutate(p.value = 2 * (1 - pnorm(abs(t.value)))) %>% 
+  mutate_at(.cols = c("estimate", "std.error", "t.value"), 
+            .funs = round, digits = 2) %>% 
+  mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+  rowwise() %>% 
+  mutate(sig = getstars(p.value))
+
+e1.tab.inspect$term <- c("Intercept","Gaze Condition","Log(Interval)",
+                         "Log(Referents)","Gaze Condition*Log(Interval)", 
+                         "Gaze Condition*Log(Referent)", "Log(Interval)*Log(Referent)")
+
+names(e1.tab.inspect)[6] <- c("")
+
+print(xtable(e1.tab.inspect,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:e1_rt"),
+      include.rownames=FALSE, 
+      hline.after=c(0,nrow(e1.tab.inspect)),
+      sanitize.text.function=function(x){x},
+      table.placement = "h",
+      comment = F)
+```
+
+\newpage
+\section*{Table A2. Accuracy on test trials in Experiment 1 with inspection times on exposure trials included as a predictor}
+\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Referents) + \\ Log(Inspection Time))$^2$ + offset(logit($^1/_{Referents}$)) + (TrialType | subject)}
+
+```{r e1 inspect model acc table, results = 'asis'}
+# some code to clean up tables for paper
+e1.tab.inspect.acc <- broom::tidy(m1_2way_acc_expt1_inspect) %>% 
+  filter(group == "fixed") %>% 
+  select(term:p.value) %>% 
+  rename(z.value = statistic) %>% 
+  mutate_at(.cols = c("estimate", "std.error", "z.value"), 
+            .funs = round, digits = 2) %>% 
+  mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+  rowwise() %>% 
+  mutate(sig = getstars(p.value))
+
+e1.tab.inspect.acc$term <- c("Intercept", "Switch Trial", "Gaze Condition","Log(Interval)",
+                             "Log(Referents)","Log(Inspection Time)","Switch Trial*Gaze Condition",
+                             "Switch Trial*Log(Interval)", "Switch Trial*Log(Referent)",
+                             "Switch Trial*Log(Inspection Time)", "Gaze Condition*Log(Interval)",
+                             "Gaze Condition*Log(Referent)", "Gaze Condition*Log(Inspection Time)",
+                             "Log(Interval)*Log(Referent)", "Log(Interval)*Log(Inspection Time)",
+                             "Log(Referents)*Log(Inspection Time)")
+
+names(e1.tab.inspect.acc)[6] <- c("")
+
+print(xtable(e1.tab.inspect.acc,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:e1_acc_it"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e1.tab.inspect.acc)),
+      sanitize.text.function=function(x){x},
+      table.placement = "h",
+      comment = F)
+```
+
+\newpage
+\section*{Table A3. Length of inspection times on exposure trials in Experiment 2 as a function of gaze and interval}
+\texttt{Log(Inspection time) $\sim$ Gaze * Log(Interval) + (1 | subject)}
+
+```{r e2 inspect model table, results = 'asis'}
+# some code to clean up tables for paper
+e2.tab.inspect <- broom::tidy(m1_rt_expt2) %>% 
+  filter(group == "fixed") %>% 
+  select(term:statistic) %>% 
+  rename(t.value = statistic) %>% 
+  mutate(p.value = 2 * (1 - pnorm(abs(t.value)))) %>% 
+  mutate_at(.cols = c("estimate", "std.error", "t.value"), 
+            .funs = round, digits = 2) %>% 
+  mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+  rowwise() %>% 
+  mutate(sig = getstars(p.value))
+
+e2.tab.inspect$term <- c("Intercept", "Gaze Condition", "Log(Interval)",
+                         "Gaze Condition*Log(Interval)")
+
+names(e2.tab.inspect)[6] <- c("")
+
+print(xtable(e2.tab.inspect,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:e2_rt"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e2.tab.inspect)),
+      sanitize.text.function=function(x){x},
+      table.placement = "h",
+      comment = F)
+```
+
+\section*{Table A4. Accuracy on test trials in Experiment 2 with inspection times on exposure trials included as a predictor}
+\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Inspection Time))$^2$ + \\ offset(logit($^1/_{Referents}$)) + (TrialType | subject)}
+
+```{r e2 inspect model acc table, results = 'asis'}
+# some code to clean up tables for paper
+e2.tab.inspect.acc <- broom::tidy(m2_inspect_e2) %>% 
+  filter(group == "fixed") %>% 
+  select(term:p.value) %>% 
+  rename(z.value = statistic) %>% 
+  mutate_at(.cols = c("estimate", "std.error", "z.value"), 
+            .funs = round, digits = 2) %>% 
+  mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+  rowwise() %>% 
+  mutate(sig = getstars(p.value))
+
+e2.tab.inspect.acc$term <- c("Intercept", "Gaze Condition", "Switch Trial", "Log(Interval)",
+                             "Log(Inspection Time)", "Switch Trial*Gaze Condition",
+                             "Gaze Condition*Log(Interval)", "Gaze Condition*Log(Inspection Time)",
+                             "Switch Trial*Log(Interval)", "Switch Trial*Log(Inspection Time)", 
+                             "Log(Interval)*Log(Inspection Time)")
+
+names(e2.tab.inspect.acc)[6] <- c("")
+
+print(xtable(e2.tab.inspect.acc,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:e2_acc_it"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e2.tab.inspect.acc)),
+      sanitize.text.function=function(x){x},
+      table.placement = "h",
+      comment = F)
+```
+
+\newpage
+\section*{Table A5. Accuracy on exposure trials in Experiment 3 as a function of reliability condition and participants' subjective reliability judgments}
+\texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + (1 | subject)}
+
+```{r e3 gf on exposure table, results = 'asis'}
+# some code to clean up tables for paper
+e3.tab.gf.exposure <- broom::tidy(m1_expo_expt3) %>% 
+filter(group == "fixed") %>% 
+select(term:p.value) %>% 
+rename(z.value = statistic) %>% 
+mutate_at(.cols = c("estimate", "std.error", "z.value"), 
+.funs = round, digits = 2) %>% 
+mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+rowwise() %>% 
+mutate(sig = getstars(p.value))
+
+e3.tab.gf.exposure$term <- c("Intercept", "Reliability Condition", "Subjective Reliability",
+"Reliability Condition*Subjective Reliability")
+
+names(e3.tab.gf.exposure)[6] <- c("")
+
+print(xtable(e3.tab.gf.exposure,
+align = c("l","l","r","r","r","r","l"),
+label = "tab:e3_gf_exp"),
+include.rownames=FALSE,hline.after=c(0,nrow(e3.tab.gf.exposure)),
+sanitize.text.function=function(x){x},
+table.placement = "h",
+comment = F)
+```
+
+\section*{Table A6. Accuracy on test trials in Experiment 3 as a function of reliability condition}
+\texttt{Correct $\sim$ Trial Type * Reliability Condition + (Trial Type | subject)}
+
+```{r e3 acc test rel cond table, results = 'asis'}
+# some code to clean up tables for paper
+e3.tab.acc.rel.cond <- broom::tidy(m1_expt3) %>% 
+filter(group == "fixed") %>% 
+select(term:p.value) %>% 
+rename(z.value = statistic) %>% 
+mutate_at(.cols = c("estimate", "std.error", "z.value"), 
+.funs = round, digits = 2) %>% 
+mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+rowwise() %>% 
+mutate(sig = getstars(p.value))
+
+e3.tab.acc.rel.cond$term <- c("Intercept", "Trial Type", "Reliability Condition",
+"Reliability Condition*Trial Type")
+
+names(e3.tab.acc.rel.cond)[6] <- c("")
+
+print(xtable(e3.tab.acc.rel.cond,
+align = c("l","l","r","r","r","r","l"),
+label = "tab:e3_acc_rel_cond"),
+include.rownames=FALSE,hline.after=c(0,nrow(e3.tab.acc.rel.cond)),
+sanitize.text.function=function(x){x},
+table.placement = "h",
+comment = F)
+```
+
+\newpage
+\section*{Table A7. Accuracy on test trials in Experiment 3 as a function of reliability condition and participants' use of gaze on exposure trials}
+\texttt{Correct $\sim$ (Trial Type + Reliability Condition + Correct-Exposure)$^2$ \\ + (Trial Type | subject)}
+
+```{r e3 acc test rel and gaze follow table, results = 'asis'}
+# some code to clean up tables for paper
+e3.tab.acc.rel.cond.gf <- broom::tidy(m2a_expt3) %>% 
+  filter(group == "fixed") %>% 
+  select(term:p.value) %>% 
+  rename(z.value = statistic) %>% 
+  mutate_at(.cols = c("estimate", "std.error", "z.value"), 
+            .funs = round, digits = 2) %>% 
+  mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+  rowwise() %>% 
+  mutate(sig = getstars(p.value))
+
+e3.tab.acc.rel.cond.gf$term <- c("Intercept", "Correct Exposure", "Trial Type", "Reliability Condition",
+                                 "Correct Exposure*Trial Type", "Correct Exposure*Reliability",
+                                 "Reliability Condition*Trial Type")
+
+names(e3.tab.acc.rel.cond.gf)[6] <- c("")
+
+print(xtable(e3.tab.acc.rel.cond.gf,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:e3_acc_rel_cond_gf"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e3.tab.acc.rel.cond.gf)),
+      sanitize.text.function=function(x){x},
+      table.placement = "h",
+      comment = F)
+```
+
+\section*{Table A8. Accuracy on test trials in Experiment 3 as a function of each participants' accuracy on exposure trials}
+\texttt{Correct $\sim$ Trial Type * Total Correct Exposure + (Trial Type | subject)}
+
+```{r e3 acc test gaze use table, results = 'asis'}
+# some code to clean up tables for paper
+e3.tab.acc.gaze.use <- broom::tidy(m2b_expt3) %>% 
+  filter(group == "fixed") %>% 
+  select(term:p.value) %>% 
+  rename(z.value = statistic) %>% 
+  mutate_at(.cols = c("estimate", "std.error", "z.value"), 
+            .funs = round, digits = 2) %>% 
+  mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+  rowwise() %>% 
+  mutate(sig = getstars(p.value))
+
+e3.tab.acc.gaze.use$term <- c("Intercept", "Total Exposure Correct", "Trial Type",
+                              "Total Exposure Correct*Trial Type")
+
+names(e3.tab.acc.gaze.use)[6] <- c("")
+
+print(xtable(e3.tab.acc.gaze.use,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:e3_acc_gaze_use"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e3.tab.acc.gaze.use)),
+      sanitize.text.function=function(x){x},
+      table.placement = "h",
+      comment = F)
+```
+
+\newpage
+\section*{Table A9. Accuracy on test trials in Experiment 3 as a function of each participants' subjective reliability judgment}
+\texttt{Correct $\sim$ Trial Type * Subjective Reliability + (Trial Type | subject)}
+
+```{r e3 acc test subj reliability, results = 'asis'}
+# some code to clean up tables for paper
+e3.tab.acc.subj.rel <- broom::tidy(m3_expt3) %>% 
+  filter(group == "fixed") %>% 
+  select(term:p.value) %>% 
+  rename(z.value = statistic) %>% 
+  mutate_at(.cols = c("estimate", "std.error", "z.value"), 
+            .funs = round, digits = 2) %>% 
+  mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+  rowwise() %>% 
+  mutate(sig = getstars(p.value))
+
+e3.tab.acc.subj.rel$term <- c("Intercept", "Subjective Reliability", "Trial Type",
+                              "Subjective Reliability*Trial Type")
+
+names(e3.tab.acc.subj.rel)[6] <- c("")
+
+print(xtable(e3.tab.acc.subj.rel,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:e3_acc_subj_rel"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e3.tab.acc.subj.rel)),
+      sanitize.text.function=function(x){x},
+      table.placement = "h",
+      comment = F)
+```
+
+\section*{Table A10. Accuracy on test trials in Experiment 3 as a function of reliability condition and inspection time on exposure trials}
+\texttt{Correct $\sim$ (Trial Type + Reliability condition + Trial Type + \\ Log(Inspection Time))$^2$ + (Trial Type | subject)}
+
+```{r e3 acc test inspection time table, results = 'asis'}
+# some code to clean up tables for paper
+e3.tab.acc.inspection <- broom::tidy(m4a_expt3_2) %>% 
+  filter(group == "fixed") %>% 
+  select(term:p.value) %>% 
+  rename(z.value = statistic) %>% 
+  mutate_at(.cols = c("estimate", "std.error", "z.value"), 
+            .funs = round, digits = 2) %>% 
+  mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+  rowwise() %>% 
+  mutate(sig = getstars(p.value))
+
+e3.tab.acc.inspection$term <- c("Intercept","Log(Inspection Time)", "Trial Type",
+                                "Reliability Condition", "Log(Inspection Time)*Trial Type",
+                                "Log(Inspection Time)*Reliability Condition", 
+                                "Trial Type*Reliability Condition")
+
+names(e3.tab.acc.inspection)[6] <- c("")
+
+print(xtable(e3.tab.acc.inspection,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:e3_acc_inspect"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e3.tab.acc.inspection)),
+      sanitize.text.function=function(x){x},
+      table.placement = "h",
+      comment = F)
+```
+
+\newpage
+\section*{Table A11. Accuracy on test trials in Experiment 4 as a function of gaze and interval}
+\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval))$^2$ + (Trial Type | subject)}
+
+```{r e4 acc test inspection time table, results = 'asis'}
+# some code to clean up tables for paper
+e4.tab.acc <- broom::tidy(m1_acc_expt4) %>% 
+  filter(group == "fixed") %>% 
+  select(term:p.value) %>% 
+  rename(z.value = statistic) %>% 
+  mutate_at(.cols = c("estimate", "std.error", "z.value"), 
+            .funs = round, digits = 2) %>% 
+  mutate(p.value = ifelse(round(p.value, 3) == 0, "$<$ .001", round(p.value, 3))) %>% 
+  rowwise() %>% 
+  mutate(sig = getstars(p.value))
+
+e4.tab.acc$term <- c("Intercept", "Trial Type", "Gaze Condition", "Log(Interval)",
+                     "Trial Type*Gaze Condition", "Trial Type*Log(Interval)", 
+                     "Gaze Condition*Log(Interval)")
+
+names(e4.tab.acc)[6] <- c("")
+
+print(xtable(e4.tab.acc,
+             align = c("l","l","r","r","r","r","l"),
+             label = "tab:e4_acc"),
+      include.rownames=FALSE,hline.after=c(0,nrow(e3.tab.acc.inspection)),
+      sanitize.text.function=function(x){x},
+      table.placement = "h",
+      comment = F)
+```
+

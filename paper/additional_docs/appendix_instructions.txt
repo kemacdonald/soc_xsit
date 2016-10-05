@@ -1,0 +1,7 @@
+Note that if you knit the .Rmd file, the appendix will not be there.
+
+This is because we want the appendix to show up after the references, 
+but Pandoc always places the References at the end of the .tex output.
+
+So, the workaround is to create the appendix as a separate .tex file and
+copy/paste it into the .tex file created when you knit from RMarkdown.
