@@ -1334,6 +1334,252 @@ project. This work was supported by a National Science Foundation
 Graduate Research Fellowship to KM, an NIH NRSA Postdoctoral Fellowship
 to DY, and a John Merck Scholars Fellowship to M.C.F.
 
+\newpage
+
+\section*{Appendix}
+
+\captionsetup[table]{labelformat=empty}
+
+\section*{Table A1. Length of inspection times on exposure trials in Experiment 1 as a function of gaze, interval, and number of referents}
+
+\texttt{Log(Inspection time) $\sim$ (Gaze + Log(Interval) + Log(Referents))$^2$ + (1 | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & t.value & p.value &  \\ 
+  \hline
+Intercept & 0.83 & 0.10 & 8.19 & $<$ .001 & *** \\ 
+  Gaze Condition & 0.16 & 0.11 & 1.48 & 0.138 &  \\ 
+  Log(Interval) & 0.06 & 0.05 & 1.33 & 0.184 &  \\ 
+  Log(Referents) & 0.34 & 0.04 & 7.91 & $<$ .001 & *** \\ 
+  Gaze Condition*Log(Interval) & -0.08 & 0.03 & -2.86 & 0.004 & ** \\ 
+  Gaze Condition*Log(Referent) & -0.27 & 0.04 & -6.01 & $<$ .001 & *** \\ 
+  Log(Interval)*Log(Referent) & -0.00 & 0.02 & -0.19 & 0.849 &  \\ 
+   \hline
+\end{tabular}
+\label{tab:e1_rt}
+\end{table}
+
+\newpage
+
+\section*{Table A2. Accuracy on test trials in Experiment 1 with inspection times on exposure trials included as a predictor}
+
+\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Referents) + \\ Log(Inspection Time))$^2$ + offset(logit($^1/_{Referents}$)) + (TrialType | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & z.value & p.value &  \\ 
+  \hline
+Intercept & 2.89 & 0.34 & 8.49 & $<$ .001 & *** \\ 
+  Switch Trial & -1.45 & 0.25 & -5.76 & $<$ .001 & *** \\ 
+  Gaze Condition & 0.12 & 0.27 & 0.43 & 0.669 &  \\ 
+  Log(Interval) & -0.47 & 0.11 & -4.15 & $<$ .001 & *** \\ 
+  Log(Referents) & 0.05 & 0.14 & 0.39 & 0.693 &  \\ 
+  Log(Inspection Time) & 0.20 & 0.15 & 1.38 & 0.169 &  \\ 
+  Switch Trial*Gaze Condition & -1.02 & 0.13 & -7.86 & $<$ .001 & *** \\ 
+  Switch Trial*Log(Interval) & 0.52 & 0.06 & 9.39 & $<$ .001 & *** \\ 
+  Switch Trial*Log(Referent) & -0.62 & 0.09 & -6.67 & $<$ .001 & *** \\ 
+  Switch Trial*Log(Inspection Time) & 0.09 & 0.07 & 1.36 & 0.174 &  \\ 
+  Gaze Condition*Log(Interval) & 0.09 & 0.06 & 1.61 & 0.107 &  \\ 
+  Gaze Condition*Log(Referent) & 0.36 & 0.10 & 3.68 & $<$ .001 & *** \\ 
+  Gaze Condition*Log(Inspection Time) & -0.17 & 0.07 & -2.55 & 0.011 & * \\ 
+  Log(Interval)*Log(Referent) & -0.05 & 0.04 & -1.26 & 0.207 &  \\ 
+  Log(Interval)*Log(Inspection Time) & 0.02 & 0.03 & 0.54 & 0.589 &  \\ 
+  Log(Referents)*Log(Inspection Time) & 0.05 & 0.05 & 0.94 & 0.345 &  \\ 
+   \hline
+\end{tabular}
+\label{tab:e1_acc_it}
+\end{table}
+
+\newpage
+
+\section*{Table A3. Length of inspection times on exposure trials in Experiment 2 as a function of gaze and interval}
+
+\texttt{Log(Inspection time) $\sim$ Gaze * Log(Interval) + (1 | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & t.value & p.value &  \\ 
+  \hline
+Intercept & 3.90 & 0.08 & 50.69 & $<$ .001 & *** \\ 
+  Gaze Condition & -1.10 & 0.05 & -20.90 & $<$ .001 & *** \\ 
+  Log(Interval) & -0.48 & 0.05 & -8.77 & $<$ .001 & *** \\ 
+  Gaze Condition*Log(Interval) & -0.02 & 0.04 & -0.60 & 0.549 &  \\ 
+   \hline
+\end{tabular}
+\label{tab:e2_rt}
+\end{table}
+
+\section*{Table A4. Accuracy on test trials in Experiment 2 with inspection times on exposure trials included as a predictor}
+
+\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Inspection Time))$^2$ + \\ offset(logit($^1/_{Referents}$)) + (TrialType | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & z.value & p.value &  \\ 
+  \hline
+Intercept & 3.51 & 0.29 & 12.13 & $<$ .001 & *** \\ 
+  Gaze Condition & 0.13 & 0.23 & 0.58 & 0.559 &  \\ 
+  Switch Trial & -3.12 & 0.26 & -12.21 & $<$ .001 & *** \\ 
+  Log(Interval) & -0.88 & 0.14 & -6.34 & $<$ .001 & *** \\ 
+  Log(Inspection Time) & 0.15 & 0.13 & 1.14 & 0.255 &  \\ 
+  Switch Trial*Gaze Condition & -0.54 & 0.17 & -3.21 & 0.001 & ** \\ 
+  Gaze Condition*Log(Interval) & 0.16 & 0.09 & 1.85 & 0.064 & . \\ 
+  Gaze Condition*Log(Inspection Time) & -0.14 & 0.10 & -1.37 & 0.172 &  \\ 
+  Switch Trial*Log(Interval) & 0.77 & 0.10 & 8.00 & $<$ .001 & *** \\ 
+  Switch Trial*Log(Inspection Time) & 0.21 & 0.11 & 1.96 & 0.05 & . \\ 
+  Log(Interval)*Log(Inspection Time) & 0.04 & 0.06 & 0.77 & 0.44 &  \\ 
+   \hline
+\end{tabular}
+\label{tab:e2_acc_it}
+\end{table}
+
+\newpage
+
+\section*{Table A5. Accuracy on exposure trials in Experiment 3 as a function of reliability condition and participants' subjective reliability judgments}
+
+\texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + \\  offset(logit($^1/_{Referents}$)) + (1 | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & z.value & p.value &  \\ 
+  \hline
+Intercept & 3.07 & 0.98 & 3.14 & 0.002 & ** \\ 
+  Reliability Condition & 3.28 & 1.50 & 2.19 & 0.029 & * \\ 
+  Subjective Reliability & 7.26 & 1.73 & 4.21 & $<$ .001 & *** \\ 
+  Reliability Condition*Subjective Reliability & -4.58 & 2.72 & -1.69 & 0.092 & . \\ 
+   \hline
+\end{tabular}
+\label{tab:e3_gf_exp}
+\end{table}
+
+\section*{Table A6. Accuracy on test trials in Experiment 3 as a function of reliability condition}
+
+\texttt{Correct $\sim$ Trial Type * Reliability Condition + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & z.value & p.value &  \\ 
+  \hline
+Intercept & 4.70 & 0.36 & 13.09 & $<$ .001 & *** \\ 
+  Trial Type & -3.95 & 0.36 & -10.92 & $<$ .001 & *** \\ 
+  Reliability Condition & 0.38 & 0.37 & 1.03 & 0.302 &  \\ 
+  Reliability Condition*Trial Type & -0.76 & 0.38 & -2.01 & 0.044 & * \\ 
+   \hline
+\end{tabular}
+\label{tab:e3_acc_rel_cond}
+\end{table}
+
+\newpage
+
+\section*{Table A7. Accuracy on test trials in Experiment 3 as a function of reliability condition and participants' use of gaze on exposure trials}
+
+\texttt{Correct $\sim$ (Trial Type + Reliability Condition + Correct-Exposure)$^2$ \\ + offset(logit($^1/_{Referents}$)) + (Trial Type | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & z.value & p.value &  \\ 
+  \hline
+Intercept & 4.50 & 0.39 & 11.58 & $<$ .001 & *** \\ 
+  Correct Exposure & 0.07 & 0.29 & 0.26 & 0.797 &  \\ 
+  Trial Type & -2.70 & 0.38 & -7.06 & $<$ .001 & *** \\ 
+  Reliability Condition & -0.43 & 0.44 & -0.98 & 0.325 &  \\ 
+  Correct Exposure*Trial Type & -1.43 & 0.27 & -5.41 & $<$ .001 & *** \\ 
+  Correct Exposure*Reliability & 0.97 & 0.33 & 2.92 & 0.004 & ** \\ 
+  Reliability Condition*Trial Type & -0.62 & 0.36 & -1.72 & 0.086 & . \\ 
+   \hline
+\end{tabular}
+\label{tab:e3_acc_rel_cond_gf}
+\end{table}
+
+\section*{Table A8. Accuracy on test trials in Experiment 3 as a function of each participants' accuracy on exposure trials}
+
+\texttt{Correct $\sim$ Trial Type * Total Correct Exposure + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & z.value & p.value &  \\ 
+  \hline
+Intercept & 2.73 & 0.39 & 7.01 & $<$ .001 & *** \\ 
+  Total Exposure Correct & 0.14 & 0.06 & 2.49 & 0.013 & * \\ 
+  Trial Type & -1.39 & 0.39 & -3.55 & $<$ .001 & *** \\ 
+  Total Exposure Correct*Trial Type & -0.26 & 0.06 & -4.66 & $<$ .001 & *** \\ 
+   \hline
+\end{tabular}
+\label{tab:e3_acc_gaze_use}
+\end{table}
+
+\newpage
+
+\section*{Table A9. Accuracy on test trials in Experiment 3 as a function of each participants' subjective reliability judgment}
+
+\texttt{Correct $\sim$ Trial Type * Subjective Reliability + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & z.value & p.value &  \\ 
+  \hline
+Intercept & 4.54 & 0.44 & 10.33 & $<$ .001 & *** \\ 
+  Subjective Reliability & 0.40 & 0.58 & 0.69 & 0.493 &  \\ 
+  Trial Type & -3.44 & 0.44 & -7.81 & $<$ .001 & *** \\ 
+  Subjective Reliability*Trial Type & -1.63 & 0.59 & -2.78 & 0.005 & ** \\ 
+   \hline
+\end{tabular}
+\label{tab:e3_acc_subj_rel}
+\end{table}
+
+\section*{Table A10. Accuracy on test trials in Experiment 3 as a function of reliability condition and inspection time on exposure trials}
+
+\texttt{Correct $\sim$ (Trial Type + Reliability condition + Trial Type + \\ Log(Inspection Time))$^2$ + offset(logit($^1/_{Referents}$)) + (Trial Type | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & z.value & p.value &  \\ 
+  \hline
+Intercept & 3.11 & 0.20 & 15.94 & $<$ .001 & *** \\ 
+  Log(Inspection Time) & 0.31 & 0.09 & 3.31 & 0.001 & ** \\ 
+  Trial Type & -2.75 & 0.20 & -13.64 & $<$ .001 & *** \\ 
+  Reliability Condition & 0.50 & 0.30 & 1.66 & 0.097 & . \\ 
+  Log(Inspection Time)*Trial Type & 0.03 & 0.09 & 0.34 & 0.736 &  \\ 
+  Log(Inspection Time)*Reliability Condition & -0.20 & 0.11 & -1.83 & 0.067 & . \\ 
+  Trial Type*Reliability Condition & -0.58 & 0.29 & -1.97 & 0.048 & * \\ 
+   \hline
+\end{tabular}
+\label{tab:e3_acc_inspect}
+\end{table}
+
+\newpage
+
+\section*{Table A11. Accuracy on test trials in Experiment 4 as a function of gaze and interval}
+
+\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval))$^2$ + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrrl}
+ term & estimate & std.error & z.value & p.value &  \\ 
+  \hline
+Intercept & 3.37 & 0.16 & 21.32 & $<$ .001 & *** \\ 
+  Trial Type & -3.18 & 0.16 & -19.93 & $<$ .001 & *** \\ 
+  Gaze Condition & -0.48 & 0.14 & -3.52 & $<$ .001 & *** \\ 
+  Log(Interval) & -0.84 & 0.10 & -8.59 & $<$ .001 & *** \\ 
+  Trial Type*Gaze Condition & 0.90 & 0.14 & 6.63 & $<$ .001 & *** \\ 
+  Trial Type*Log(Interval) & 0.80 & 0.09 & 8.71 & $<$ .001 & *** \\ 
+  Gaze Condition*Log(Interval) & -0.01 & 0.07 & -0.10 & 0.917 &  \\ 
+   \hline
+\end{tabular}
+\label{tab:e4_acc}
+\end{table}
 
 \newpage
 
@@ -1596,253 +1842,5 @@ at scale: The baby's view is better. \emph{Developmental Science},
 \emph{16}(6), 959--966.
 
 \bibliography{}
-
-\newpage
-
-\section*{Appendix}
-
-\captionsetup[table]{labelformat=empty}
-
-\section*{Table A1. Length of inspection times on exposure trials in Experiment 1 as a function of gaze, interval, and number of referents}
-
-\texttt{Log(Inspection time) $\sim$ (Gaze + Log(Interval) + Log(Referents))$^2$ + (1 | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & t.value & p.value &  \\ 
-  \hline
-Intercept & 0.83 & 0.10 & 8.19 & $<$ .001 & *** \\ 
-  Gaze Condition & 0.16 & 0.11 & 1.48 & 0.138 &  \\ 
-  Log(Interval) & 0.06 & 0.05 & 1.33 & 0.184 &  \\ 
-  Log(Referents) & 0.34 & 0.04 & 7.91 & $<$ .001 & *** \\ 
-  Gaze Condition*Log(Interval) & -0.08 & 0.03 & -2.86 & 0.004 & ** \\ 
-  Gaze Condition*Log(Referent) & -0.27 & 0.04 & -6.01 & $<$ .001 & *** \\ 
-  Log(Interval)*Log(Referent) & -0.00 & 0.02 & -0.19 & 0.849 &  \\ 
-   \hline
-\end{tabular}
-\label{tab:e1_rt}
-\end{table}
-
-\newpage
-
-\section*{Table A2. Accuracy on test trials in Experiment 1 with inspection times on exposure trials included as a predictor}
-
-\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Referents) + \\ Log(Inspection Time))$^2$ + offset(logit($^1/_{Referents}$)) + (TrialType | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 2.89 & 0.34 & 8.49 & $<$ .001 & *** \\ 
-  Switch Trial & -1.45 & 0.25 & -5.76 & $<$ .001 & *** \\ 
-  Gaze Condition & 0.12 & 0.27 & 0.43 & 0.669 &  \\ 
-  Log(Interval) & -0.47 & 0.11 & -4.15 & $<$ .001 & *** \\ 
-  Log(Referents) & 0.05 & 0.14 & 0.39 & 0.693 &  \\ 
-  Log(Inspection Time) & 0.20 & 0.15 & 1.38 & 0.169 &  \\ 
-  Switch Trial*Gaze Condition & -1.02 & 0.13 & -7.86 & $<$ .001 & *** \\ 
-  Switch Trial*Log(Interval) & 0.52 & 0.06 & 9.39 & $<$ .001 & *** \\ 
-  Switch Trial*Log(Referent) & -0.62 & 0.09 & -6.67 & $<$ .001 & *** \\ 
-  Switch Trial*Log(Inspection Time) & 0.09 & 0.07 & 1.36 & 0.174 &  \\ 
-  Gaze Condition*Log(Interval) & 0.09 & 0.06 & 1.61 & 0.107 &  \\ 
-  Gaze Condition*Log(Referent) & 0.36 & 0.10 & 3.68 & $<$ .001 & *** \\ 
-  Gaze Condition*Log(Inspection Time) & -0.17 & 0.07 & -2.55 & 0.011 & * \\ 
-  Log(Interval)*Log(Referent) & -0.05 & 0.04 & -1.26 & 0.207 &  \\ 
-  Log(Interval)*Log(Inspection Time) & 0.02 & 0.03 & 0.54 & 0.589 &  \\ 
-  Log(Referents)*Log(Inspection Time) & 0.05 & 0.05 & 0.94 & 0.345 &  \\ 
-   \hline
-\end{tabular}
-\label{tab:e1_acc_it}
-\end{table}
-
-\newpage
-
-\section*{Table A3. Length of inspection times on exposure trials in Experiment 2 as a function of gaze and interval}
-
-\texttt{Log(Inspection time) $\sim$ Gaze * Log(Interval) + (1 | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & t.value & p.value &  \\ 
-  \hline
-Intercept & 3.90 & 0.08 & 50.69 & $<$ .001 & *** \\ 
-  Gaze Condition & -1.10 & 0.05 & -20.90 & $<$ .001 & *** \\ 
-  Log(Interval) & -0.48 & 0.05 & -8.77 & $<$ .001 & *** \\ 
-  Gaze Condition*Log(Interval) & -0.02 & 0.04 & -0.60 & 0.549 &  \\ 
-   \hline
-\end{tabular}
-\label{tab:e2_rt}
-\end{table}
-
-\section*{Table A4. Accuracy on test trials in Experiment 2 with inspection times on exposure trials included as a predictor}
-
-\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval) + Log(Inspection Time))$^2$ + \\ offset(logit($^1/_{Referents}$)) + (TrialType | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 3.51 & 0.29 & 12.13 & $<$ .001 & *** \\ 
-  Gaze Condition & 0.13 & 0.23 & 0.58 & 0.559 &  \\ 
-  Switch Trial & -3.12 & 0.26 & -12.21 & $<$ .001 & *** \\ 
-  Log(Interval) & -0.88 & 0.14 & -6.34 & $<$ .001 & *** \\ 
-  Log(Inspection Time) & 0.15 & 0.13 & 1.14 & 0.255 &  \\ 
-  Switch Trial*Gaze Condition & -0.54 & 0.17 & -3.21 & 0.001 & ** \\ 
-  Gaze Condition*Log(Interval) & 0.16 & 0.09 & 1.85 & 0.064 & . \\ 
-  Gaze Condition*Log(Inspection Time) & -0.14 & 0.10 & -1.37 & 0.172 &  \\ 
-  Switch Trial*Log(Interval) & 0.77 & 0.10 & 8.00 & $<$ .001 & *** \\ 
-  Switch Trial*Log(Inspection Time) & 0.21 & 0.11 & 1.96 & 0.05 & . \\ 
-  Log(Interval)*Log(Inspection Time) & 0.04 & 0.06 & 0.77 & 0.44 &  \\ 
-   \hline
-\end{tabular}
-\label{tab:e2_acc_it}
-\end{table}
-
-\newpage
-
-\section*{Table A5. Accuracy on exposure trials in Experiment 3 as a function of reliability condition and participants' subjective reliability judgments}
-
-\texttt{Correct-Exposure $\sim$ Reliability Condition * Subjective Reliability + \\  offset(logit($^1/_{Referents}$)) + (1 | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 3.07 & 0.98 & 3.14 & 0.002 & ** \\ 
-  Reliability Condition & 3.28 & 1.50 & 2.19 & 0.029 & * \\ 
-  Subjective Reliability & 7.26 & 1.73 & 4.21 & $<$ .001 & *** \\ 
-  Reliability Condition*Subjective Reliability & -4.58 & 2.72 & -1.69 & 0.092 & . \\ 
-   \hline
-\end{tabular}
-\label{tab:e3_gf_exp}
-\end{table}
-
-\section*{Table A6. Accuracy on test trials in Experiment 3 as a function of reliability condition}
-
-\texttt{Correct $\sim$ Trial Type * Reliability Condition + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 4.70 & 0.36 & 13.09 & $<$ .001 & *** \\ 
-  Trial Type & -3.95 & 0.36 & -10.92 & $<$ .001 & *** \\ 
-  Reliability Condition & 0.38 & 0.37 & 1.03 & 0.302 &  \\ 
-  Reliability Condition*Trial Type & -0.76 & 0.38 & -2.01 & 0.044 & * \\ 
-   \hline
-\end{tabular}
-\label{tab:e3_acc_rel_cond}
-\end{table}
-
-\newpage
-
-\section*{Table A7. Accuracy on test trials in Experiment 3 as a function of reliability condition and participants' use of gaze on exposure trials}
-
-\texttt{Correct $\sim$ (Trial Type + Reliability Condition + Correct-Exposure)$^2$ \\ + offset(logit($^1/_{Referents}$)) + (Trial Type | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 4.50 & 0.39 & 11.58 & $<$ .001 & *** \\ 
-  Correct Exposure & 0.07 & 0.29 & 0.26 & 0.797 &  \\ 
-  Trial Type & -2.70 & 0.38 & -7.06 & $<$ .001 & *** \\ 
-  Reliability Condition & -0.43 & 0.44 & -0.98 & 0.325 &  \\ 
-  Correct Exposure*Trial Type & -1.43 & 0.27 & -5.41 & $<$ .001 & *** \\ 
-  Correct Exposure*Reliability & 0.97 & 0.33 & 2.92 & 0.004 & ** \\ 
-  Reliability Condition*Trial Type & -0.62 & 0.36 & -1.72 & 0.086 & . \\ 
-   \hline
-\end{tabular}
-\label{tab:e3_acc_rel_cond_gf}
-\end{table}
-
-\section*{Table A8. Accuracy on test trials in Experiment 3 as a function of each participants' accuracy on exposure trials}
-
-\texttt{Correct $\sim$ Trial Type * Total Correct Exposure + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 2.73 & 0.39 & 7.01 & $<$ .001 & *** \\ 
-  Total Exposure Correct & 0.14 & 0.06 & 2.49 & 0.013 & * \\ 
-  Trial Type & -1.39 & 0.39 & -3.55 & $<$ .001 & *** \\ 
-  Total Exposure Correct*Trial Type & -0.26 & 0.06 & -4.66 & $<$ .001 & *** \\ 
-   \hline
-\end{tabular}
-\label{tab:e3_acc_gaze_use}
-\end{table}
-
-\newpage
-
-\section*{Table A9. Accuracy on test trials in Experiment 3 as a function of each participants' subjective reliability judgment}
-
-\texttt{Correct $\sim$ Trial Type * Subjective Reliability + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 4.54 & 0.44 & 10.33 & $<$ .001 & *** \\ 
-  Subjective Reliability & 0.40 & 0.58 & 0.69 & 0.493 &  \\ 
-  Trial Type & -3.44 & 0.44 & -7.81 & $<$ .001 & *** \\ 
-  Subjective Reliability*Trial Type & -1.63 & 0.59 & -2.78 & 0.005 & ** \\ 
-   \hline
-\end{tabular}
-\label{tab:e3_acc_subj_rel}
-\end{table}
-
-\section*{Table A10. Accuracy on test trials in Experiment 3 as a function of reliability condition and inspection time on exposure trials}
-
-\texttt{Correct $\sim$ (Trial Type + Reliability condition + Trial Type + \\ Log(Inspection Time))$^2$ + offset(logit($^1/_{Referents}$)) + (Trial Type | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 3.11 & 0.20 & 15.94 & $<$ .001 & *** \\ 
-  Log(Inspection Time) & 0.31 & 0.09 & 3.31 & 0.001 & ** \\ 
-  Trial Type & -2.75 & 0.20 & -13.64 & $<$ .001 & *** \\ 
-  Reliability Condition & 0.50 & 0.30 & 1.66 & 0.097 & . \\ 
-  Log(Inspection Time)*Trial Type & 0.03 & 0.09 & 0.34 & 0.736 &  \\ 
-  Log(Inspection Time)*Reliability Condition & -0.20 & 0.11 & -1.83 & 0.067 & . \\ 
-  Trial Type*Reliability Condition & -0.58 & 0.29 & -1.97 & 0.048 & * \\ 
-   \hline
-\end{tabular}
-\label{tab:e3_acc_inspect}
-\end{table}
-
-\newpage
-
-\section*{Table A11. Accuracy on test trials in Experiment 4 as a function of gaze and interval}
-
-\texttt{Correct $\sim$ (Trial Type + Gaze + Log(Interval))$^2$ + offset(logit($^1/_{Referents}$)) + \\ (Trial Type | subject)}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{lrrrrl}
- term & estimate & std.error & z.value & p.value &  \\ 
-  \hline
-Intercept & 3.37 & 0.16 & 21.32 & $<$ .001 & *** \\ 
-  Trial Type & -3.18 & 0.16 & -19.93 & $<$ .001 & *** \\ 
-  Gaze Condition & -0.48 & 0.14 & -3.52 & $<$ .001 & *** \\ 
-  Log(Interval) & -0.84 & 0.10 & -8.59 & $<$ .001 & *** \\ 
-  Trial Type*Gaze Condition & 0.90 & 0.14 & 6.63 & $<$ .001 & *** \\ 
-  Trial Type*Log(Interval) & 0.80 & 0.09 & 8.71 & $<$ .001 & *** \\ 
-  Gaze Condition*Log(Interval) & -0.01 & 0.07 & -0.10 & 0.917 &  \\ 
-   \hline
-\end{tabular}
-\label{tab:e4_acc}
-\end{table}
-
 
 \end{document}

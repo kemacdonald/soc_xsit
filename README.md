@@ -1,4 +1,4 @@
-Real-time lexical comprehension in ASL
+Social cross-situational word learning
 ===
 
 This repository contains the following materials for the paper: "Social cues modulate the representations underlying cross-situational learning"
