@@ -25,6 +25,7 @@ mf_labeller <- function(var, value){
 ## add some style elements for ggplot2
 theme_set(theme_bw())
 
+
 ## standard error of the mean
 sem <- function (x) {
   sd(x,na.rm=TRUE) / sqrt(length(x))
