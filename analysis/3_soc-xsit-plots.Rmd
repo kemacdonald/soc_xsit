@@ -1,7 +1,6 @@
 ---
 title: "Soc-Xsit Plots"
 author: "Kyle MacDonald"
-date: "July 26, 2016"
 output: html_document
 ---
 
@@ -20,7 +19,6 @@ library(directlabels); library(forcats); library(cowplot)
 ```
 
 ```{r custom plotting theme, include = FALSE}
-#theme_soc_xsit <- theme_set(theme_bw())
 theme_soc_xsit <- theme_set(theme_cowplot())
 
 theme_soc_xsit <- theme_update(
@@ -30,8 +28,6 @@ theme_soc_xsit <- theme_update(
   legend.text = element_text(size=12),
   strip.text = element_text(size=12),
   strip.background = element_blank(),
-  #panel.grid.minor = element_blank(),
-  #panel.grid.major = element_line(colour = "gray88", linetype = "solid"),
   panel.margin = unit(1, "lines")
   )
 ```
@@ -75,8 +71,6 @@ df_expo_expt1_analysis <- df_expt1 %>%
   filter(correct_exposure == T | condition == "No-Social")
 ```
 
-### Gaze following on exposure trials in the social condition
-
 ```{r expt1 accuracy on exposure trials}
 ms_expo_expt1 <-  df_expo_expt1 %>%
   filter(condition == "Social") %>%
@@ -86,7 +80,8 @@ ms_expo_expt1 <-  df_expo_expt1 %>%
   multi_boot_standard("accuracy_exposure")
 ```
 
-```{r expt 1 accuracy on exposure trials plot}
+```{r expt 1 accuracy on exposure trials plot, eval = F}
+### Gaze following on exposure trials in the social condition
 ggplot(data=ms_expo_expt1, aes(x=intervalNum, y=mean)) + 
   geom_pointrange(aes(ymin=ci_lower, 
                       ymax=ci_upper), size=0.6) +
@@ -344,6 +339,7 @@ expt2.acc.test.line <- ggplot(data=ms_test_expt2_filt,
 ```{r expt2 final plot, fig.height=5, fig.width = 8}
 e2_main_plot <- plot_grid(expt2.rt.expo, expt2.acc.test.line, 
                           ncol=2, labels = c('A', 'B'))
+e2_main_plot
 
 ggsave(plot = e2_main_plot, "../paper/figs/expt2_new.png", device = "png", width = 9, height = 5)
 ```
@@ -492,8 +488,11 @@ expt3_gf_plot <- ggplot(aes(x = prop_cond_clean, y = mean, color = correct_expos
   annotate("text", x = 6, y = 0.8, label = "Same", color = "black", size = 6) +
   annotate("text", x = 6, y = 0.4, label = "Switch", color = "black", size = 6) +
   panel_border()
+```
 
+```{r}
 e3_main_plot <- plot_grid(expt3_acc_test, expt3_gf_plot, ncol = 2, labels = c('A' ,'B'))
+e3_main_plot
 
 ggsave(plot = e3_main_plot, "../paper/figs/expt3_main_plot.png", device = "png", width = 9, height = 5)
 ```
@@ -559,9 +558,13 @@ expt3_inspect_plot <- ggplot(data=ms_inspect,
   annotate("text", x = 4.7, y = 0.75, label = "Same", size = 6) +
   annotate("text", x = 4.7, y = 0.35, label = "Switch", size = 6) + 
   panel_border()
+```
 
+
+```{r}
 e3_sub_plots <- plot_grid(expt3_acc_test_chose_gazetar, expt3_subj_rel_test_plot, ncol = 2,
                           labels = c("A", "B"))
+e3_sub_plots
 
 ggsave(plot = e3_sub_plots, "../paper/figs/expt3_sub_plot.png", device = "png", width = 9, height = 5)
 ```
@@ -609,7 +612,9 @@ e4_plot <- ggplot(data=ms_e4, aes(x=as.factor(intervalNum), y=mean,
   guides(linetype=F, shape=F) +
   annotate("text", x = 2.35, y = 0.55, label = "Same", color = "black", size = 6) +
   annotate("text", x = 2.35, y = 0.3, label = "Switch", color = "black", size = 6)
+```
 
+```{r}
 ggsave(plot = e4_plot, "../paper/figs/expt4.png", device = "png",
        width = 8, height = 5)
 ```
@@ -626,7 +631,7 @@ ms_e4_2$gaze_trial <- factor(ms_e4_2$gaze_trial, levels = c("No-Gaze", "Gaze"))
 
 ### Performance at test as a function of interval and gaze condition
 
-```{r e4 final plot, fig.width = 5}
+```{r e4 final plot, }
 expt4.acc.test.line <- ggplot(data=ms_e4_2, 
                               aes(x=as.factor(intervalNum), y=mean, 
                                   colour = gaze_trial,shape = gaze_trial)) +
@@ -645,7 +650,10 @@ expt4.acc.test.line <- ggplot(data=ms_e4_2,
   annotate("text", x = 2.35, y = 0.6, label = "Same", color = "black", size = 6) +
   annotate("text", x = 2.35, y = 0.3, label = "Switch", color = "black", size = 6) +
   panel_border()
+```
 
+```{r, fig.width = 5}
+expt4.acc.test.line
 ggsave(plot = expt4.acc.test.line, "../paper/figs/expt4_collapsed.png", device = "png",
        width = 4.5, height = 5)
 ```
